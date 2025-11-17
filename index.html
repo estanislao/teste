@@ -1,77 +1,5 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Business Case Builder - HupData</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
-    // Lucide Icons as React components
-    const FileText = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-      </svg>
-    );
-
-    const Target = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="10" strokeWidth={2}></circle>
-        <circle cx="12" cy="12" r="6" strokeWidth={2}></circle>
-        <circle cx="12" cy="12" r="2" strokeWidth={2}></circle>
-      </svg>
-    );
-
-    const TrendingUp = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-      </svg>
-    );
-
-    const CheckCircle = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    );
-
-    const Download = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-      </svg>
-    );
-
-    const ChevronRight = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-      </svg>
-    );
-
-    const ChevronLeft = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-      </svg>
-    );
-
-    const Calculator = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="2" width="16" height="20" rx="2" strokeWidth={2}></rect>
-        <line x1="8" y1="6" x2="16" y2="6" strokeWidth={2}></line>
-      </svg>
-    );
-
-    const ChevronDown = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-      </svg>
-    );
-
-    const { useState } = React;
-
+import React, { useState } from 'react';
+import { FileText, TrendingUp, Target, CheckCircle, Download, ChevronRight, ChevronLeft, Calculator, ChevronDown } from 'lucide-react';
 
 const BusinessCaseBuilder = () => {
   const [currentStep, setCurrentStep] = useState(0);
@@ -915,7 +843,4 @@ const BusinessCaseBuilder = () => {
   );
 };
 
-    ReactDOM.render(<BusinessCaseBuilder />, document.getElementById('root'));
-  </script>
-</body>
-</html>
+export default BusinessCaseBuilder;
