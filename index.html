@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Case Builder - HupData</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(to bottom right, #f9fafb, #e5e7eb);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    /* HupData Colors */
+    .bg-hupdata-blue { background-color: #032c62; }
+    .bg-hupdata-dark { background-color: #17203c; }
+    .text-hupdata-blue { color: #032c62; }
+    .text-hupdata-gray { color: #8c95ae; }
+    .border-hupdata-blue { border-color: #032c62; }
+    
+    /* Header */
+    .header { text-align: center; margin-bottom: 2rem; }
+    .header h1 { font-size: 2.5rem; font-weight: 800; color: #111; margin-bottom: 0.5rem; }
+    .header p { color: #6b7280; }
+    
+    /* Card */
+    .card { background: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; }
+    
+    /* Progress Bar */
+    .progress-bar {
+      background-color: #032c62;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progress-step {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .progress-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .progress-icon.active {
+      background-color: white;
+      color: #032c62;
+    }
+    .progress-icon.inactive {
+      background-color: #17203c;
+      color: #8c95ae;
+    }
+    .progress-text {
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+    .progress-text.inactive {
+      color: #8c95ae;
+    }
+    .progress-arrow {
+      color: #8c95ae;
+      margin: 0 0.5rem;
+    }
+    
+    /* Section Header */
+    .section-header {
+      background-color: #032c62;
+      color: white;
+      padding: 1.5rem;
+      margin: -2rem -2rem 2rem -2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    /* Content */
+    .content { padding: 2rem; }
+    
+    /* Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .form-group { margin-bottom: 1rem; }
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 0.5rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #032c62;
+      box-shadow: 0 0 0 3px rgba(3, 44, 98, 0.1);
+    }
+    
+    /* Navigation */
+    .navigation {
+      background: white;
+      padding: 1.5rem 2rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background-color: #032c62;
+      color: white;
+      box-shadow: 0 4px 6px rgba(3, 44, 98, 0.3);
+    }
+    .btn-primary:hover {
+      background-color: #17203c;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 8px rgba(3, 44, 98, 0.4);
+    }
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    .btn-secondary:hover {
+      background-color: #d1d5db;
+    }
+    .btn:disabled {
+      background-color: #e5e7eb;
+      color: #9ca3af;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .step-indicator {
+      color: #6b7280;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    .footer .brand {
+      color: #032c62;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState } = React;
+    
+    const BusinessCaseBuilder = () => {
+      const [currentStep, setCurrentStep] = useState(0);
+      const [formData, setFormData] = useState({
+        nomeGestor: '',
+        empresa: '',
+        area: 'tributaria',
+        cargo: 'gerente',
+        numProfissionais: 5,
+        percentualAtividadesManuais: 40,
+        custoPorHora: 80,
+        numeroProcessos: 10,
+        fontesDados: 2,
+        sistemasUtilizados: ['SAP', 'Excel'],
+      });
+      
+      const steps = [
+        { id: 1, title: 'Informações Básicas' },
+        { id: 2, title: 'Diagnóstico Atual' },
+        { id: 3, title: 'Ganhos Esperados' },
+        { id: 4, title: 'Plano de Ação' },
+        { id: 5, title: 'Business Case' }
+      ];
+      
+      const handleChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+      };
+      
+      const canProceed = () => {
+        if (currentStep === 0) {
+          return formData.nomeGestor && formData.empresa;
+        }
+        return true;
+      };
+      
+      return (
+        <div className="container">
+          <div className="header">
+            <h1>Business Case Builder</h1>
+            <p>Construa seu business case de automação em minutos</p>
+          </div>
+          
+          <div className="card">
+            {/* Progress Bar */}
+            <div className="progress-bar">
+              {steps.map((step, index) => (
+                <React.Fragment key={step.id}>
+                  <div className="progress-step">
+                    <div className={`progress-icon ${index <= currentStep ? 'active' : 'inactive'}`}>
+                      {index + 1}
+                    </div>
+                    <span className={`progress-text ${index <= currentStep ? '' : 'inactive'}`}>
+                      {step.title}
+                    </span>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <span className="progress-arrow">→</span>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+            
+            {/* Content */}
+            <div className="content">
+              {currentStep === 0 && (
+                <div>
+                  <div className="section-header">
+                    <h2>Informações Básicas</h2>
+                  </div>
+                  
+                  <div className="form-grid">
+                    <div className="form-group">
+                      <label className="form-label">Seu Nome</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={formData.nomeGestor}
+                        onChange={(e) => handleChange('nomeGestor', e.target.value)}
+                        placeholder="João Silva"
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Empresa</label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={formData.empresa}
+                        onChange={(e) => handleChange('empresa', e.target.value)}
+                        placeholder="Nome da Empresa"
+                      />
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Área de Atuação</label>
+                      <select
+                        className="form-input"
+                        value={formData.area}
+                        onChange={(e) => handleChange('area', e.target.value)}
+                      >
+                        <option value="tributaria">Tributária</option>
+                        <option value="fiscal">Fiscal</option>
+                        <option value="auditoria">Auditoria</option>
+                        <option value="compliance">Compliance</option>
+                      </select>
+                    </div>
+                    
+                    <div className="form-group">
+                      <label className="form-label">Seu Cargo</label>
+                      <select
+                        className="form-input"
+                        value={formData.cargo}
+                        onChange={(e) => handleChange('cargo', e.target.value)}
+                      >
+                        <option value="diretor">Diretor</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="coordenador">Coordenador</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="analista-senior">Auditor/Analista Senior</option>
+                        <option value="analista-pleno">Auditor/Analista Pleno</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {currentStep === 1 && (
+                <div>
+                  <div className="section-header">
+                    <h2>Diagnóstico da Situação Atual</h2>
+                  </div>
+                  <p style={{ color: '#6b7280', marginBottom: '1rem' }}>
+                    Configure os parâmetros para análise...
+                  </p>
+                </div>
+              )}
+              
+              {currentStep > 1 && (
+                <div>
+                  <div className="section-header">
+                    <h2>{steps[currentStep].title}</h2>
+                  </div>
+                  <p style={{ color: '#6b7280' }}>
+                    Conteúdo em desenvolvimento...
+                  </p>
+                </div>
+              )}
+            </div>
+            
+            {/* Navigation */}
+            <div className="navigation">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+                disabled={currentStep === 0}
+              >
+                ← Anterior
+              </button>
+              
+              <div className="step-indicator">
+                Passo {currentStep + 1} de {steps.length}
+              </div>
+              
+              <button
+                className="btn btn-primary"
+                onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+                disabled={currentStep === steps.length - 1 || !canProceed()}
+              >
+                Próximo →
+              </button>
+            </div>
+          </div>
+          
+          <div className="footer">
+            <p>Desenvolvido por <span className="brand">HupData</span> - Especialistas em Automação de Dados</p>
+          </div>
+        </div>
+      );
+    };
+    
+    ReactDOM.render(<BusinessCaseBuilder />, document.getElementById('root'));
+  </script>
+</body>
+</html>
