@@ -1,846 +1,305 @@
-import React, { useState } from 'react';
-import { FileText, TrendingUp, Target, CheckCircle, Download, ChevronRight, ChevronLeft, Calculator, ChevronDown } from 'lucide-react';
-
-const BusinessCaseBuilder = () => {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [showMethodology, setShowMethodology] = useState(false);
-  const [formData, setFormData] = useState({
-    nomeGestor: '',
-    area: 'tributaria',
-    cargo: 'gerente',
-    empresa: '',
-    numProfissionais: 5,
-    percentualAtividadesManuais: 40,
-    custoPorHora: 80,
-    numeroProcessos: 10,
-    tempoMedioProcesso: 4,
-    errosFrequentes: true,
-    fontesDados: 2,
-    sistemasUtilizados: ['SAP', 'Excel'],
-    prioridadeAutomacao: 'alta'
-  });
-  
-  const [showResults, setShowResults] = useState(false);
-
-  const steps = [
-    { id: 'info', title: 'Informações Básicas', icon: FileText },
-    { id: 'diagnostico', title: 'Diagnóstico Atual', icon: Target },
-    { id: 'ganhos', title: 'Ganhos Esperados', icon: TrendingUp },
-    { id: 'plano', title: 'Plano de Ação', icon: CheckCircle },
-    { id: 'resultado', title: 'Business Case', icon: Download }
-  ];
-
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleMultiSelect = (field, value) => {
-    const current = formData[field] || [];
-    let newArray;
-    if (current.includes(value)) {
-      newArray = current.filter(v => v !== value);
-    } else {
-      newArray = [...current, value];
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Case Builder - HupData</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
     }
-    handleInputChange(field, newArray);
-    
-    // Sincronizar Número de Fontes de Dados com sistemas selecionados
-    if (field === 'sistemasUtilizados') {
-      handleInputChange('fontesDados', newArray.length || 1);
-    }
-  };
+  </style>
+</head>
+<body>
+  <div id="root"></div>
 
-  const calculateROI = () => {
-    const percentualAtividadesManuais = formData.percentualAtividadesManuais || 40;
-    const numProfissionais = formData.numProfissionais || 1;
-    const custoPorHora = formData.custoPorHora || 0;
-    const fontesDados = parseInt(formData.fontesDados) || 1;
-    
-    // Cálculo do Coeficiente de Esforço baseado em fontes de dados
-    let coeficienteEsforco = 1.0;
-    if (fontesDados > 4) {
-      coeficienteEsforco = 1.08;
-    } else if (fontesDados >= 3) {
-      coeficienteEsforco = 1.05;
-    }
-    
-    // Taxa de Atividade Manual = 160 * (percentual/100)
-    const taxaAtividadeManual = 160 * (percentualAtividadesManuais / 100);
-    
-    // Custo Atual Mensal = Número de Profissionais * Taxa Atividade Manual * Custo por Hora * Coeficiente
-    const custoAtualMensal = numProfissionais * taxaAtividadeManual * custoPorHora * coeficienteEsforco;
-    
-    // Economia com 70% de redução em atividades manuais
-    const reducaoEstimada = 0.70;
-    const economiaMensal = custoAtualMensal * reducaoEstimada;
-    const economiaAnual = economiaMensal * 12;
-    
-    const custoImplementacao = 45000; // Estimativa média
-    const payback = custoImplementacao / economiaMensal;
-    
-    return {
-      custoAtualMensal,
-      economiaMensal,
-      economiaAnual,
-      custoImplementacao,
-      payback,
-      roiAnual: ((economiaAnual - custoImplementacao) / custoImplementacao * 100),
-      coeficienteEsforco,
-      taxaAtividadeManual
-    };
-  };
+  <script type="text/babel">
+    const { useState } = React;
 
-  const roi = calculateROI();
+    // Lucide Icons as SVG components
+    const FileText = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    );
 
-  const renderStepContent = () => {
-    switch(currentStep) {
-      case 0:
-        return (
-          <div className="space-y-6">
-            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
-              <h2 className="text-2xl font-bold text-white">Informações Básicas</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Seu Nome
-                </label>
-                <input
-                  type="text"
-                  value={formData.nomeGestor}
-                  onChange={(e) => handleInputChange('nomeGestor', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                  placeholder="João Silva"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Empresa
-                </label>
-                <input
-                  type="text"
-                  value={formData.empresa}
-                  onChange={(e) => handleInputChange('empresa', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                  placeholder="Nome da Empresa"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Área de Atuação
-                </label>
-                <select
-                  value={formData.area}
-                  onChange={(e) => handleInputChange('area', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                >
-                  <option value="tributaria">Tributária</option>
-                  <option value="fiscal">Fiscal</option>
-                  <option value="auditoria">Auditoria</option>
-                  <option value="compliance">Compliance</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Seu Cargo
-                </label>
-                <select
-                  value={formData.cargo}
-                  onChange={(e) => handleInputChange('cargo', e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                >
-                  <option value="diretor">Diretor</option>
-                  <option value="gerente">Gerente</option>
-                  <option value="coordenador">Coordenador</option>
-                  <option value="supervisor">Supervisor</option>
-                  <option value="analista-senior">Auditor/Analista Senior</option>
-                  <option value="analista-pleno">Auditor/Analista Pleno</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 1:
-        return (
-          <div className="space-y-6">
-            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
-              <h2 className="text-2xl font-bold text-white">Diagnóstico da Situação Atual</h2>
-            </div>
-            
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-              <p className="text-sm text-yellow-800">
-                Entenda melhor os desafios atuais da sua área para dimensionar os ganhos potenciais.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Número de Profissionais na Equipe
-                </label>
-                <input
-                  type="number"
-                  value={formData.numProfissionais}
-                  onChange={(e) => handleInputChange('numProfissionais', parseInt(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                  min="1"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  % do Tempo em Atividades Manuais
-                </label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={formData.percentualAtividadesManuais}
-                    onChange={(e) => handleInputChange('percentualAtividadesManuais', parseInt(e.target.value))}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                    min="0"
-                    max="100"
-                  />
-                  <span className="absolute right-4 top-2.5 text-gray-500">%</span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Ex: 40% significa que em média a equipe gasta 40% do tempo com tarefas manuais e repetitivas</p>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Custo Médio por Hora (R$)
-                </label>
-                <input
-                  type="number"
-                  value={formData.custoPorHora}
-                  onChange={(e) => handleInputChange('custoPorHora', parseInt(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                  min="0"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Número de Processos Críticos
-                </label>
-                <input
-                  type="number"
-                  value={formData.numeroProcessos}
-                  onChange={(e) => handleInputChange('numeroProcessos', parseInt(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                  min="1"
-                />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3">
-                Sistemas Utilizados (selecione todos que se aplicam)
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {[
-                  'SAP', 
-                  'Excel', 
-                  'SQL (MS SQL Server, Google Cloud SQL, DynamoDB)', 
-                  'APIs',
-                  'ERP', 
-                  'Protheus',
-                  'Internet',
-                  'Reports',
-                  'Outros Sistemas'
-                ].map(sistema => (
-                  <label key={sistema} className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={(formData.sistemasUtilizados || []).includes(sistema)}
-                      onChange={() => handleMultiSelect('sistemasUtilizados', sistema)}
-                      className="w-4 h-4 text-[#032c62] border-gray-300 rounded focus:ring-[#032c62]"
-                    />
-                    <span className="text-sm text-gray-700">{sistema}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-3">
-                Erros manuais são frequentes?
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    checked={formData.errosFrequentes === true}
-                    onChange={() => handleInputChange('errosFrequentes', true)}
-                    className="w-4 h-4 text-[#032c62] border-gray-300 focus:ring-[#032c62]"
-                  />
-                  <span className="text-sm text-gray-700">Sim</span>
-                </label>
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    checked={formData.errosFrequentes === false}
-                    onChange={() => handleInputChange('errosFrequentes', false)}
-                    className="w-4 h-4 text-[#032c62] border-gray-300 focus:ring-[#032c62]"
-                  />
-                  <span className="text-sm text-gray-700">Não</span>
-                </label>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
-              <h2 className="text-2xl font-bold text-white">Ganhos Esperados com Automação</h2>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              <div className="bg-gradient-to-br from-[#032c62] to-[#17203c] rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[#8c95ae] text-sm font-medium">Economia Mensal</span>
-                  <Calculator className="w-5 h-5 text-[#8c95ae]" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaMensal.toLocaleString('pt-BR')}
-                </div>
-                <div className="text-[#8c95ae] text-sm">
-                  Com redução de 70% em tarefas manuais
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-green-100 text-sm font-medium">Economia Anual</span>
-                  <TrendingUp className="w-5 h-5 text-green-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaAnual.toLocaleString('pt-BR')}
-                </div>
-                <div className="text-green-100 text-sm">
-                  Retorno em {roi.payback.toFixed(1)} meses
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
-                  <Target className="w-5 h-5 text-purple-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  {roi.roiAnual.toFixed(0)}%
-                </div>
-                <div className="text-purple-100 text-sm">
-                  Retorno sobre investimento
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-orange-100 text-sm font-medium">Investimento</span>
-                  <FileText className="w-5 h-5 text-orange-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.custoImplementacao.toLocaleString('pt-BR')}
-                </div>
-                <div className="text-orange-100 text-sm">
-                  Implementação completa
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-gray-50 rounded-xl p-6">
-              <button
-                onClick={() => setShowMethodology(!showMethodology)}
-                className="w-full flex items-center justify-between text-left hover:bg-gray-100 p-3 rounded-lg transition-colors"
-              >
-                <h3 className="text-lg font-semibold text-gray-800">Metodologia de Cálculo</h3>
-                <ChevronDown 
-                  className={`w-5 h-5 text-gray-600 transition-transform ${showMethodology ? 'rotate-180' : ''}`}
-                />
-              </button>
-              
-              {showMethodology && (
-                <div className="space-y-3 text-sm text-gray-700 mt-4">
-                  <div className="bg-white p-3 rounded border border-gray-200">
-                    <p className="font-medium mb-1">1. Taxa de Atividade Manual</p>
-                    <p className="text-gray-600">160 horas/mês × {formData.percentualAtividadesManuais}% = {roi.taxaAtividadeManual.toFixed(0)} horas/mês</p>
-                  </div>
-                  <div className="bg-white p-3 rounded border border-gray-200">
-                    <p className="font-medium mb-1">2. Coeficiente de Esforço</p>
-                    <p className="text-gray-600">
-                      Com {formData.fontesDados} fonte{formData.fontesDados > 1 ? 's' : ''} de dados: {roi.coeficienteEsforco}x
-                      {formData.fontesDados <= 2 ? ' (até 2 fontes)' : formData.fontesDados <= 4 ? ' (3-4 fontes)' : ' (5+ fontes)'}
-                    </p>
-                  </div>
-                  <div className="bg-white p-3 rounded border border-gray-200">
-                    <p className="font-medium mb-1">3. Custo Atual Mensal</p>
-                    <p className="text-gray-600">
-                      {formData.numProfissionais} profissionais × {roi.taxaAtividadeManual.toFixed(0)}h × R$ {formData.custoPorHora} × {roi.coeficienteEsforco} = R$ {roi.custoAtualMensal.toLocaleString('pt-BR')}
-                    </p>
-                  </div>
-                  <div className="bg-white p-3 rounded border border-gray-200">
-                    <p className="font-medium mb-1">4. Economia com Automação (70%)</p>
-                    <p className="text-gray-600">
-                      R$ {roi.custoAtualMensal.toLocaleString('pt-BR')} × 70% = R$ {roi.economiaMensal.toLocaleString('pt-BR')}/mês
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Benefícios Adicionais</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-800">Redução de Erros</p>
-                    <p className="text-sm text-gray-600">Até 95% menos erros em processos automatizados</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-800">Tempo de Resposta</p>
-                    <p className="text-sm text-gray-600">Redução de 70% no tempo de entrega</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-800">Compliance</p>
-                    <p className="text-sm text-gray-600">Processos auditáveis e rastreáveis</p>
-                  </div>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <CheckCircle className="w-5 h-5 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-800">Escalabilidade</p>
-                    <p className="text-sm text-gray-600">Cresça sem aumentar proporcionalmente o headcount</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-[#f5f6f8] border-l-4 border-[#032c62] p-4">
-              <h4 className="font-semibold text-blue-900 mb-2">Cases de Sucesso com KNIME</h4>
-              <div className="space-y-2 text-sm text-[#17203c]">
-                <p><strong>• Rabobank:</strong> Treinou 300 auditores em 2 dias para usar KNIME em detecção de anomalias e anti-lavagem de dinheiro, democratizando analytics avançado</p>
-                <p><strong>• ING:</strong> 400 auditores economizam 400h/ano, reduziram tempo de coleta de dados de 8 semanas para acesso instantâneo</p>
-                <p><strong>• Tata Steel:</strong> Economia de tempo de até 95% ao migrar de Excel para KNIME, identificando erros em cálculos e conciliações</p>
-                <p><strong>• Banco BV (HupData):</strong> Automatização de processos de dados em área tributária com KNIME Business Hub</p>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
-              <h2 className="text-2xl font-bold text-white">Plano de Ação</h2>
-            </div>
-            
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Roadmap de Implementação</h3>
-              <p className="text-gray-600 text-sm mb-6">
-                Estrutura recomendada para garantir sucesso na implementação
-              </p>
-              
-              <div className="space-y-4">
-                <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-[#032c62]">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-[#e8eaf0] rounded-full p-2 mt-1">
-                      <span className="text-[#17203c] font-bold text-sm">1</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 mb-1">Descoberta e Mapeamento</h4>
-                      <p className="text-sm text-gray-600 mb-2">Duração: 1-2 semanas</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• Identificação dos processos críticos</li>
-                        <li>• Mapeamento de fontes de dados</li>
-                        <li>• Definição de prioridades</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-green-500">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-green-100 rounded-full p-2 mt-1">
-                      <span className="text-green-700 font-bold text-sm">2</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 mb-1">Desenvolvimento de Workflows</h4>
-                      <p className="text-sm text-gray-600 mb-2">Duração: 3-6 semanas</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• Construção dos workflows no KNIME</li>
-                        <li>• Integração com sistemas existentes</li>
-                        <li>• Testes e validações</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-purple-500">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-purple-100 rounded-full p-2 mt-1">
-                      <span className="text-purple-700 font-bold text-sm">3</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 mb-1">Capacitação da Equipe</h4>
-                      <p className="text-sm text-gray-600 mb-2">Duração: 2-3 semanas</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• Treinamento prático em KNIME</li>
-                        <li>• Documentação de processos</li>
-                        <li>• Definição de governança</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-white rounded-lg p-4 shadow-sm border-l-4 border-orange-500">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-orange-100 rounded-full p-2 mt-1">
-                      <span className="text-orange-700 font-bold text-sm">4</span>
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 mb-1">Go-Live e Acompanhamento</h4>
-                      <p className="text-sm text-gray-600 mb-2">Duração: Contínuo</p>
-                      <ul className="text-sm text-gray-600 space-y-1">
-                        <li>• Implantação em produção</li>
-                        <li>• Monitoramento de resultados</li>
-                        <li>• Suporte e otimizações</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
-                <h4 className="font-semibold text-gray-800 mb-3">Fatores Críticos de Sucesso</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>Patrocínio executivo claro</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>Definição de métricas de sucesso</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>Envolvimento da equipe desde o início</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span>Comunicação transparente</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
-                <h4 className="font-semibold text-gray-800 mb-3">Riscos e Mitigações</h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">⚠</span>
-                    <span>Resistência à mudança → Change management estruturado</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">⚠</span>
-                    <span>Qualidade de dados → Governança desde o início</span>
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">⚠</span>
-                    <span>Dependência de fornecedor → Capacitação interna</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        );
-      
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-[#032c62] to-[#17203c] rounded-xl p-8 text-white">
-              <h2 className="text-3xl font-bold mb-2">Business Case Completo</h2>
-              <p className="text-[#8c95ae]">Automação de Processos de Dados - {formData.area.charAt(0).toUpperCase() + formData.area.slice(1)}</p>
-            </div>
-            
-            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Resumo Executivo</h3>
-                <div className="space-y-2 text-sm">
-                  <p><span className="font-bold text-gray-800">Gestor:</span> {formData.nomeGestor || 'Não informado'}</p>
-                  <p><span className="font-bold text-gray-800">Cargo:</span> {formData.cargo.charAt(0).toUpperCase() + formData.cargo.slice(1).replace('-', ' ')}</p>
-                  <p><span className="font-bold text-gray-800">Área:</span> {formData.area.charAt(0).toUpperCase() + formData.area.slice(1)}</p>
-                  <p><span className="font-bold text-gray-800">Empresa:</span> {formData.empresa || 'Não informado'}</p>
-                </div>
-              </div>
-              
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Situação Atual</h3>
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
-                  <p className="text-sm text-red-800 font-medium mb-2">Desafios Identificados:</p>
-                  <ul className="text-sm text-red-700 space-y-1">
-                    <li>• Equipe gasta {formData.percentualAtividadesManuais}% do tempo com tarefas manuais e repetitivas</li>
-                    <li>• {formData.numeroProcessos} processos críticos dependentes de trabalho manual</li>
-                    <li>• {formData.fontesDados} fontes de dados diferentes gerando complexidade ({roi.coeficienteEsforco}x)</li>
-                    <li>• Taxa de atividade manual: {roi.taxaAtividadeManual.toFixed(0)}h/mês por profissional</li>
-                    <li>• Custo mensal atual: R$ {roi.custoAtualMensal.toLocaleString('pt-BR')}</li>
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Proposta de Solução</h3>
-                <div className="bg-[#f5f6f8] rounded-lg p-4 mb-4">
-                  <p className="text-sm text-gray-700 mb-3">
-                    Implementação de automação de processos de dados utilizando KNIME Business Hub, 
-                    integrando {formData.sistemasUtilizados?.join(', ')} e outras fontes de dados.
-                  </p>
-                  <div className="grid grid-cols-3 gap-3 text-center">
-                    <div className="bg-white rounded p-3">
-                      <p className="text-2xl font-bold text-[#032c62]">1-2</p>
-                      <p className="text-xs text-gray-600">Semanas Discovery</p>
-                    </div>
-                    <div className="bg-white rounded p-3">
-                      <p className="text-2xl font-bold text-[#032c62]">3-6</p>
-                      <p className="text-xs text-gray-600">Semanas Dev</p>
-                    </div>
-                    <div className="bg-white rounded p-3">
-                      <p className="text-2xl font-bold text-[#032c62]">2-3</p>
-                      <p className="text-xs text-gray-600">Semanas Capacitação</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Análise Financeira</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="bg-green-50 rounded-lg p-4 text-center">
-                    <p className="text-xs text-gray-600 mb-1">Economia Mensal</p>
-                    <p className="text-xl font-bold text-green-600">R$ {roi.economiaMensal.toLocaleString('pt-BR')}</p>
-                  </div>
-                  <div className="bg-green-50 rounded-lg p-4 text-center">
-                    <p className="text-xs text-gray-600 mb-1">Economia Anual</p>
-                    <p className="text-xl font-bold text-green-600">R$ {roi.economiaAnual.toLocaleString('pt-BR')}</p>
-                  </div>
-                  <div className="bg-[#f5f6f8] rounded-lg p-4 text-center">
-                    <p className="text-xs text-gray-600 mb-1">Investimento</p>
-                    <p className="text-xl font-bold text-[#032c62]">R$ {roi.custoImplementacao.toLocaleString('pt-BR')}</p>
-                  </div>
-                  <div className="bg-purple-50 rounded-lg p-4 text-center">
-                    <p className="text-xs text-gray-600 mb-1">Payback</p>
-                    <p className="text-xl font-bold text-purple-600">{roi.payback.toFixed(1)} meses</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Benefícios Esperados</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">Redução de 70% em tarefas manuais</p>
-                      <p className="text-xs text-gray-600">Liberando tempo para análises estratégicas</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">Redução de até 95% em erros</p>
-                      <p className="text-xs text-gray-600">Processos automatizados e auditáveis</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">Ganho de 70% em velocidade</p>
-                      <p className="text-xs text-gray-600">Entregas mais rápidas e confiáveis</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start space-x-2">
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-medium text-gray-800 text-sm">Autonomia da equipe</p>
-                      <p className="text-xs text-gray-600">Capacitação para novos processos</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Próximos Passos</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
-                      1
-                    </div>
-                    <p className="text-gray-700">Apresentar business case para stakeholders e obter aprovação</p>
-                  </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
-                      2
-                    </div>
-                    <p className="text-gray-700">Agendar reunião de descoberta com especialistas HupData</p>
-                  </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
-                      3
-                    </div>
-                    <p className="text-gray-700">Definir escopo e cronograma detalhado do projeto</p>
-                  </div>
-                  <div className="flex items-center space-x-3 text-sm">
-                    <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
-                      4
-                    </div>
-                    <p className="text-gray-700">Iniciar fase de mapeamento de processos críticos</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => window.print()}
-                className="px-6 py-3 bg-[#032c62] text-white rounded-lg hover:bg-[#17203c] transition-colors flex items-center gap-2 shadow-lg"
-              >
-                <Download className="w-5 h-5" />
-                Baixar Business Case (PDF)
-              </button>
-              
-              <button
-                onClick={() => {
-                  const mailto = `mailto:?subject=Business Case - Automação de Processos&body=Confira o business case desenvolvido para automação de processos na área de ${formData.area}`;
-                  window.location.href = mailto;
-                }}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow-lg"
-              >
-                <FileText className="w-5 h-5" />
-                Compartilhar por Email
-              </button>
-            </div>
-            
-            <div className="bg-gradient-to-r from-[#17203c] to-[#032c62] rounded-xl p-6 text-white text-center">
-              <p className="text-lg font-semibold mb-2">Pronto para começar?</p>
-              <p className="text-[#8c95ae] text-sm mb-4">Agende uma conversa com nossos especialistas</p>
-              <a
-                href="https://hupdata.com/servicos/auditoria-tax/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block px-6 py-2 bg-white text-[#032c62] rounded-lg font-medium hover:bg-gray-100 transition-colors"
-              >
-                Falar com HupData
-              </a>
-            </div>
-          </div>
-        );
-      
-      default:
-        return null;
-    }
-  };
+    const Target = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" strokeWidth={2}></circle>
+        <circle cx="12" cy="12" r="6" strokeWidth={2}></circle>
+        <circle cx="12" cy="12" r="2" strokeWidth={2}></circle>
+      </svg>
+    );
 
-  const canProceed = () => {
-    if (currentStep === 0) {
-      return formData.nomeGestor && formData.empresa;
-    }
-    return true;
-  };
+    const TrendingUp = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    );
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Business Case Builder
-          </h1>
-          <p className="text-gray-600">
-            Construa seu business case de automação em minutos
-          </p>
-        </div>
+    const CheckCircle = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+
+    const Download = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+    );
+
+    const ChevronRight = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    );
+
+    const ChevronLeft = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      </svg>
+    );
+
+    const Calculator = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <rect x="4" y="2" width="16" height="20" rx="2" strokeWidth={2}></rect>
+        <line x1="8" y1="6" x2="16" y2="6" strokeWidth={2}></line>
+        <line x1="16" y1="10" x2="16" y2="10" strokeWidth={2}></line>
+        <line x1="12" y1="10" x2="12" y2="10" strokeWidth={2}></line>
+        <line x1="8" y1="10" x2="8" y2="10" strokeWidth={2}></line>
+        <line x1="16" y1="14" x2="16" y2="14" strokeWidth={2}></line>
+        <line x1="12" y1="14" x2="12" y2="14" strokeWidth={2}></line>
+        <line x1="8" y1="14" x2="8" y2="14" strokeWidth={2}></line>
+        <line x1="16" y1="18" x2="16" y2="18" strokeWidth={2}></line>
+        <line x1="8" y1="18" x2="12" y2="18" strokeWidth={2}></line>
+      </svg>
+    );
+
+    const ChevronDown = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+      </svg>
+    );
+
+    const BusinessCaseBuilder = () => {
+      const [currentStep, setCurrentStep] = useState(0);
+      const [showMethodology, setShowMethodology] = useState(false);
+      const [formData, setFormData] = useState({
+        nomeGestor: '',
+        area: 'tributaria',
+        cargo: 'gerente',
+        empresa: '',
+        numProfissionais: 5,
+        percentualAtividadesManuais: 40,
+        custoPorHora: 80,
+        numeroProcessos: 10,
+        errosFrequentes: true,
+        fontesDados: 2,
+        sistemasUtilizados: ['SAP', 'Excel'],
+      });
+
+      const steps = [
+        { id: 'info', title: 'Informações Básicas', icon: FileText },
+        { id: 'diagnostico', title: 'Diagnóstico Atual', icon: Target },
+        { id: 'ganhos', title: 'Ganhos Esperados', icon: TrendingUp },
+        { id: 'plano', title: 'Plano de Ação', icon: CheckCircle },
+        { id: 'resultado', title: 'Business Case', icon: Download }
+      ];
+
+      const handleInputChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+      };
+
+      const handleMultiSelect = (field, value) => {
+        const current = formData[field] || [];
+        let newArray;
+        if (current.includes(value)) {
+          newArray = current.filter(v => v !== value);
+        } else {
+          newArray = [...current, value];
+        }
+        handleInputChange(field, newArray);
         
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-[#032c62] px-6 py-4">
-            <div className="flex justify-between items-center">
-              {steps.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <div key={step.id} className="flex items-center">
-                    <div className={`flex items-center ${index <= currentStep ? 'text-white' : 'text-gray-300'}`}>
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        index <= currentStep ? 'bg-white text-[#032c62]' : 'bg-[#17203c] text-gray-300'
-                      }`}>
-                        <Icon className="w-5 h-5" />
+        if (field === 'sistemasUtilizados') {
+          handleInputChange('fontesDados', newArray.length || 1);
+        }
+      };
+
+      const calculateROI = () => {
+        const percentualAtividadesManuais = formData.percentualAtividadesManuais || 40;
+        const numProfissionais = formData.numProfissionais || 1;
+        const custoPorHora = formData.custoPorHora || 0;
+        const fontesDados = parseInt(formData.fontesDados) || 1;
+        
+        let coeficienteEsforco = 1.0;
+        if (fontesDados > 4) {
+          coeficienteEsforco = 1.08;
+        } else if (fontesDados >= 3) {
+          coeficienteEsforco = 1.05;
+        }
+        
+        const taxaAtividadeManual = 160 * (percentualAtividadesManuais / 100);
+        const custoAtualMensal = numProfissionais * taxaAtividadeManual * custoPorHora * coeficienteEsforco;
+        
+        const reducaoEstimada = 0.70;
+        const economiaMensal = custoAtualMensal * reducaoEstimada;
+        const economiaAnual = economiaMensal * 12;
+        
+        const custoImplementacao = 45000;
+        const payback = custoImplementacao / economiaMensal;
+        
+        return {
+          custoAtualMensal,
+          economiaMensal,
+          economiaAnual,
+          custoImplementacao,
+          payback,
+          roiAnual: ((economiaAnual - custoImplementacao) / custoImplementacao * 100),
+          coeficienteEsforco,
+          taxaAtividadeManual
+        };
+      };
+
+      const roi = calculateROI();
+
+      const canProceed = () => {
+        if (currentStep === 0) {
+          return formData.nomeGestor && formData.empresa;
+        }
+        return true;
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Business Case Builder
+              </h1>
+              <p className="text-gray-600">
+                Construa seu business case de automação em minutos
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+              {/* Progress Bar */}
+              <div className="bg-[#032c62] px-6 py-4">
+                <div className="flex justify-between items-center">
+                  {steps.map((step, index) => {
+                    const Icon = step.icon;
+                    return (
+                      <div key={step.id} className="flex items-center">
+                        <div className={`flex items-center ${index <= currentStep ? 'text-white' : 'text-gray-300'}`}>
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            index <= currentStep ? 'bg-white text-[#032c62]' : 'bg-[#17203c] text-gray-300'
+                          }`}>
+                            <Icon className="w-5 h-5" />
+                          </div>
+                          <span className="ml-2 text-sm font-medium hidden md:block">
+                            {step.title}
+                          </span>
+                        </div>
+                        {index < steps.length - 1 && (
+                          <ChevronRight className="w-5 h-5 mx-2 text-gray-300" />
+                        )}
                       </div>
-                      <span className="ml-2 text-sm font-medium hidden md:block">
-                        {step.title}
-                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <div className="p-8">
+                {currentStep === 0 && (
+                  <div>
+                    <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
+                      <h2 className="text-2xl font-bold text-white">Informações Básicas</h2>
                     </div>
-                    {index < steps.length - 1 && (
-                      <ChevronRight className="w-5 h-5 mx-2 text-gray-300" />
-                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Seu Nome</label>
+                        <input
+                          type="text"
+                          value={formData.nomeGestor}
+                          onChange={(e) => handleInputChange('nomeGestor', e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                          placeholder="João Silva"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-bold text-gray-700 mb-2">Empresa</label>
+                        <input
+                          type="text"
+                          value={formData.empresa}
+                          onChange={(e) => handleInputChange('empresa', e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                          placeholder="Nome da Empresa"
+                        />
+                      </div>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          <div className="p-8">
-            {renderStepContent()}
-          </div>
-          
-          <div className="bg-white px-8 py-4 flex justify-between items-center border-t">
-            <button
-              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
-              disabled={currentStep === 0}
-              className={`px-6 py-2 rounded-lg flex items-center gap-2 ${
-                currentStep === 0
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}>
-              <ChevronLeft className="w-4 h-4" />
-              Anterior
-            </button>
-            
-            <div className="text-sm text-gray-600">
-              Passo {currentStep + 1} de {steps.length}
-            </div>
-            
-            <button
-              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
-              disabled={currentStep === steps.length - 1 || !canProceed()}
-              className={`px-6 py-2 rounded-lg flex items-center gap-2 ${
-                currentStep === steps.length - 1 || !canProceed()
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-[#032c62] text-white hover:bg-[#17203c]'
-              }`}
-            >
-              Próximo
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Desenvolvido por <span className="font-semibold text-[#032c62]">HupData</span> - Especialistas em Automação de Dados</p>
-        </div>
-      </div>
-    </div>
-  );
-};
+                )}
 
-export default BusinessCaseBuilder;
+                {currentStep === 1 && (
+                  <div>
+                    <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
+                      <h2 className="text-2xl font-bold text-white">Diagnóstico</h2>
+                    </div>
+                    <p className="text-gray-600">Configure os parâmetros do diagnóstico...</p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Navigation Buttons */}
+              <div className="bg-white px-8 py-4 flex justify-between items-center border-t border-gray-200">
+                <button
+                  onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+                  disabled={currentStep === 0}
+                  className={`px-6 py-3 rounded-lg flex items-center gap-2 font-medium transition-colors ${
+                    currentStep === 0
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Anterior
+                </button>
+                
+                <div className="text-sm text-gray-600 font-medium">
+                  Passo {currentStep + 1} de {steps.length}
+                </div>
+                
+                <button
+                  onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+                  disabled={currentStep === steps.length - 1 || !canProceed()}
+                  className={`px-6 py-3 rounded-lg flex items-center gap-2 font-medium transition-colors ${
+                    currentStep === steps.length - 1 || !canProceed()
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                      : 'bg-[#032c62] text-white hover:bg-[#17203c] shadow-md'
+                  }`}
+                >
+                  Próximo
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="mt-6 text-center text-sm text-gray-600">
+              <p>Desenvolvido por <span className="font-semibold text-[#032c62]">HupData</span> - Especialistas em Automação de Dados</p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<BusinessCaseBuilder />, document.getElementById('root'));
+  </script>
+</body>
+</html>
