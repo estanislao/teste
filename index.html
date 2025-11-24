@@ -1240,40 +1240,6 @@ const BusinessCaseBuilder = () => {
               <p className="text-gray-300">Automação de Processos - {getBenchmark().nome}</p>
             </div>
 
-            {/* SITUAÇÃO CRÍTICA NO BUSINESS CASE */}
-            <div className={`${mensagemPrioridade.bgColor} border-l-4 ${mensagemPrioridade.borderColor} rounded-lg p-6`}>
-              <div className="flex items-start">
-                <div className="flex-shrink-0 mr-4">
-                  <div className={`w-12 h-12 ${mensagemPrioridade.bgColor} rounded-full flex items-center justify-center text-2xl`}>
-                    {formData.prioridadeAutomacao === 'alta' ? '🚨' : formData.prioridadeAutomacao === 'media' ? '⚠️' : '💡'}
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <h3 className={`text-xl font-bold ${mensagemPrioridade.textColor} mb-1`}>
-                    {mensagemPrioridade.titulo}
-                  </h3>
-                  <p className={`text-sm ${mensagemPrioridade.textColor} mb-3`}>
-                    Prioridade: <strong>{formData.prioridadeAutomacao.toUpperCase()}</strong> | 
-                    {formData.errosFrequentes ? ' Erros frequentes detectados' : ' Sem erros frequentes'}
-                  </p>
-                  <div className="grid grid-cols-2 gap-4 mt-3">
-                    <div className={`bg-white bg-opacity-50 rounded-lg p-3`}>
-                      <p className="text-xs text-gray-700">Economia Potencial</p>
-                      <p className={`text-xl font-bold ${mensagemPrioridade.textColor}`}>
-                        R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                      </p>
-                    </div>
-                    <div className={`bg-white bg-opacity-50 rounded-lg p-3`}>
-                      <p className="text-xs text-gray-700">Payback</p>
-                      <p className={`text-xl font-bold ${mensagemPrioridade.textColor}`}>
-                        {roi.payback.toFixed(1)} meses
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
               {/* Resumo Executivo */}
               <div className="border-b pb-4">
@@ -1330,10 +1296,69 @@ const BusinessCaseBuilder = () => {
                   </ul>
                 </div>
               </div>
+            </div>
 
+            {/* SITUAÇÃO CRÍTICA NO BUSINESS CASE */}
+            <div className={`${mensagemPrioridade.bgColor} border-l-4 ${mensagemPrioridade.borderColor} rounded-lg p-6`}>
+              <div className="flex items-start">
+                <div className="flex-shrink-0 mr-4">
+                  <div className={`w-12 h-12 ${mensagemPrioridade.bgColor} rounded-full flex items-center justify-center text-2xl`}>
+                    {formData.prioridadeAutomacao === 'alta' ? '🚨' : formData.prioridadeAutomacao === 'media' ? '⚠️' : '💡'}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className={`text-xl font-bold ${mensagemPrioridade.textColor} mb-1`}>
+                    {mensagemPrioridade.titulo}
+                  </h3>
+                  <p className={`text-sm ${mensagemPrioridade.textColor} mb-3`}>
+                    Prioridade: <strong>{formData.prioridadeAutomacao.toUpperCase()}</strong> | 
+                    {formData.errosFrequentes ? ' Erros frequentes detectados' : ' Sem erros frequentes'}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 mt-3">
+                    <div className={`bg-white bg-opacity-50 rounded-lg p-3`}>
+                      <p className="text-xs text-gray-700">Economia Potencial</p>
+                      <p className={`text-xl font-bold ${mensagemPrioridade.textColor}`}>
+                        R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
+                      </p>
+                    </div>
+                    <div className={`bg-white bg-opacity-50 rounded-lg p-3`}>
+                      <p className="text-xs text-gray-700">Payback</p>
+                      <p className={`text-xl font-bold ${mensagemPrioridade.textColor}`}>
+                        {roi.payback.toFixed(1)} meses
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
               {/* Análise Financeira */}
               <div className="border-b pb-4">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Análise Financeira</h3>
+                
+                {/* Validação Cruzada - PRIMEIRO */}
+                <div className="mb-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  <h4 className="font-semibold text-blue-900 mb-2">🔍 Metodologia com Dupla Validação</h4>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-blue-700 font-bold">Cálculo por % Tempo:</p>
+                      <p className="font-bold text-blue-900">
+                        R$ {roi.custoAtualMensalPorTempo.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-blue-700 font-bold">Cálculo por Processos:</p>
+                      <p className="font-bold text-blue-900">
+                        R$ {roi.custoAtualMensalPorProcessos.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-2">
+                    <span className="font-bold">✓ Custo validado (média):</span> R$ {roi.custoAtualMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="bg-green-50 rounded-lg p-4 text-center border border-green-200">
                     <p className="text-xs text-gray-600 mb-1">Economia Mensal</p>
@@ -1378,28 +1403,6 @@ const BusinessCaseBuilder = () => {
                       </p>
                     </div>
                   </div>
-                </div>
-
-                {/* Validação Cruzada */}
-                <div className="mt-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-2">🔍 Metodologia com Dupla Validação</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-blue-700">Cálculo por % Tempo:</p>
-                      <p className="font-bold text-blue-900">
-                        R$ {roi.custoAtualMensalPorTempo.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-blue-700">Cálculo por Processos:</p>
-                      <p className="font-bold text-blue-900">
-                        R$ {roi.custoAtualMensalPorProcessos.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-blue-600 mt-2">
-                    ✓ Custo validado (média): R$ {roi.custoAtualMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                  </p>
                 </div>
               </div>
 
