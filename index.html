@@ -566,7 +566,7 @@ const BusinessCaseBuilder = () => {
   const getMensagemPorPrioridade = () => {
     const mensagens = {
       alta: {
-        titulo: "Situação Crítica Identificada",
+        titulo: "🚨 Situação Crítica Identificada",
         subtitulo: "Ação imediata recomendada",
         cor: "red",
         bgColor: "bg-red-50",
@@ -575,7 +575,7 @@ const BusinessCaseBuilder = () => {
         cta: "Agendar Reunião de Emergência"
       },
       media: {
-        titulo: "Oportunidade de Melhoria",
+        titulo: "⚠️ Oportunidade de Melhoria",
         subtitulo: "Implementação recomendada nos próximos 90 dias",
         cor: "orange",
         bgColor: "bg-orange-50",
@@ -584,7 +584,7 @@ const BusinessCaseBuilder = () => {
         cta: "Agendar Reunião de Discovery"
       },
       baixa: {
-        titulo: "Potencial de Otimização",
+        titulo: "💡 Potencial de Otimização",
         subtitulo: "Planejamento para próximo ciclo orçamentário",
         cor: "blue",
         bgColor: "bg-blue-50",
@@ -597,27 +597,45 @@ const BusinessCaseBuilder = () => {
   };
 
   const getTimelinePorPrioridade = () => {
-    const roi = calculateROI();
-    
-    // Usa os valores calculados do ROI
-    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
-    
-    // Entregas baseadas no tempo real
-    const tempoQuickWin = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.3));
-    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
-    
-    return {
-      discovery: roi.tempoDiscovery,
-      desenvolvimento: roi.tempoDev,
-      implantacao: tempoImplantacaoTotal,
-      total: roi.tempoTotal,
-      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
-      entregas: [
-        `Discovery completo em ${roi.tempoDiscovery} semanas`,
-        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
-        `Go-live completo em ${roi.tempoTotal} semanas`
-      ]
+    const timelines = {
+      alta: {
+        discovery: 2,
+        desenvolvimento: 6,
+        implantacao: 2,
+        total: 10,
+        nota: "Timeline acelerada para atender urgência",
+        entregas: [
+          "Quick win em 3 semanas",
+          "Primeiro processo automatizado em 6 semanas",
+          "Go-live completo em 10 semanas"
+        ]
+      },
+      media: {
+        discovery: 3,
+        desenvolvimento: 8,
+        implantacao: 3,
+        total: 14,
+        nota: "Timeline balanceada entre qualidade e velocidade",
+        entregas: [
+          "Discovery completo em 3 semanas",
+          "Protótipo em 7 semanas",
+          "Go-live completo em 14 semanas"
+        ]
+      },
+      baixa: {
+        discovery: 4,
+        desenvolvimento: 10,
+        implantacao: 4,
+        total: 18,
+        nota: "Timeline otimizada para minimizar disrupção",
+        entregas: [
+          "Planejamento detalhado em 4 semanas",
+          "Implementação gradual em fases",
+          "Go-live completo em 18 semanas"
+        ]
+      }
     };
+    return timelines[formData.prioridadeAutomacao];
   };
 
   // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
@@ -682,49 +700,11 @@ const BusinessCaseBuilder = () => {
       complexidadeProjeto = 'Muito Alta';
     }
     
-    // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
-    let numeroProfissionais = 1;
-    if (numeroProcessos <= 3) {
-      numeroProfissionais = 1;
-    } else if (numeroProcessos <= 10) {
-      numeroProfissionais = 2;
-    } else {
-      numeroProfissionais = 3;
-    }
-    
-    // ===== CÁLCULO DE TEMPO DE IMPLEMENTAÇÃO =====
-    // Discovery: baseado no PORTE do projeto (complexidade)
-    let tempoDiscovery = 2;
-    if (complexidadeProjeto === 'Baixa') {
-      tempoDiscovery = 1; // Projeto pequeno
-    } else if (complexidadeProjeto === 'Média') {
-      tempoDiscovery = 2; // Projeto médio
-    } else { // Alta ou Muito Alta
-      tempoDiscovery = 3; // Projeto grande
-    }
-    
-    // Desenvolvimento: Base 3 semanas por processo
-    const tempoBasePorProcesso = 3;
-    
-    // Multiplicadores
-    const multiplicadorSistemas = coeficienteEsforco; // 1.0 a 1.5
-    const multiplicadorErros = errosFrequentes ? 1.2 : 1.0; // +20% se há erros
-    
-    // Tempo total de desenvolvimento (distribuído entre profissionais)
-    const tempoTotalProcessos = numeroProcessos * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros;
-    const tempoDev = Math.ceil(tempoTotalProcessos / numeroProfissionais);
-    
-    // Capacitação: baseado no PORTE do projeto (complexidade)
-    let tempoCapacitacao = 2;
-    if (complexidadeProjeto === 'Alta' || complexidadeProjeto === 'Muito Alta') {
-      tempoCapacitacao = 3; // Projetos grandes precisam mais capacitação
-    }
-    
-    // Go-Live: 1 semana
-    const tempoGoLive = 1;
-    
-    // Total (sem overlap - para cronograma sequencial)
-    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao + tempoGoLive;
+    // ===== TEMPO DE IMPLEMENTAÇÃO BASEADO EM PROCESSOS =====
+    const tempoDiscovery = Math.ceil(numeroProcessos / 5); // 1 semana a cada 5 processos
+    const tempoDev = Math.ceil(numeroProcessos / 2); // 1 semana a cada 2 processos
+    const tempoCapacitacao = 3; // Fixo
+    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao;
     
     // ===== ESTRATÉGIA DE PRIORIZAÇÃO =====
     let estrategia = '';
@@ -732,29 +712,23 @@ const BusinessCaseBuilder = () => {
     
     if (numeroProcessos <= 5) {
       estrategia = 'Big Bang';
-      const duracaoFase = Math.ceil((numeroProcessos * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros) / numeroProfissionais);
       fasesImplementacao = [
-        { fase: 1, processos: numeroProcessos, duracao: `${duracaoFase} semanas`, descricao: 'Todos os processos de uma vez' }
+        { fase: 1, processos: numeroProcessos, duracao: '6-8 semanas', descricao: 'Todos os processos de uma vez' }
       ];
     } else if (numeroProcessos <= 15) {
       estrategia = 'Faseada (2 ondas)';
       const metade = Math.ceil(numeroProcessos / 2);
-      const duracaoFase1 = Math.ceil((metade * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros) / numeroProfissionais);
-      const duracaoFase2 = Math.ceil(((numeroProcessos - metade) * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros) / numeroProfissionais);
       fasesImplementacao = [
-        { fase: 1, processos: metade, duracao: `${duracaoFase1} semanas`, descricao: 'Processos críticos' },
-        { fase: 2, processos: numeroProcessos - metade, duracao: `${duracaoFase2} semanas`, descricao: 'Processos secundários' }
+        { fase: 1, processos: metade, duracao: '8-10 semanas', descricao: 'Processos críticos' },
+        { fase: 2, processos: numeroProcessos - metade, duracao: '6-8 semanas', descricao: 'Processos secundários' }
       ];
     } else {
       estrategia = 'Incremental (3+ ondas)';
       const terco = Math.ceil(numeroProcessos / 3);
-      const duracaoFase1 = Math.ceil((terco * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros) / numeroProfissionais);
-      const duracaoFase2 = Math.ceil((terco * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros) / numeroProfissionais);
-      const duracaoFase3 = Math.ceil(((numeroProcessos - (terco * 2)) * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros) / numeroProfissionais);
       fasesImplementacao = [
-        { fase: 1, processos: terco, duracao: `${duracaoFase1} semanas`, descricao: 'Quick Wins' },
-        { fase: 2, processos: terco, duracao: `${duracaoFase2} semanas`, descricao: 'Processos core' },
-        { fase: 3, processos: numeroProcessos - (terco * 2), duracao: `${duracaoFase3} semanas`, descricao: 'Processos restantes' }
+        { fase: 1, processos: terco, duracao: '8-10 semanas', descricao: 'Quick Wins' },
+        { fase: 2, processos: terco, duracao: '8-10 semanas', descricao: 'Processos core' },
+        { fase: 3, processos: numeroProcessos - (terco * 2), duracao: '6-8 semanas', descricao: 'Processos restantes' }
       ];
     }
     
@@ -822,12 +796,7 @@ const BusinessCaseBuilder = () => {
       tempoDiscovery,
       tempoDev,
       tempoCapacitacao,
-      tempoGoLive,
       tempoTotal,
-      numeroProfissionais,
-      tempoBasePorProcesso,
-      multiplicadorSistemas,
-      multiplicadorErros,
       
       // Estratégia
       estrategia,
@@ -1338,7 +1307,7 @@ const BusinessCaseBuilder = () => {
               </div>
 
               <div className="mt-4 bg-white rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Estimado:</p>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Detalhado:</p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Discovery:</span>
@@ -1352,17 +1321,9 @@ const BusinessCaseBuilder = () => {
                     <span className="text-gray-600">Capacitação:</span>
                     <span className="font-semibold text-gray-800">{roi.tempoCapacitacao} semanas</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Go-Live:</span>
-                    <span className="font-semibold text-gray-800">{roi.tempoGoLive} semana</span>
-                  </div>
                   <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
                     <span className="font-semibold text-gray-700">Total:</span>
-                    <span className="font-bold text-blue-700">{roi.tempoTotal} semanas</span>
-                  </div>
-                  <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
-                    <span className="text-xs text-gray-500">Equipe alocada:</span>
-                    <span className="text-xs font-semibold text-gray-600">{roi.numeroProfissionais} profissional(is)</span>
+                    <span className="font-bold text-purple-700">{roi.tempoTotal} semanas</span>
                   </div>
                 </div>
               </div>
@@ -1374,7 +1335,7 @@ const BusinessCaseBuilder = () => {
                 <div className="flex items-start">
                   <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h4 className="font-semibold text-yellow-900 mb-2">Pontos de Atenção</h4>
+                    <h4 className="font-semibold text-yellow-900 mb-2">⚠️ Pontos de Atenção</h4>
                     <ul className="space-y-1">
                       {roi.alertas.map((alerta, index) => (
                         <li key={index} className="text-sm text-yellow-800">
