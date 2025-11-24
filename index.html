@@ -281,7 +281,27 @@ const BusinessCaseBuilder = () => {
                 }
               }
             }
-          }
+          },
+          plugins: [{
+            id: 'percentageLabels',
+            afterDatasetDraw: function(chart) {
+              const ctx = chart.ctx;
+              chart.data.datasets.forEach((dataset, datasetIndex) => {
+                const meta = chart.getDatasetMeta(datasetIndex);
+                meta.data.forEach((element, index) => {
+                  const data = dataset.data[index];
+                  const x = element.x;
+                  const y = element.y;
+                  
+                  ctx.fillStyle = 'white';
+                  ctx.font = 'bold 24px Arial';
+                  ctx.textAlign = 'center';
+                  ctx.textBaseline = 'middle';
+                  ctx.fillText(data + '%', x, y);
+                });
+              });
+            }
+          }]
         });
       }
 
@@ -358,7 +378,7 @@ const BusinessCaseBuilder = () => {
         window.chartInstances.validacao = new Chart(ctxValidacao, {
           type: 'bar',
           data: {
-            labels: ['Método 1\n(Por % Tempo)', 'Método 2\n(Por Processos)', 'Média\nValidada'],
+            labels: ['Cálculo por\n% Tempo', 'Cálculo por\nProcessos', 'Custo médio\nvalidado'],
             datasets: [{
               label: 'Custo Mensal Calculado',
               data: [roi.custoAtualMensalPorTempo, roi.custoAtualMensalPorProcessos, roi.custoAtualMensal],
@@ -372,10 +392,7 @@ const BusinessCaseBuilder = () => {
             maintainAspectRatio: false,
             plugins: {
               title: {
-                display: true,
-                text: 'Dupla Validação - Comparação dos Métodos de Cálculo',
-                font: { size: 16, weight: 'bold' },
-                color: '#032c62'
+                display: false
               },
               legend: { display: false },
               tooltip: {
@@ -1248,28 +1265,28 @@ const BusinessCaseBuilder = () => {
             </div>
 
             {/* NOVO: Análise de Complexidade do Projeto */}
-            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <Award className="w-6 h-6 text-purple-600 mr-2" />
+                <Award className="w-6 h-6 text-blue-700 mr-2" />
                 Análise de Complexidade do Projeto
               </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded-lg p-4 border-2 border-purple-200">
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
                   <p className="text-sm text-gray-600 mb-1">Complexidade</p>
-                  <p className="text-2xl font-bold text-purple-700">{roi.complexidadeProjeto}</p>
+                  <p className="text-2xl font-bold text-blue-700">{roi.complexidadeProjeto}</p>
                   <p className="text-xs text-gray-500 mt-1">{formData.numeroProcessos} processos</p>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 border-2 border-purple-200">
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
                   <p className="text-sm text-gray-600 mb-1">Tempo Estimado</p>
-                  <p className="text-2xl font-bold text-purple-700">{roi.tempoTotal} semanas</p>
+                  <p className="text-2xl font-bold text-blue-700">{roi.tempoTotal} semanas</p>
                   <p className="text-xs text-gray-500 mt-1">≈ {(roi.tempoTotal / 4.33).toFixed(1)} meses</p>
                 </div>
                 
-                <div className="bg-white rounded-lg p-4 border-2 border-purple-200">
+                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
                   <p className="text-sm text-gray-600 mb-1">Estratégia</p>
-                  <p className="text-xl font-bold text-purple-700">{roi.estrategia}</p>
+                  <p className="text-xl font-bold text-blue-700">{roi.estrategia}</p>
                   <p className="text-xs text-gray-500 mt-1">{roi.fasesImplementacao.length} fase(s)</p>
                 </div>
               </div>
@@ -1277,10 +1294,10 @@ const BusinessCaseBuilder = () => {
               <div className="mt-4 space-y-2">
                 <p className="text-sm font-semibold text-gray-700">Fases de Implementação:</p>
                 {roi.fasesImplementacao.map((fase, index) => (
-                  <div key={index} className="bg-white rounded-lg p-3 border-l-4 border-purple-500">
+                  <div key={index} className="bg-white rounded-lg p-3 border-l-4 border-blue-500">
                     <div className="flex justify-between items-center">
                       <span className="font-semibold text-gray-800">Fase {fase.fase}</span>
-                      <span className="text-sm text-purple-600">{fase.duracao}</span>
+                      <span className="text-sm text-blue-600">{fase.duracao}</span>
                     </div>
                     <p className="text-sm text-gray-600 mt-1">
                       {fase.processos} processos - {fase.descricao}
@@ -1576,36 +1593,30 @@ const BusinessCaseBuilder = () => {
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Resumo Executivo</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-gray-600">Gestor:</p>
-                    <p className="font-semibold text-gray-800">{formData.nomeGestor}</p>
+                    <p className="text-gray-600">Gestor: <span className="font-semibold text-gray-800">{formData.nomeGestor}</span></p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Cargo:</p>
-                    <p className="font-semibold text-gray-800">{formData.cargo.charAt(0).toUpperCase() + formData.cargo.slice(1)}</p>
+                    <p className="text-gray-600">Cargo: <span className="font-semibold text-gray-800">{formData.cargo.charAt(0).toUpperCase() + formData.cargo.slice(1)}</span></p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Área:</p>
-                    <p className="font-semibold text-gray-800">{getBenchmark().nome}</p>
+                    <p className="text-gray-600">Área: <span className="font-semibold text-gray-800">{getBenchmark().nome}</span></p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Empresa:</p>
-                    <p className="font-semibold text-gray-800">{formData.empresa}</p>
+                    <p className="text-gray-600">Empresa: <span className="font-semibold text-gray-800">{formData.empresa}</span></p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Prioridade:</p>
-                    <p className={`font-semibold ${
+                    <p className="text-gray-600">Prioridade: <span className={`font-semibold ${
                       formData.prioridadeAutomacao === 'alta' ? 'text-red-700' :
                       formData.prioridadeAutomacao === 'media' ? 'text-orange-700' :
                       'text-blue-700'
                     }`}>
                       {formData.prioridadeAutomacao.toUpperCase()}
-                    </p>
+                    </span></p>
                   </div>
                   <div>
-                    <p className="text-gray-600">Erros Frequentes:</p>
-                    <p className={`font-semibold ${formData.errosFrequentes ? 'text-red-700' : 'text-green-700'}`}>
+                    <p className="text-gray-600">Erros Frequentes: <span className={`font-semibold ${formData.errosFrequentes ? 'text-red-700' : 'text-green-700'}`}>
                       {formData.errosFrequentes ? 'Sim' : 'Não'}
-                    </p>
+                    </span></p>
                   </div>
                 </div>
               </div>
@@ -1680,28 +1691,6 @@ const BusinessCaseBuilder = () => {
               <div className="border-b pb-4">
                 <h3 className="text-xl font-semibold text-gray-800 mb-4">Análise Financeira</h3>
                 
-                {/* Validação Cruzada - PRIMEIRO */}
-                <div className="mb-4 bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h4 className="font-semibold text-blue-900 mb-2">🔍 Metodologia com Dupla Validação</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-blue-700 font-bold">Cálculo por % Tempo:</p>
-                      <p className="font-bold text-blue-900">
-                        R$ {roi.custoAtualMensalPorTempo.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-blue-700 font-bold">Cálculo por Processos:</p>
-                      <p className="font-bold text-blue-900">
-                        R$ {roi.custoAtualMensalPorProcessos.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-xs text-blue-600 mt-2">
-                    <span className="font-bold">✓ Custo validado (média):</span> R$ {roi.custoAtualMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                  </p>
-                </div>
-
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div className="bg-green-50 rounded-lg p-4 text-center border border-green-200">
                     <p className="text-xs text-gray-600 mb-1">Economia Mensal</p>
@@ -1730,6 +1719,22 @@ const BusinessCaseBuilder = () => {
                   </div>
                 </div>
 
+                {/* GRÁFICO: Validação Cruzada */}
+                <div className="mt-6 bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+                  <h4 className="text-md font-semibold text-blue-900 mb-3 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    Validação Cruzada dos Cálculos dos Custos
+                  </h4>
+                  <p className="text-sm text-blue-800 mb-4">
+                    Comparação dos dois métodos independentes de cálculo dos custos para maior precisão e credibilidade.
+                  </p>
+                  <div className="chart-container">
+                    <canvas id="chartValidacao"></canvas>
+                  </div>
+                </div>
+
                 <div className="mt-4 bg-teal-50 rounded-lg p-4 border border-teal-200">
                   <h4 className="font-semibold text-teal-900 mb-2">Economia por Processo</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
@@ -1745,22 +1750,6 @@ const BusinessCaseBuilder = () => {
                         R$ {roi.investimentoPorProcesso.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
                       </p>
                     </div>
-                  </div>
-                </div>
-
-                {/* GRÁFICO: Validação Cruzada */}
-                <div className="mt-6 bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-                  <h4 className="text-md font-semibold text-blue-900 mb-3 flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                    </svg>
-                    Validação Cruzada dos Cálculos
-                  </h4>
-                  <p className="text-sm text-blue-800 mb-4">
-                    Comparação dos dois métodos independentes de cálculo para maior precisão e credibilidade.
-                  </p>
-                  <div className="chart-container">
-                    <canvas id="chartValidacao"></canvas>
                   </div>
                 </div>
 
