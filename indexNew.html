@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Case Builder - HupData</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    // Lucide Icons as React components
+    const FileText = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    );
+
+    const Target = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" strokeWidth={2}></circle>
+        <circle cx="12" cy="12" r="6" strokeWidth={2}></circle>
+        <circle cx="12" cy="12" r="2" strokeWidth={2}></circle>
+      </svg>
+    );
+
+    const TrendingUp = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+      </svg>
+    );
+
+    const CheckCircle = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+
+    const Download = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+      </svg>
+    );
+
+    const ChevronRight = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    );
+
+    const ChevronLeft = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      </svg>
+    );
+
+    const Calculator = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="2" width="16" height="20" rx="2" strokeWidth={2}></rect>
+        <line x1="8" y1="6" x2="16" y2="6" strokeWidth={2}></line>
+      </svg>
+    );
+
+    const Clock = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" strokeWidth={2}></circle>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
+      </svg>
+    );
+
+    const Zap = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+      </svg>
+    );
+
+    const Award = ({ className }) => (
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="8" r="7" strokeWidth={2}></circle>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" />
+      </svg>
+    );
+
+    const { useState } = React;
+
+    // Benchmarks por área de atuação
+    const areaBenchmarks = {
+      tributaria: {
+        nome: 'Tributária',
+        reducaoTempo: 75,
+        reducaoErros: 92,
+        ganhoVelocidade: 80,
+        desafiosComuns: [
+          'Cálculos complexos de impostos',
+          'Múltiplas legislações simultâneas',
+          'Prazos de entrega críticos'
+        ],
+        beneficiosEspecificos: [
+          'Atualização automática de tabelas tributárias',
+          'Validação cruzada com legislação vigente',
+          'Alertas de mudanças regulatórias'
+        ],
+        quickWins: [
+          { titulo: 'Cálculo Automático de ICMS', economia: 15000, tempo: 4, impacto: 'ALTO' },
+          { titulo: 'Validação de Dados Fiscais', economia: 12000, tempo: 3, impacto: 'ALTO' },
+          { titulo: 'Automatização de Planilhas', economia: 8000, tempo: 2, impacto: 'MEDIO' }
+        ]
+      },
+      auditoria: {
+        nome: 'Auditoria',
+        reducaoTempo: 70,
+        reducaoErros: 95,
+        ganhoVelocidade: 75,
+        desafiosComuns: [
+          'Volume alto de documentos',
+          'Rastreabilidade de evidências',
+          'Controles de conformidade'
+        ],
+        beneficiosEspecificos: [
+          'Trilha de auditoria completa e automatizada',
+          'Validação de amostras estatísticas',
+          'Relatórios de conformidade em tempo real'
+        ],
+        quickWins: [
+          { titulo: 'Detecção de Anomalias', economia: 18000, tempo: 5, impacto: 'ALTO' },
+          { titulo: 'Amostragem Automática', economia: 10000, tempo: 3, impacto: 'ALTO' },
+          { titulo: 'Coleta Automática de Dados', economia: 7000, tempo: 2, impacto: 'MEDIO' }
+        ]
+      },
+      compliance: {
+        nome: 'Fiscal Compliance',
+        reducaoTempo: 68,
+        reducaoErros: 90,
+        ganhoVelocidade: 72,
+        desafiosComuns: [
+          'Obrigações acessórias múltiplas',
+          'Prazos regulatórios rígidos',
+          'Integração de sistemas legados'
+        ],
+        beneficiosEspecificos: [
+          'Calendário automatizado de obrigações',
+          'Validação pré-envio de arquivos fiscais',
+          'Monitoramento de pendências e alertas'
+        ],
+        quickWins: [
+          { titulo: 'Validação de Arquivos SPED', economia: 14000, tempo: 4, impacto: 'ALTO' },
+          { titulo: 'Calendário de Obrigações', economia: 9000, tempo: 2, impacto: 'MEDIO' },
+          { titulo: 'Conciliação de Dados', economia: 11000, tempo: 3, impacto: 'ALTO' }
+        ]
+      }
+    };
+
+const BusinessCaseBuilder = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [showMethodology, setShowMethodology] = useState(false);
+  const [formData, setFormData] = useState({
+    nomeGestor: '',
+    email: '',
+    whatsapp: '',
+    empresa: '',
+    area: 'tributaria',
+    cargo: 'gerente',
+    numProfissionais: 5,
+    percentualAtividadesManuais: 40,
+    custoPorHora: 80,
+    numeroProcessos: 10,
+    tempoMedioProcesso: 4,
+    errosFrequentes: true,
+    sistemasUtilizados: ['SAP', 'Excel'],
+    prioridadeAutomacao: 'alta'
+  });
+  
+  const [showResults, setShowResults] = useState(false);
+
+  const steps = [
+    { id: 'info', title: 'Informações Básicas', icon: FileText },
+    { id: 'diagnostico', title: 'Diagnóstico Atual', icon: Target },
+    { id: 'ganhos', title: 'Ganhos Esperados', icon: TrendingUp },
+    { id: 'plano', title: 'Plano de Ação', icon: CheckCircle },
+    { id: 'resultado', title: 'Business Case', icon: Download }
+  ];
+
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleMultiSelect = (field, value) => {
+    const current = formData[field] || [];
+    let newArray;
+    if (current.includes(value)) {
+      newArray = current.filter(v => v !== value);
+    } else {
+      newArray = [...current, value];
+    }
+    handleInputChange(field, newArray);
+  };
+
+  const getBenchmark = () => {
+    return areaBenchmarks[formData.area] || areaBenchmarks.tributaria;
+  };
+
+  const getMensagemPorPrioridade = () => {
+    const mensagens = {
+      alta: {
+        titulo: "🚨 Situação Crítica Identificada",
+        subtitulo: "Ação imediata recomendada",
+        cor: "red",
+        bgColor: "bg-red-50",
+        borderColor: "border-red-500",
+        textColor: "text-red-900",
+        cta: "Agendar Reunião de Emergência"
+      },
+      media: {
+        titulo: "⚠️ Oportunidade de Melhoria",
+        subtitulo: "Implementação recomendada nos próximos 90 dias",
+        cor: "orange",
+        bgColor: "bg-orange-50",
+        borderColor: "border-orange-500",
+        textColor: "text-orange-900",
+        cta: "Agendar Reunião de Discovery"
+      },
+      baixa: {
+        titulo: "💡 Potencial de Otimização",
+        subtitulo: "Planejamento para próximo ciclo orçamentário",
+        cor: "blue",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-500",
+        textColor: "text-blue-900",
+        cta: "Receber Mais Informações"
+      }
+    };
+    return mensagens[formData.prioridadeAutomacao];
+  };
+
+  const getTimelinePorPrioridade = () => {
+    const timelines = {
+      alta: {
+        discovery: 2,
+        desenvolvimento: 6,
+        implantacao: 2,
+        total: 10,
+        nota: "Timeline acelerada para atender urgência",
+        entregas: [
+          "Quick win em 3 semanas",
+          "Primeiro processo automatizado em 6 semanas",
+          "Go-live completo em 10 semanas"
+        ]
+      },
+      media: {
+        discovery: 3,
+        desenvolvimento: 8,
+        implantacao: 3,
+        total: 14,
+        nota: "Timeline balanceada entre qualidade e velocidade",
+        entregas: [
+          "Discovery completo em 3 semanas",
+          "Protótipo em 7 semanas",
+          "Go-live completo em 14 semanas"
+        ]
+      },
+      baixa: {
+        discovery: 4,
+        desenvolvimento: 10,
+        implantacao: 4,
+        total: 18,
+        nota: "Timeline otimizada para minimizar disrupção",
+        entregas: [
+          "Planejamento detalhado em 4 semanas",
+          "Implementação gradual em fases",
+          "Go-live completo em 18 semanas"
+        ]
+      }
+    };
+    return timelines[formData.prioridadeAutomacao];
+  };
+
+  const getModeloInvestimento = (custoBase) => {
+    const modelos = {
+      alta: {
+        tipo: "Fast-Track",
+        multiplicador: 1.2,
+        investimento: custoBase * 1.2,
+        condicoes: [
+          "Equipe dedicada exclusiva",
+          "Suporte 24/7 durante go-live",
+          "Garantia de prazo",
+          "Penalidade por atraso"
+        ],
+        desconto: 0,
+        badge: "PREMIUM",
+        badgeColor: "bg-red-600",
+        observacao: "Investimento premium para entrega acelerada"
+      },
+      media: {
+        tipo: "Padrão",
+        multiplicador: 1.0,
+        investimento: custoBase,
+        condicoes: [
+          "Equipe compartilhada",
+          "Suporte horário comercial",
+          "Timeline flexível"
+        ],
+        desconto: 0,
+        badge: "RECOMENDADO",
+        badgeColor: "bg-green-600",
+        observacao: "Melhor custo-benefício"
+      },
+      baixa: {
+        tipo: "Planejado",
+        multiplicador: 0.85,
+        investimento: custoBase * 0.85,
+        condicoes: [
+          "Implementação em 6+ meses",
+          "Pagamento antecipado",
+          "Flexibilidade total de prazo"
+        ],
+        desconto: 15,
+        badge: "ECONOMIA",
+        badgeColor: "bg-blue-600",
+        observacao: "Desconto de 15% por planejamento antecipado"
+      }
+    };
+    return modelos[formData.prioridadeAutomacao];
+  };
+
+  const getQuickWinsPriorizados = () => {
+    const benchmark = getBenchmark();
+    const quickWins = benchmark.quickWins;
+    
+    if (formData.prioridadeAutomacao === 'alta') {
+      return quickWins.sort((a, b) => a.tempo - b.tempo);
+    } else if (formData.prioridadeAutomacao === 'media') {
+      return quickWins.sort((a, b) => b.economia - a.economia);
+    } else {
+      const impactoScore = { 'ALTO': 3, 'MEDIO': 2, 'BAIXO': 1 };
+      return quickWins.sort((a, b) => impactoScore[b.impacto] - impactoScore[a.impacto]);
+    }
+  };
+
+  const calculateROI = () => {
+    const percentualAtividadesManuais = formData.percentualAtividadesManuais || 40;
+    const numProfissionais = formData.numProfissionais || 1;
+    const custoPorHora = formData.custoPorHora || 0;
+    const fontesDados = formData.sistemasUtilizados.length || 1;
+    
+    const benchmark = getBenchmark();
+    const reducaoEstimada = benchmark.reducaoTempo / 100;
+    
+    let coeficienteEsforco = 1.0;
+    if (fontesDados > 4) {
+      coeficienteEsforco = 1.08;
+    } else if (fontesDados >= 3) {
+      coeficienteEsforco = 1.05;
+    }
+    
+    const taxaAtividadeManual = 160 * (percentualAtividadesManuais / 100);
+    const custoAtualMensal = numProfissionais * taxaAtividadeManual * custoPorHora * coeficienteEsforco;
+    const economiaMensal = custoAtualMensal * reducaoEstimada;
+    const economiaAnual = economiaMensal * 12;
+    
+    const custoImplementacao = 45000;
+    const payback = custoImplementacao / economiaMensal;
+    
+    return {
+      custoAtualMensal,
+      economiaMensal,
+      economiaAnual,
+      custoImplementacao,
+      payback,
+      roiAnual: ((economiaAnual - custoImplementacao) / custoImplementacao * 100),
+      coeficienteEsforco,
+      taxaAtividadeManual,
+      benchmark
+    };
+  };
+
+  const roi = calculateROI();
+  const timeline = getTimelinePorPrioridade();
+  const modeloInvestimento = getModeloInvestimento(roi.custoImplementacao);
+  const quickWins = getQuickWinsPriorizados();
+  const mensagemPrioridade = getMensagemPorPrioridade();
+
+  const renderStepContent = () => {
+    switch(currentStep) {
+      case 0:
+        return (
+          <div className="space-y-6">
+            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
+              <h2 className="text-2xl font-bold text-white">Informações Básicas</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Seu Nome *
+                </label>
+                <input
+                  type="text"
+                  value={formData.nomeGestor}
+                  onChange={(e) => handleInputChange('nomeGestor', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  placeholder="João Silva"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  placeholder="joao.silva@empresa.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  WhatsApp *
+                </label>
+                <input
+                  type="tel"
+                  value={formData.whatsapp}
+                  onChange={(e) => handleInputChange('whatsapp', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  placeholder="(11) 99999-9999"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Empresa *
+                </label>
+                <input
+                  type="text"
+                  value={formData.empresa}
+                  onChange={(e) => handleInputChange('empresa', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  placeholder="Nome da Empresa"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Área de Atuação
+                </label>
+                <select
+                  value={formData.area}
+                  onChange={(e) => handleInputChange('area', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                >
+                  <option value="tributaria">Tributária</option>
+                  <option value="auditoria">Auditoria</option>
+                  <option value="compliance">Fiscal Compliance</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Seu Cargo
+                </label>
+                <select
+                  value={formData.cargo}
+                  onChange={(e) => handleInputChange('cargo', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                >
+                  <option value="analista">Analista</option>
+                  <option value="coordenador">Coordenador</option>
+                  <option value="gerente">Gerente</option>
+                  <option value="diretor">Diretor</option>
+                  <option value="cfo">CFO</option>
+                  <option value="cto">CTO</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+              <div className="flex items-start">
+                <FileText className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-blue-900 mb-1">Benchmark da Área: {getBenchmark().nome}</h3>
+                  <p className="text-sm text-blue-700">
+                    Redução média de tempo: <strong>{getBenchmark().reducaoTempo}%</strong> | 
+                    Redução de erros: <strong>{getBenchmark().reducaoErros}%</strong> | 
+                    Ganho em velocidade: <strong>{getBenchmark().ganhoVelocidade}%</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
+              <h2 className="text-2xl font-bold text-white">Diagnóstico Atual</h2>
+            </div>
+            
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <h3 className="font-semibold text-yellow-900 mb-2">Desafios Comuns em {getBenchmark().nome}</h3>
+              <ul className="space-y-1">
+                {getBenchmark().desafiosComuns.map((desafio, idx) => (
+                  <li key={idx} className="text-sm text-yellow-800 flex items-center">
+                    <span className="w-1.5 h-1.5 bg-yellow-600 rounded-full mr-2"></span>
+                    {desafio}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Número de Profissionais na Equipe
+                </label>
+                <input
+                  type="number"
+                  value={formData.numProfissionais}
+                  onChange={(e) => handleInputChange('numProfissionais', parseInt(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  min="1"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  % de Atividades Manuais/Repetitivas
+                </label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={formData.percentualAtividadesManuais}
+                    onChange={(e) => handleInputChange('percentualAtividadesManuais', parseInt(e.target.value))}
+                    className="flex-1"
+                  />
+                  <span className="text-lg font-semibold text-[#032c62] min-w-[60px] text-right">
+                    {formData.percentualAtividadesManuais}%
+                  </span>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Custo Médio por Hora (R$)
+                </label>
+                <input
+                  type="number"
+                  value={formData.custoPorHora}
+                  onChange={(e) => handleInputChange('custoPorHora', parseFloat(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  min="0"
+                  step="10"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Número de Processos Mensais
+                </label>
+                <input
+                  type="number"
+                  value={formData.numeroProcessos}
+                  onChange={(e) => handleInputChange('numeroProcessos', parseInt(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  min="1"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Tempo Médio por Processo (horas)
+                </label>
+                <input
+                  type="number"
+                  value={formData.tempoMedioProcesso}
+                  onChange={(e) => handleInputChange('tempoMedioProcesso', parseFloat(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
+                  min="0.5"
+                  step="0.5"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Sistemas Utilizados (selecione todos que usa)
+              </label>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {['SAP', 'Excel', 'SQL', 'Oracle', 'Totvs', 'Outros'].map(sistema => (
+                  <button
+                    key={sistema}
+                    onClick={() => handleMultiSelect('sistemasUtilizados', sistema)}
+                    className={`px-4 py-2 rounded-lg border-2 transition-all ${
+                      formData.sistemasUtilizados.includes(sistema)
+                        ? 'bg-[#032c62] text-white border-[#032c62]'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-[#032c62]'
+                    }`}
+                  >
+                    {sistema}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                {formData.sistemasUtilizados.length} sistema(s) selecionado(s) - usado para calcular complexidade
+              </p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Ocorrem Erros Frequentes?
+              </label>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleInputChange('errosFrequentes', true)}
+                  className={`flex-1 px-4 py-2 rounded-lg border-2 transition-all ${
+                    formData.errosFrequentes
+                      ? 'bg-red-50 text-red-700 border-red-300'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  Sim
+                </button>
+                <button
+                  onClick={() => handleInputChange('errosFrequentes', false)}
+                  className={`flex-1 px-4 py-2 rounded-lg border-2 transition-all ${
+                    !formData.errosFrequentes
+                      ? 'bg-green-50 text-green-700 border-green-300'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  Não
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 2:
+        return (
+          <div className="space-y-6">
+            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
+              <h2 className="text-2xl font-bold text-white">Ganhos Esperados com Automação</h2>
+            </div>
+
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-5 mb-6">
+              <h3 className="font-bold text-green-900 mb-3 text-lg">Benefícios Específicos para {getBenchmark().nome}</h3>
+              <div className="space-y-2">
+                {getBenchmark().beneficiosEspecificos.map((beneficio, idx) => (
+                  <div key={idx} className="flex items-start">
+                    <CheckCircle className="w-5 h-5 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-green-800">{beneficio}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-blue-900">Tempo de Resposta</h3>
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
+                </div>
+                <p className="text-3xl font-bold text-blue-700">{roi.benchmark.reducaoTempo}%</p>
+                <p className="text-xs text-blue-600 mt-1">Redução baseada em benchmark</p>
+                <p className="text-xs text-blue-800 mt-2 font-medium">Área: {roi.benchmark.nome}</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border border-green-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-green-900">Redução de Erros</h3>
+                  <Target className="w-5 h-5 text-green-600" />
+                </div>
+                <p className="text-3xl font-bold text-green-700">{roi.benchmark.reducaoErros}%</p>
+                <p className="text-xs text-green-600 mt-1">Processos auditáveis e precisos</p>
+                <p className="text-xs text-green-800 mt-2 font-medium">Área: {roi.benchmark.nome}</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-purple-900">Ganho em Velocidade</h3>
+                  <CheckCircle className="w-5 h-5 text-purple-600" />
+                </div>
+                <p className="text-3xl font-bold text-purple-700">{roi.benchmark.ganhoVelocidade}%</p>
+                <p className="text-xs text-purple-600 mt-1">Entregas mais rápidas</p>
+                <p className="text-xs text-purple-800 mt-2 font-medium">Área: {roi.benchmark.nome}</p>
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">
+                Qual a Prioridade desta Automação?
+              </label>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  onClick={() => handleInputChange('prioridadeAutomacao', 'baixa')}
+                  className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                    formData.prioridadeAutomacao === 'baixa'
+                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-200'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  <div className="font-semibold">💡 Baixa</div>
+                  <div className="text-xs mt-1">Planejamento</div>
+                </button>
+                <button
+                  onClick={() => handleInputChange('prioridadeAutomacao', 'media')}
+                  className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                    formData.prioridadeAutomacao === 'media'
+                      ? 'bg-orange-50 text-orange-700 border-orange-300 ring-2 ring-orange-200'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  <div className="font-semibold">⚠️ Média</div>
+                  <div className="text-xs mt-1">90 dias</div>
+                </button>
+                <button
+                  onClick={() => handleInputChange('prioridadeAutomacao', 'alta')}
+                  className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                    formData.prioridadeAutomacao === 'alta'
+                      ? 'bg-red-50 text-red-700 border-red-300 ring-2 ring-red-200'
+                      : 'bg-white text-gray-700 border-gray-300'
+                  }`}
+                >
+                  <div className="font-semibold">🚨 Alta</div>
+                  <div className="text-xs mt-1">Urgente</div>
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
+              <h2 className="text-2xl font-bold text-white">Plano de Implementação</h2>
+            </div>
+
+            {/* Timeline Personalizada */}
+            <div className={`rounded-xl p-5 border-l-4 ${mensagemPrioridade.bgColor} ${mensagemPrioridade.borderColor}`}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`font-bold text-xl ${mensagemPrioridade.textColor}`}>
+                  {mensagemPrioridade.titulo}
+                </h3>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${modeloInvestimento.badgeColor}`}>
+                  {modeloInvestimento.badge}
+                </span>
+              </div>
+              <p className="text-sm text-gray-700 mb-4">{mensagemPrioridade.subtitulo}</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="bg-white bg-opacity-50 rounded-lg p-3">
+                  <div className="flex items-center mb-1">
+                    <Clock className="w-4 h-4 mr-2 text-gray-600" />
+                    <span className="text-xs font-semibold text-gray-600">TIMELINE TOTAL</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{timeline.total} semanas</p>
+                </div>
+                <div className="bg-white bg-opacity-50 rounded-lg p-3">
+                  <div className="flex items-center mb-1">
+                    <Calculator className="w-4 h-4 mr-2 text-gray-600" />
+                    <span className="text-xs font-semibold text-gray-600">INVESTIMENTO</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">R$ {modeloInvestimento.investimento.toLocaleString('pt-BR')}</p>
+                </div>
+                <div className="bg-white bg-opacity-50 rounded-lg p-3">
+                  <div className="flex items-center mb-1">
+                    <Zap className="w-4 h-4 mr-2 text-gray-600" />
+                    <span className="text-xs font-semibold text-gray-600">MODELO</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{modeloInvestimento.tipo}</p>
+                </div>
+              </div>
+              
+              <p className="text-xs text-gray-600 italic">{timeline.nota}</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-white border-l-4 border-[#032c62] rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-[#032c62] text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    1
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Discovery & Mapeamento</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: {timeline.discovery} semanas</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Análise detalhada dos processos atuais</li>
+                      <li>• Identificação de pontos críticos de automação</li>
+                      <li>• Definição de prioridades e quick wins</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border-l-4 border-blue-500 rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    2
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Desenvolvimento & Testes</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: {timeline.desenvolvimento} semanas</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Desenvolvimento de automações priorizadas</li>
+                      <li>• Integração com sistemas existentes</li>
+                      <li>• Testes de validação e ajustes</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border-l-4 border-green-500 rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    3
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Implantação & Capacitação</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: {timeline.implantacao} semanas</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Deploy em ambiente de produção</li>
+                      <li>• Treinamento da equipe</li>
+                      <li>• Documentação e procedimentos</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border-l-4 border-purple-500 rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    4
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Monitoramento & Otimização</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: Contínuo</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Acompanhamento de performance</li>
+                      <li>• Ajustes e melhorias contínuas</li>
+                      <li>• Expansão gradual do escopo</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modelo de Investimento */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Modelo de Investimento: {modeloInvestimento.tipo}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-700 mb-2">Condições Incluídas:</h4>
+                  <ul className="space-y-1">
+                    {modeloInvestimento.condicoes.map((condicao, idx) => (
+                      <li key={idx} className="text-sm text-gray-600 flex items-start">
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                        {condicao}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="bg-white rounded-lg p-4">
+                    <p className="text-xs text-gray-600 mb-1">Investimento Total</p>
+                    <p className="text-3xl font-bold text-gray-800">
+                      R$ {modeloInvestimento.investimento.toLocaleString('pt-BR')}
+                    </p>
+                    {modeloInvestimento.desconto > 0 && (
+                      <p className="text-sm text-green-600 font-semibold mt-1">
+                        Economia de {modeloInvestimento.desconto}%
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2 italic">{modeloInvestimento.observacao}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Wins Priorizados */}
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-5 border border-amber-200">
+              <div className="flex items-center mb-4">
+                <Zap className="w-6 h-6 text-amber-600 mr-2" />
+                <h3 className="text-lg font-bold text-gray-800">
+                  Quick Wins Priorizados
+                  {formData.prioridadeAutomacao === 'alta' && ' (Por Velocidade)'}
+                  {formData.prioridadeAutomacao === 'media' && ' (Por ROI)'}
+                  {formData.prioridadeAutomacao === 'baixa' && ' (Por Impacto)'}
+                </h3>
+              </div>
+              <div className="space-y-3">
+                {quickWins.map((win, idx) => (
+                  <div key={idx} className="bg-white rounded-lg p-4 border border-amber-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 mb-1">{win.titulo}</h4>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="text-green-700 font-semibold">
+                            💰 R$ {win.economia.toLocaleString('pt-BR')}/mês
+                          </span>
+                          <span className="text-blue-700">
+                            ⏱️ {win.tempo} semanas
+                          </span>
+                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                            win.impacto === 'ALTO' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                          }`}>
+                            {win.impacto}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-amber-600">#{idx + 1}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-gray-600 mt-3 italic">
+                * Quick wins ordenados por {formData.prioridadeAutomacao === 'alta' ? 'velocidade de implementação' : 
+                  formData.prioridadeAutomacao === 'media' ? 'retorno financeiro' : 'facilidade de implementação'}
+              </p>
+            </div>
+          </div>
+        );
+      
+      case 4:
+        return (
+          <div className="space-y-6">
+            <div className="bg-gradient-to-r from-[#032c62] to-[#17203c] rounded-lg px-6 py-5 -mx-8 mb-6 shadow-lg">
+              <h2 className="text-3xl font-bold text-white mb-1">Business Case</h2>
+              <p className="text-blue-200 text-sm">Automação de Processos - {formData.empresa}</p>
+            </div>
+
+            {/* CONTEXTO DO PROJETO - MOVIDO PARA O INÍCIO */}
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-5 border border-indigo-200">
+              <h3 className="text-lg font-semibold text-indigo-900 mb-3">Contexto do Projeto</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <p className="text-indigo-600 font-medium">Gestor</p>
+                  <p className="text-indigo-900">{formData.nomeGestor}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Empresa</p>
+                  <p className="text-indigo-900">{formData.empresa}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Área</p>
+                  <p className="text-indigo-900">{roi.benchmark.nome}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Profissionais</p>
+                  <p className="text-indigo-900">{formData.numProfissionais} pessoas</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Email</p>
+                  <p className="text-indigo-900 text-xs">{formData.email}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">WhatsApp</p>
+                  <p className="text-indigo-900">{formData.whatsapp}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Prioridade</p>
+                  <p className="text-indigo-900 font-semibold">
+                    {formData.prioridadeAutomacao === 'alta' ? '🚨 Alta' : 
+                     formData.prioridadeAutomacao === 'media' ? '⚠️ Média' : '💡 Baixa'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Timeline</p>
+                  <p className="text-indigo-900">{timeline.total} semanas</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Métricas Financeiras */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 shadow">
+                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Situação Atual</p>
+                <p className="text-3xl font-bold text-gray-800 mb-1">
+                  R$ {roi.custoAtualMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-gray-600">Custo mensal com processos manuais</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-5 border border-green-200 shadow">
+                <p className="text-xs font-semibold text-green-700 uppercase mb-1">Economia Mensal</p>
+                <p className="text-3xl font-bold text-green-700 mb-1">
+                  R$ {roi.economiaMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-green-600">Redução de {roi.benchmark.reducaoTempo}% (benchmark {roi.benchmark.nome})</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 shadow">
+                <p className="text-xs font-semibold text-blue-700 uppercase mb-1">Economia Anual</p>
+                <p className="text-3xl font-bold text-blue-700 mb-1">
+                  R$ {roi.economiaAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-blue-600">Ganho anual projetado</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <Calculator className="w-4 h-4 mr-2 text-[#032c62]" />
+                  Investimento & Retorno
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Modelo:</span>
+                    <span className="font-semibold text-gray-800">{modeloInvestimento.tipo}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Investimento Inicial:</span>
+                    <span className="font-semibold text-gray-800">R$ {modeloInvestimento.investimento.toLocaleString('pt-BR')}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Payback:</span>
+                    <span className="font-semibold text-[#032c62]">{roi.payback.toFixed(1)} meses</span>
+                  </div>
+                  <div className="flex justify-between text-sm pt-2 border-t">
+                    <span className="text-gray-600">ROI Anual:</span>
+                    <span className="font-bold text-green-600 text-lg">{roi.roiAnual.toFixed(0)}%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200 shadow">
+                <h3 className="text-sm font-semibold text-purple-900 mb-3">Ganhos Qualitativos - {roi.benchmark.nome}</h3>
+                <div className="space-y-2">
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">Redução de até {roi.benchmark.reducaoErros}% em erros</p>
+                      <p className="text-xs text-gray-600">Processos automatizados e auditáveis</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">Ganho de {roi.benchmark.ganhoVelocidade}% em velocidade</p>
+                      <p className="text-xs text-gray-600">Entregas mais rápidas e confiáveis</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">Autonomia da equipe</p>
+                      <p className="text-xs text-gray-600">Capacitação para novos processos</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CASES DE SUCESSO KNIME - INSERIDO ANTES DE PRÓXIMOS PASSOS */}
+            <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl p-6 text-white">
+              <div className="flex items-center mb-4">
+                <Award className="w-8 h-8 mr-3 text-yellow-400" />
+                <h3 className="text-2xl font-bold">Cases de Sucesso com KNIME</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏦 Rabobank</h4>
+                  <p className="text-sm text-blue-100">
+                    Treinou <strong>300 auditores em 2 dias</strong> para usar KNIME em detecção de anomalias 
+                    e anti-lavagem de dinheiro, democratizando analytics avançado
+                  </p>
+                </div>
+
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏦 ING</h4>
+                  <p className="text-sm text-blue-100">
+                    <strong>400 auditores economizam 400h/ano</strong>, reduziram tempo de coleta de dados 
+                    de <strong>8 semanas para acesso instantâneo</strong>
+                  </p>
+                </div>
+
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏭 Tata Steel</h4>
+                  <p className="text-sm text-blue-100">
+                    Economia de tempo de até <strong>95%</strong> ao migrar de Excel para KNIME, 
+                    identificando erros em cálculos e conciliações
+                  </p>
+                </div>
+
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏦 Banco BV (HupData)</h4>
+                  <p className="text-sm text-blue-100">
+                    Automatização de <strong>processos de dados em área tributária</strong> com KNIME Business Hub, 
+                    gerando economia significativa
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-blue-200 mt-4 text-center italic">
+                Fonte: KNIME Case Studies & HupData Portfolio
+              </p>
+            </div>
+
+            {/* Próximos Passos */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Próximos Passos</h3>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    1
+                  </div>
+                  <p className="text-gray-700">Apresentar business case para stakeholders e obter aprovação</p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    2
+                  </div>
+                  <p className="text-gray-700">Agendar reunião de descoberta com especialistas HupData</p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    3
+                  </div>
+                  <p className="text-gray-700">Definir escopo e cronograma detalhado do projeto</p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    4
+                  </div>
+                  <p className="text-gray-700">Iniciar fase de mapeamento de processos críticos</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => window.print()}
+                className="px-6 py-3 bg-[#032c62] text-white rounded-lg hover:bg-[#17203c] transition-colors flex items-center gap-2 shadow-lg"
+              >
+                <Download className="w-5 h-5" />
+                Baixar Business Case (PDF)
+              </button>
+              
+              <button
+                onClick={() => {
+                  const body = `Confira o business case desenvolvido para automação de processos na área de ${roi.benchmark.nome}.
+
+Economia Anual Projetada: R$ ${roi.economiaAnual.toLocaleString('pt-BR')}
+ROI: ${roi.roiAnual.toFixed(0)}%
+Payback: ${roi.payback.toFixed(1)} meses
+Prioridade: ${formData.prioridadeAutomacao.toUpperCase()}
+
+Contato: ${formData.nomeGestor}
+Email: ${formData.email}
+WhatsApp: ${formData.whatsapp}
+Empresa: ${formData.empresa}`;
+                  
+                  const mailto = `mailto:?subject=Business Case - ${formData.empresa} - Automação ${roi.benchmark.nome}&body=${encodeURIComponent(body)}`;
+                  window.location.href = mailto;
+                }}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow-lg"
+              >
+                <FileText className="w-5 h-5" />
+                Compartilhar por Email
+              </button>
+            </div>
+            
+            <div className={`rounded-xl p-6 text-white text-center ${
+              formData.prioridadeAutomacao === 'alta' ? 'bg-gradient-to-r from-red-600 to-red-700' :
+              formData.prioridadeAutomacao === 'media' ? 'bg-gradient-to-r from-orange-600 to-orange-700' :
+              'bg-gradient-to-r from-[#17203c] to-[#032c62]'
+            }`}>
+              <p className="text-lg font-semibold mb-2">{mensagemPrioridade.cta}</p>
+              <p className="text-gray-200 text-sm mb-4">
+                {formData.prioridadeAutomacao === 'alta' 
+                  ? `Cada mês de atraso custa R$ ${roi.economiaMensal.toLocaleString('pt-BR')} à ${formData.empresa}`
+                  : 'Agende uma conversa com nossos especialistas'}
+              </p>
+              <a
+                href={`https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(
+                  `Olá! Gostaria de conversar sobre automação para ${roi.benchmark.nome}. Meu nome é ${formData.nomeGestor} da empresa ${formData.empresa}. Prioridade: ${formData.prioridadeAutomacao.toUpperCase()}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-2 bg-white text-[#032c62] rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              >
+                Falar com HupData
+              </a>
+            </div>
+          </div>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  const canProceed = () => {
+    if (currentStep === 0) {
+      return formData.nomeGestor && formData.empresa && formData.email && formData.whatsapp;
+    }
+    return true;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+            Business Case Builder
+          </h1>
+          <p className="text-gray-600">
+            Construa seu business case de automação em minutos
+          </p>
+        </div>
+        
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-[#032c62] px-6 py-4">
+            <div className="flex justify-between items-center">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <div key={step.id} className="flex items-center">
+                    <div className={`flex items-center ${index <= currentStep ? 'text-white' : 'text-gray-300'}`}>
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        index <= currentStep ? 'bg-white text-[#032c62]' : 'bg-[#17203c] text-gray-300'
+                      }`}>
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <span className="ml-2 text-sm font-medium hidden md:block">
+                        {step.title}
+                      </span>
+                    </div>
+                    {index < steps.length - 1 && (
+                      <ChevronRight className="w-5 h-5 mx-2 text-gray-300" />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          <div className="p-8">
+            {renderStepContent()}
+          </div>
+          
+          <div className="bg-white px-8 py-4 flex justify-between items-center border-t">
+            <button
+              onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+              disabled={currentStep === 0}
+              className={`px-6 py-2 rounded-lg flex items-center gap-2 ${
+                currentStep === 0
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}>
+              <ChevronLeft className="w-4 h-4" />
+              Anterior
+            </button>
+            
+            <div className="text-sm text-gray-600">
+              Passo {currentStep + 1} de {steps.length}
+            </div>
+            
+            <button
+              onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+              disabled={currentStep === steps.length - 1 || !canProceed()}
+              className={`px-6 py-2 rounded-lg flex items-center gap-2 ${
+                currentStep === steps.length - 1 || !canProceed()
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-[#032c62] text-white hover:bg-[#17203c]'
+              }`}
+            >
+              Próximo
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        
+        <div className="mt-6 text-center text-sm text-gray-600">
+          <p>Desenvolvido por <span className="font-semibold text-[#032c62]">HupData</span> - Especialistas em Automação de Dados</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+    ReactDOM.render(<BusinessCaseBuilder />, document.getElementById('root'));
+  </script>
+</body>
+</html>
