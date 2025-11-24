@@ -8,6 +8,25 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for interactive graphs -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    .chart-container {
+      position: relative;
+      height: 350px;
+      margin: 1rem 0;
+    }
+    @media (max-width: 768px) {
+      .chart-container {
+        height: 300px;
+      }
+    }
+    @media print {
+      .chart-container {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -209,6 +228,294 @@ const BusinessCaseBuilder = () => {
       setFormData(prev => ({ ...prev, prioridadeAutomacao: 'media' }));
     }
   }, [formData.errosFrequentes]);
+
+  // ===== RENDERIZAÇÃO DOS GRÁFICOS CHART.JS =====
+  useEffect(() => {
+    // Aguarda o DOM estar pronto
+    const timeout = setTimeout(() => {
+      const roi = calculateROI();
+      
+      // Destruir gráficos anteriores se existirem
+      if (window.chartInstances) {
+        Object.values(window.chartInstances).forEach(chart => {
+          if (chart) chart.destroy();
+        });
+      }
+      window.chartInstances = {};
+
+      // 1. Gráfico de Pizza (Etapa 2)
+      const pizzaCanvas = document.getElementById('chartPizzaTempo');
+      if (pizzaCanvas && currentStep === 2) {
+        const ctxPizza = pizzaCanvas.getContext('2d');
+        window.chartInstances.pizza = new Chart(ctxPizza, {
+          type: 'doughnut',
+          data: {
+            labels: ['Tarefas Manuais (Desperdício)', 'Trabalho Estratégico'],
+            datasets: [{
+              data: [formData.percentualAtividadesManuais, 100 - formData.percentualAtividadesManuais],
+              backgroundColor: ['#ef4444', '#10b981'],
+              borderColor: ['#dc2626', '#059669'],
+              borderWidth: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Distribuição Atual do Tempo da Equipe',
+                font: { size: 16, weight: 'bold' },
+                color: '#032c62'
+              },
+              legend: {
+                display: true,
+                position: 'bottom',
+                labels: { font: { size: 12 }, padding: 15 }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return context.label + ': ' + context.parsed + '%';
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+
+      // 2. Gráfico Antes vs Depois (Etapa 4 - Situação Atual)
+      const antesDepoisCanvas = document.getElementById('chartAntesDepois');
+      if (antesDepoisCanvas && currentStep === 4) {
+        const ctxAntesDepois = antesDepoisCanvas.getContext('2d');
+        const custoAtual = roi.custoTotal;
+        const custoDepois = custoAtual - roi.economiaMensal;
+        
+        window.chartInstances.antesDepois = new Chart(ctxAntesDepois, {
+          type: 'bar',
+          data: {
+            labels: ['Custo Mensal'],
+            datasets: [
+              {
+                label: 'Atual (com tarefas manuais)',
+                data: [custoAtual],
+                backgroundColor: '#ef4444',
+                borderColor: '#dc2626',
+                borderWidth: 2
+              },
+              {
+                label: 'Com Automação',
+                data: [custoDepois],
+                backgroundColor: '#10b981',
+                borderColor: '#059669',
+                borderWidth: 2
+              },
+              {
+                label: 'Economia Mensal',
+                data: [roi.economiaMensal],
+                backgroundColor: '#f59e0b',
+                borderColor: '#d97706',
+                borderWidth: 2
+              }
+            ]
+          },
+          options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `Redução de ${((roi.economiaMensal / custoAtual) * 100).toFixed(0)}% no Custo Mensal Operacional`,
+                font: { size: 16, weight: 'bold' },
+                color: '#032c62'
+              },
+              legend: { display: true, position: 'bottom' },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return context.dataset.label + ': R$ ' + context.parsed.x.toLocaleString('pt-BR');
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
+              }
+            }
+          }
+        });
+      }
+
+      // 3. Gráfico de Validação Cruzada (Etapa 4 - Análise Financeira)
+      const validacaoCanvas = document.getElementById('chartValidacao');
+      if (validacaoCanvas && currentStep === 4) {
+        const ctxValidacao = validacaoCanvas.getContext('2d');
+        
+        window.chartInstances.validacao = new Chart(ctxValidacao, {
+          type: 'bar',
+          data: {
+            labels: ['Método 1\n(Por % Tempo)', 'Método 2\n(Por Processos)', 'Média\nValidada'],
+            datasets: [{
+              label: 'Custo Mensal Calculado',
+              data: [roi.custoAtualMensalPorTempo, roi.custoAtualMensalPorProcessos, roi.custoAtualMensal],
+              backgroundColor: ['#3b82f6', '#8b5cf6', '#10b981'],
+              borderColor: ['#2563eb', '#7c3aed', '#059669'],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: 'Dupla Validação - Comparação dos Métodos de Cálculo',
+                font: { size: 16, weight: 'bold' },
+                color: '#032c62'
+              },
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return 'Custo: R$ ' + context.parsed.y.toLocaleString('pt-BR');
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
+              }
+            }
+          }
+        });
+      }
+
+      // 4. Gráfico de Payback (Etapa 4 - Análise Financeira)
+      const paybackCanvas = document.getElementById('chartPayback');
+      if (paybackCanvas && currentStep === 4) {
+        const ctxPayback = paybackCanvas.getContext('2d');
+        const meses = 18;
+        const economiaAcumulada = Array.from({length: meses + 1}, (_, i) => i * roi.economiaMensal);
+        const investimentoLinha = Array.from({length: meses + 1}, () => roi.custoImplementacao);
+        
+        window.chartInstances.payback = new Chart(ctxPayback, {
+          type: 'line',
+          data: {
+            labels: Array.from({length: meses + 1}, (_, i) => i === 0 ? 'Início' : `${i}m`),
+            datasets: [
+              {
+                label: 'Economia Acumulada',
+                data: economiaAcumulada,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                fill: true,
+                tension: 0.4,
+                borderWidth: 3,
+                pointRadius: 4,
+                pointHoverRadius: 6
+              },
+              {
+                label: 'Investimento Inicial',
+                data: investimentoLinha,
+                borderColor: '#ef4444',
+                borderDash: [10, 5],
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 0
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `Payback: ${roi.payback.toFixed(1)} meses | ROI Anual: ${roi.roiAnual.toFixed(0)}%`,
+                font: { size: 16, weight: 'bold' },
+                color: '#032c62'
+              },
+              legend: { display: true, position: 'bottom' },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return context.dataset.label + ': R$ ' + context.parsed.y.toLocaleString('pt-BR');
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
+              }
+            }
+          }
+        });
+      }
+
+      // 5. Gráfico de Evolução 12 Meses (Etapa 4 - Análise Financeira)
+      const evolucaoCanvas = document.getElementById('chartEvolucao');
+      if (evolucaoCanvas && currentStep === 4) {
+        const ctxEvolucao = evolucaoCanvas.getContext('2d');
+        const mesesAno = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const economiaAcumuladaAno = Array.from({length: 12}, (_, i) => (i + 1) * roi.economiaMensal);
+        
+        window.chartInstances.evolucao = new Chart(ctxEvolucao, {
+          type: 'line',
+          data: {
+            labels: mesesAno,
+            datasets: [{
+              label: 'Economia Acumulada',
+              data: economiaAcumuladaAno,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.2)',
+              fill: true,
+              tension: 0.4,
+              borderWidth: 3,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+              pointBackgroundColor: '#10b981'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              title: {
+                display: true,
+                text: `Economia Total em 12 Meses: R$ ${roi.economiaAnual.toLocaleString('pt-BR')}`,
+                font: { size: 16, weight: 'bold' },
+                color: '#032c62'
+              },
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    return 'Acumulado: R$ ' + context.parsed.y.toLocaleString('pt-BR');
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
+              }
+            }
+          }
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timeout);
+  }, [currentStep, formData]);
 
   const [showResults, setShowResults] = useState(false);
 
@@ -1075,6 +1382,29 @@ const BusinessCaseBuilder = () => {
                   : '💡 Auto-selecionada como "Média" - você pode ajustar conforme necessário'}
               </p>
             </div>
+
+            {/* GRÁFICO: Distribuição do Tempo */}
+            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <svg className="w-6 h-6 text-[#032c62] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+                Distribuição do Tempo da Equipe Hoje
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Visualização de como o tempo da equipe é atualmente distribuído entre tarefas manuais e trabalho estratégico.
+              </p>
+              <div className="chart-container">
+                <canvas id="chartPizzaTempo"></canvas>
+              </div>
+              <div className="mt-4 bg-red-50 rounded-lg p-4 border-l-4 border-red-500">
+                <p className="text-sm text-red-900">
+                  <strong>Impacto:</strong> {formData.percentualAtividadesManuais}% do tempo da equipe está sendo desperdiçado 
+                  em tarefas que podem ser automatizadas! Com a automação, esse tempo volta para atividades de maior valor.
+                </p>
+              </div>
+            </div>
           </div>
         );
       
@@ -1295,6 +1625,19 @@ const BusinessCaseBuilder = () => {
                     )}
                   </ul>
                 </div>
+
+                {/* GRÁFICO: Antes vs Depois */}
+                <div className="mt-6">
+                  <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg className="w-5 h-5 text-[#032c62] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Comparação: Cenário Atual vs Com Automação
+                  </h4>
+                  <div className="chart-container">
+                    <canvas id="chartAntesDepois"></canvas>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1401,6 +1744,82 @@ const BusinessCaseBuilder = () => {
                       <p className="font-bold text-teal-900">
                         R$ {roi.investimentoPorProcesso.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
                       </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* GRÁFICO: Validação Cruzada */}
+                <div className="mt-6 bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
+                  <h4 className="text-md font-semibold text-blue-900 mb-3 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    Validação Cruzada dos Cálculos
+                  </h4>
+                  <p className="text-sm text-blue-800 mb-4">
+                    Comparação dos dois métodos independentes de cálculo para maior precisão e credibilidade.
+                  </p>
+                  <div className="chart-container">
+                    <canvas id="chartValidacao"></canvas>
+                  </div>
+                </div>
+
+                {/* GRÁFICO: Análise de Payback */}
+                <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
+                  <h4 className="text-md font-semibold text-green-900 mb-3 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Análise de Payback - Ponto de Equilíbrio
+                  </h4>
+                  <p className="text-sm text-green-800 mb-4">
+                    Visualização de quando o investimento se paga. A linha verde mostra a economia acumulada crescendo até ultrapassar o investimento inicial.
+                  </p>
+                  <div className="chart-container">
+                    <canvas id="chartPayback"></canvas>
+                  </div>
+                  <div className="mt-4 bg-white rounded-lg p-4 border-l-4 border-green-500">
+                    <p className="text-sm text-green-900">
+                      <strong>Ponto de Equilíbrio:</strong> Em {roi.payback.toFixed(1)} meses o investimento está completamente pago. 
+                      A partir daí, toda economia é lucro líquido! ROI anual de {roi.roiAnual.toFixed(0)}%.
+                    </p>
+                  </div>
+                </div>
+
+                {/* GRÁFICO: Evolução da Economia */}
+                <div className="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border-2 border-purple-200">
+                  <h4 className="text-md font-semibold text-purple-900 mb-3 flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                    </svg>
+                    Evolução da Economia ao Longo de 12 Meses
+                  </h4>
+                  <p className="text-sm text-purple-800 mb-4">
+                    Projeção da economia acumulada mês a mês. Veja como o benefício cresce continuamente ao longo do primeiro ano.
+                  </p>
+                  <div className="chart-container">
+                    <canvas id="chartEvolucao"></canvas>
+                  </div>
+                  <div className="mt-4 bg-white rounded-lg p-4 border-l-4 border-purple-500">
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <p className="text-xs text-gray-600">Economia Total Ano 1</p>
+                        <p className="text-lg font-bold text-purple-700">
+                          R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Investimento</p>
+                        <p className="text-lg font-bold text-blue-700">
+                          R$ {roi.custoImplementacao.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-600">Lucro Líquido Ano 1</p>
+                        <p className="text-lg font-bold text-green-700">
+                          R$ {(roi.economiaAnual - roi.custoImplementacao).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
