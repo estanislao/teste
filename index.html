@@ -8,38 +8,19 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js for interactive graphs -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <style>
-    .chart-container {
-      position: relative;
-      height: 350px;
-      margin: 1rem 0;
-    }
-    @media (max-width: 768px) {
-      .chart-container {
-        height: 300px;
-      }
-    }
-    @media print {
-      .chart-container {
-        page-break-inside: avoid;
-      }
-    }
-  </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
     // Lucide Icons as React components
     const FileText = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     );
 
     const Target = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" strokeWidth={2}></circle>
         <circle cx="12" cy="12" r="6" strokeWidth={2}></circle>
         <circle cx="12" cy="12" r="2" strokeWidth={2}></circle>
@@ -47,71 +28,65 @@
     );
 
     const TrendingUp = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
       </svg>
     );
 
     const CheckCircle = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     );
 
     const Download = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
       </svg>
     );
 
     const ChevronRight = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
       </svg>
     );
 
     const ChevronLeft = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       </svg>
     );
 
     const Calculator = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <rect x="4" y="2" width="16" height="20" rx="2" strokeWidth={2}></rect>
         <line x1="8" y1="6" x2="16" y2="6" strokeWidth={2}></line>
       </svg>
     );
 
     const Clock = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="10" strokeWidth={2}></circle>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6l4 2" />
       </svg>
     );
 
     const Zap = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
       </svg>
     );
 
     const Award = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="8" r="7" strokeWidth={2}></circle>
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12" />
       </svg>
     );
 
-    const AlertTriangle = ({ className }) => (
-      <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-    );
+    const { useState } = React;
 
-    const { useState, useEffect } = React;
-
-    // Benchmarks por área
+    // Benchmarks por área de atuação
     const areaBenchmarks = {
       tributaria: {
         nome: 'Tributária',
@@ -124,55 +99,34 @@
           'Prazos de entrega críticos'
         ],
         beneficiosEspecificos: [
-          'Cálculo automático de impostos federais, estaduais e municipais',
-          'Validação cruzada de dados entre sistemas',
-          'Alertas de prazos e obrigações acessórias'
+          'Atualização automática de tabelas tributárias',
+          'Validação cruzada com legislação vigente',
+          'Alertas de mudanças regulatórias'
         ],
         quickWins: [
-          { titulo: 'Conciliação de ICMS', economia: 12000, tempo: 3, impacto: 'ALTO' },
-          { titulo: 'Apuração de PIS/COFINS', economia: 15000, tempo: 4, impacto: 'ALTO' },
-          { titulo: 'Validação de Notas Fiscais', economia: 8000, tempo: 2, impacto: 'MEDIO' }
-        ]
-      },
-      fiscal: {
-        nome: 'Fiscal',
-        reducaoTempo: 70,
-        reducaoErros: 88,
-        ganhoVelocidade: 75,
-        desafiosComuns: [
-          'Volume alto de documentos fiscais',
-          'Validações complexas de NFe',
-          'Conformidade com SPED'
-        ],
-        beneficiosEspecificos: [
-          'Validação automática de XMLs e arquivos SPED',
-          'Detecção de inconsistências antes do envio',
-          'Auditoria contínua de processos fiscais'
-        ],
-        quickWins: [
-          { titulo: 'Validação SPED Fiscal', economia: 10000, tempo: 3, impacto: 'ALTO' },
-          { titulo: 'Reconciliação de NFe', economia: 13000, tempo: 4, impacto: 'ALTO' },
-          { titulo: 'Relatórios Fiscais', economia: 6000, tempo: 2, impacto: 'MEDIO' }
+          { titulo: 'Cálculo Automático de ICMS', economia: 15000, tempo: 4, impacto: 'ALTO' },
+          { titulo: 'Validação de Dados Fiscais', economia: 12000, tempo: 3, impacto: 'ALTO' },
+          { titulo: 'Automatização de Planilhas', economia: 8000, tempo: 2, impacto: 'MEDIO' }
         ]
       },
       auditoria: {
         nome: 'Auditoria',
-        reducaoTempo: 72,
+        reducaoTempo: 70,
         reducaoErros: 95,
-        ganhoVelocidade: 78,
+        ganhoVelocidade: 75,
         desafiosComuns: [
-          'Análise de grandes volumes de dados',
-          'Identificação de anomalias',
-          'Documentação de evidências'
+          'Volume alto de documentos',
+          'Rastreabilidade de evidências',
+          'Controles de conformidade'
         ],
         beneficiosEspecificos: [
-          'Análise de 100% dos dados vs amostragem',
-          'Detecção automática de padrões suspeitos',
-          'Trilhas de auditoria automáticas'
+          'Trilha de auditoria completa e automatizada',
+          'Validação de amostras estatísticas',
+          'Relatórios de conformidade em tempo real'
         ],
         quickWins: [
           { titulo: 'Detecção de Anomalias', economia: 18000, tempo: 5, impacto: 'ALTO' },
-          { titulo: 'Testes de Controles', economia: 11000, tempo: 3, impacto: 'MEDIO' },
+          { titulo: 'Amostragem Automática', economia: 10000, tempo: 3, impacto: 'ALTO' },
           { titulo: 'Coleta Automática de Dados', economia: 7000, tempo: 2, impacto: 'MEDIO' }
         ]
       },
@@ -219,321 +173,6 @@ const BusinessCaseBuilder = () => {
     prioridadeAutomacao: 'alta'
   });
   
-  // ===== AUTO-SELEÇÃO DE PRIORIDADE BASEADA EM ERROS =====
-  useEffect(() => {
-    // Atualiza prioridade automaticamente quando errosFrequentes muda
-    if (formData.errosFrequentes) {
-      setFormData(prev => ({ ...prev, prioridadeAutomacao: 'alta' }));
-    } else {
-      setFormData(prev => ({ ...prev, prioridadeAutomacao: 'media' }));
-    }
-  }, [formData.errosFrequentes]);
-
-  // ===== RENDERIZAÇÃO DOS GRÁFICOS CHART.JS =====
-  useEffect(() => {
-    // Aguarda o DOM estar pronto
-    const timeout = setTimeout(() => {
-      const roi = calculateROI();
-      
-      // Destruir gráficos anteriores se existirem
-      if (window.chartInstances) {
-        Object.values(window.chartInstances).forEach(chart => {
-          if (chart) chart.destroy();
-        });
-      }
-      window.chartInstances = {};
-
-      // 1. Gráfico de Pizza (Etapa 2)
-      const pizzaCanvas = document.getElementById('chartPizzaTempo');
-      if (pizzaCanvas && currentStep === 2) {
-        const ctxPizza = pizzaCanvas.getContext('2d');
-        window.chartInstances.pizza = new Chart(ctxPizza, {
-          type: 'doughnut',
-          data: {
-            labels: ['Tarefas Manuais (Desperdício)', 'Trabalho Estratégico'],
-            datasets: [{
-              data: [formData.percentualAtividadesManuais, 100 - formData.percentualAtividadesManuais],
-              backgroundColor: ['#ef4444', '#10b981'],
-              borderColor: ['#dc2626', '#059669'],
-              borderWidth: 3
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: true,
-                text: 'Distribuição Atual do Tempo da Equipe',
-                font: { size: 16, weight: 'bold' },
-                color: '#032c62'
-              },
-              legend: {
-                display: true,
-                position: 'bottom',
-                labels: { font: { size: 12 }, padding: 15 }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return context.label + ': ' + context.parsed + '%';
-                  }
-                }
-              }
-            }
-          },
-          plugins: [{
-            id: 'percentageLabels',
-            afterDatasetDraw: function(chart) {
-              const ctx = chart.ctx;
-              chart.data.datasets.forEach((dataset, datasetIndex) => {
-                const meta = chart.getDatasetMeta(datasetIndex);
-                meta.data.forEach((element, index) => {
-                  const data = dataset.data[index];
-                  const x = element.x;
-                  const y = element.y;
-                  
-                  ctx.fillStyle = 'white';
-                  ctx.font = 'bold 24px Arial';
-                  ctx.textAlign = 'center';
-                  ctx.textBaseline = 'middle';
-                  ctx.fillText(data + '%', x, y);
-                });
-              });
-            }
-          }]
-        });
-      }
-
-      // 2. Gráfico Antes vs Depois (Etapa 4 - Situação Atual)
-      const antesDepoisCanvas = document.getElementById('chartAntesDepois');
-      if (antesDepoisCanvas && currentStep === 4) {
-        const ctxAntesDepois = antesDepoisCanvas.getContext('2d');
-        const custoAtual = roi.custoTotal;
-        const custoDepois = custoAtual - roi.economiaMensal;
-        
-        window.chartInstances.antesDepois = new Chart(ctxAntesDepois, {
-          type: 'bar',
-          data: {
-            labels: ['Custo Mensal'],
-            datasets: [
-              {
-                label: 'Atual (com tarefas manuais)',
-                data: [custoAtual],
-                backgroundColor: '#ef4444',
-                borderColor: '#dc2626',
-                borderWidth: 2
-              },
-              {
-                label: 'Com Automação',
-                data: [custoDepois],
-                backgroundColor: '#10b981',
-                borderColor: '#059669',
-                borderWidth: 2
-              },
-              {
-                label: 'Economia Mensal',
-                data: [roi.economiaMensal],
-                backgroundColor: '#f59e0b',
-                borderColor: '#d97706',
-                borderWidth: 2
-              }
-            ]
-          },
-          options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: true,
-                text: `Redução de ${((roi.economiaMensal / custoAtual) * 100).toFixed(0)}% no Custo Mensal Operacional`,
-                font: { size: 16, weight: 'bold' },
-                color: '#032c62'
-              },
-              legend: { display: true, position: 'bottom' },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return context.dataset.label + ': R$ ' + context.parsed.x.toLocaleString('pt-BR');
-                  }
-                }
-              }
-            },
-            scales: {
-              x: {
-                beginAtZero: true,
-                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
-              }
-            }
-          }
-        });
-      }
-
-      // 3. Gráfico de Validação Cruzada (Etapa 4 - Análise Financeira)
-      const validacaoCanvas = document.getElementById('chartValidacao');
-      if (validacaoCanvas && currentStep === 4) {
-        const ctxValidacao = validacaoCanvas.getContext('2d');
-        
-        window.chartInstances.validacao = new Chart(ctxValidacao, {
-          type: 'bar',
-          data: {
-            labels: ['Cálculo por\n% Tempo', 'Cálculo por\nProcessos', 'Custo médio\nvalidado'],
-            datasets: [{
-              label: 'Custo Mensal Calculado',
-              data: [roi.custoAtualMensalPorTempo, roi.custoAtualMensalPorProcessos, roi.custoAtualMensal],
-              backgroundColor: ['#3b82f6', '#8b5cf6', '#10b981'],
-              borderColor: ['#2563eb', '#7c3aed', '#059669'],
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: false
-              },
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return 'Custo: R$ ' + context.parsed.y.toLocaleString('pt-BR');
-                  }
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
-              }
-            }
-          }
-        });
-      }
-
-      // 4. Gráfico de Payback (Etapa 4 - Análise Financeira)
-      const paybackCanvas = document.getElementById('chartPayback');
-      if (paybackCanvas && currentStep === 4) {
-        const ctxPayback = paybackCanvas.getContext('2d');
-        const meses = 18;
-        const economiaAcumulada = Array.from({length: meses + 1}, (_, i) => i * roi.economiaMensal);
-        const investimentoLinha = Array.from({length: meses + 1}, () => roi.custoImplementacao);
-        
-        window.chartInstances.payback = new Chart(ctxPayback, {
-          type: 'line',
-          data: {
-            labels: Array.from({length: meses + 1}, (_, i) => i === 0 ? 'Início' : `${i}m`),
-            datasets: [
-              {
-                label: 'Economia Acumulada',
-                data: economiaAcumulada,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 3,
-                pointRadius: 4,
-                pointHoverRadius: 6
-              },
-              {
-                label: 'Investimento Inicial',
-                data: investimentoLinha,
-                borderColor: '#ef4444',
-                borderDash: [10, 5],
-                fill: false,
-                borderWidth: 2,
-                pointRadius: 0
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: true,
-                text: `Payback: ${roi.payback.toFixed(1)} meses | ROI Anual: ${roi.roiAnual.toFixed(0)}%`,
-                font: { size: 16, weight: 'bold' },
-                color: '#032c62'
-              },
-              legend: { display: true, position: 'bottom' },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return context.dataset.label + ': R$ ' + context.parsed.y.toLocaleString('pt-BR');
-                  }
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
-              }
-            }
-          }
-        });
-      }
-
-      // 5. Gráfico de Evolução 12 Meses (Etapa 4 - Análise Financeira)
-      const evolucaoCanvas = document.getElementById('chartEvolucao');
-      if (evolucaoCanvas && currentStep === 4) {
-        const ctxEvolucao = evolucaoCanvas.getContext('2d');
-        const mesesAno = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const economiaAcumuladaAno = Array.from({length: 12}, (_, i) => (i + 1) * roi.economiaMensal);
-        
-        window.chartInstances.evolucao = new Chart(ctxEvolucao, {
-          type: 'line',
-          data: {
-            labels: mesesAno,
-            datasets: [{
-              label: 'Economia Acumulada',
-              data: economiaAcumuladaAno,
-              borderColor: '#10b981',
-              backgroundColor: 'rgba(16, 185, 129, 0.2)',
-              fill: true,
-              tension: 0.4,
-              borderWidth: 3,
-              pointRadius: 5,
-              pointHoverRadius: 7,
-              pointBackgroundColor: '#10b981'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              title: {
-                display: true,
-                text: `Economia Total em 12 Meses: R$ ${roi.economiaAnual.toLocaleString('pt-BR')}`,
-                font: { size: 16, weight: 'bold' },
-                color: '#032c62'
-              },
-              legend: { display: false },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return 'Acumulado: R$ ' + context.parsed.y.toLocaleString('pt-BR');
-                  }
-                }
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true,
-                ticks: { callback: value => `R$ ${(value/1000).toFixed(0)}k` }
-              }
-            }
-          }
-        });
-      }
-    }, 100);
-
-    return () => clearTimeout(timeout);
-  }, [currentStep, formData]);
-
   const [showResults, setShowResults] = useState(false);
 
   const steps = [
@@ -597,60 +236,100 @@ const BusinessCaseBuilder = () => {
   };
 
   const getTimelinePorPrioridade = () => {
-    const timelines = {
-      alta: {
-        discovery: 2,
-        desenvolvimento: 6,
-        implantacao: 2,
-        total: 10,
-        nota: "Timeline acelerada para atender urgência",
-        entregas: [
-          "Quick win em 3 semanas",
-          "Primeiro processo automatizado em 6 semanas",
-          "Go-live completo em 10 semanas"
-        ]
-      },
-      media: {
-        discovery: 3,
-        desenvolvimento: 8,
-        implantacao: 3,
-        total: 14,
-        nota: "Timeline balanceada entre qualidade e velocidade",
-        entregas: [
-          "Discovery completo em 3 semanas",
-          "Protótipo em 7 semanas",
-          "Go-live completo em 14 semanas"
-        ]
-      },
-      baixa: {
-        discovery: 4,
-        desenvolvimento: 10,
-        implantacao: 4,
-        total: 18,
-        nota: "Timeline otimizada para minimizar disrupção",
-        entregas: [
-          "Planejamento detalhado em 4 semanas",
-          "Implementação gradual em fases",
-          "Go-live completo em 18 semanas"
-        ]
-      }
+    const roi = calculateROI();
+    
+    // Usa os valores calculados do ROI
+    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
+    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
+    
+    return {
+      discovery: roi.tempoDiscovery,
+      desenvolvimento: roi.tempoDev,
+      implantacao: tempoImplantacaoTotal,
+      total: roi.tempoTotal,
+      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
+      entregas: [
+        `Discovery completo em ${roi.tempoDiscovery} semanas`,
+        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
+        `Go-live completo em ${roi.tempoTotal} semanas`
+      ]
     };
-    return timelines[formData.prioridadeAutomacao];
   };
 
-  // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
+  const getModeloInvestimento = (custoBase) => {
+    const modelos = {
+      alta: {
+        tipo: "Fast-Track",
+        multiplicador: 1.2,
+        investimento: custoBase * 1.2,
+        condicoes: [
+          "Equipe dedicada exclusiva",
+          "Suporte 24/7 durante go-live",
+          "Garantia de prazo",
+          "Penalidade por atraso"
+        ],
+        desconto: 0,
+        badge: "PREMIUM",
+        badgeColor: "bg-red-600",
+        observacao: "Investimento premium para entrega acelerada"
+      },
+      media: {
+        tipo: "Padrão",
+        multiplicador: 1.0,
+        investimento: custoBase,
+        condicoes: [
+          "Equipe compartilhada",
+          "Suporte horário comercial",
+          "Timeline flexível"
+        ],
+        desconto: 0,
+        badge: "RECOMENDADO",
+        badgeColor: "bg-green-600",
+        observacao: "Melhor custo-benefício"
+      },
+      baixa: {
+        tipo: "Planejado",
+        multiplicador: 0.85,
+        investimento: custoBase * 0.85,
+        condicoes: [
+          "Implementação em 6+ meses",
+          "Pagamento antecipado",
+          "Flexibilidade total de prazo"
+        ],
+        desconto: 15,
+        badge: "ECONOMIA",
+        badgeColor: "bg-blue-600",
+        observacao: "Desconto de 15% por planejamento antecipado"
+      }
+    };
+    return modelos[formData.prioridadeAutomacao];
+  };
+
+  const getQuickWinsPriorizados = () => {
+    const benchmark = getBenchmark();
+    const quickWins = benchmark.quickWins;
+    
+    if (formData.prioridadeAutomacao === 'alta') {
+      return quickWins.sort((a, b) => a.tempo - b.tempo);
+    } else if (formData.prioridadeAutomacao === 'media') {
+      return quickWins.sort((a, b) => b.economia - a.economia);
+    } else {
+      const impactoScore = { 'ALTO': 3, 'MEDIO': 2, 'BAIXO': 1 };
+      return quickWins.sort((a, b) => impactoScore[b.impacto] - impactoScore[a.impacto]);
+    }
+  };
+
   const calculateROI = () => {
     const percentualAtividadesManuais = formData.percentualAtividadesManuais || 40;
     const numProfissionais = formData.numProfissionais || 1;
     const custoPorHora = formData.custoPorHora || 0;
     const numeroProcessos = formData.numeroProcessos || 10;
-    const tempoMedioProcesso = formData.tempoMedioProcesso || 4;
     const fontesDados = formData.sistemasUtilizados.length || 1;
+    const errosFrequentes = formData.errosFrequentes || false;
     
     const benchmark = getBenchmark();
     const reducaoEstimada = benchmark.reducaoTempo / 100;
     
-    // Coeficiente de esforço baseado em fontes de dados
     let coeficienteEsforco = 1.0;
     if (fontesDados > 4) {
       coeficienteEsforco = 1.08;
@@ -658,31 +337,12 @@ const BusinessCaseBuilder = () => {
       coeficienteEsforco = 1.05;
     }
     
-    // ===== MÉTODO 1: CÁLCULO POR % DE TEMPO =====
     const taxaAtividadeManual = 160 * (percentualAtividadesManuais / 100);
-    const custoAtualMensalPorTempo = numProfissionais * taxaAtividadeManual * custoPorHora * coeficienteEsforco;
-    
-    // ===== MÉTODO 2: CÁLCULO POR PROCESSOS =====
-    const custoAtualMensalPorProcessos = numeroProcessos * tempoMedioProcesso * custoPorHora * 4.33 * coeficienteEsforco;
-    
-    // ===== VALIDAÇÃO CRUZADA: USA MÉDIA DOS DOIS MÉTODOS =====
-    const custoAtualMensal = (custoAtualMensalPorTempo + custoAtualMensalPorProcessos) / 2;
-    
-    // ===== AJUSTE POR ERROS FREQUENTES =====
-    let custoErros = 0;
-    let custoTotal = custoAtualMensal;
-    
-    if (formData.errosFrequentes) {
-      // Adiciona 15% de custo por retrabalho de erros
-      custoErros = custoAtualMensal * 0.15;
-      custoTotal = custoAtualMensal + custoErros;
-    }
-    
-    // Economia mensal e anual
-    const economiaMensal = custoTotal * reducaoEstimada;
+    const custoAtualMensal = numProfissionais * taxaAtividadeManual * custoPorHora * coeficienteEsforco;
+    const economiaMensal = custoAtualMensal * reducaoEstimada;
     const economiaAnual = economiaMensal * 12;
     
-    // ===== AJUSTE DE INVESTIMENTO POR COMPLEXIDADE (numeroProcessos) =====
+    // ===== COMPLEXIDADE E INVESTIMENTO BASEADOS EM PROCESSOS =====
     let custoImplementacao = 45000;
     let complexidadeProjeto = 'Média';
     
@@ -700,123 +360,75 @@ const BusinessCaseBuilder = () => {
       complexidadeProjeto = 'Muito Alta';
     }
     
-    // ===== TEMPO DE IMPLEMENTAÇÃO BASEADO EM PROCESSOS =====
-    const tempoDiscovery = Math.ceil(numeroProcessos / 5); // 1 semana a cada 5 processos
-    const tempoDev = Math.ceil(numeroProcessos / 2); // 1 semana a cada 2 processos
-    const tempoCapacitacao = 3; // Fixo
-    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao;
-    
-    // ===== ESTRATÉGIA DE PRIORIZAÇÃO =====
-    let estrategia = '';
-    let fasesImplementacao = [];
-    
-    if (numeroProcessos <= 5) {
-      estrategia = 'Big Bang';
-      fasesImplementacao = [
-        { fase: 1, processos: numeroProcessos, duracao: '6-8 semanas', descricao: 'Todos os processos de uma vez' }
-      ];
-    } else if (numeroProcessos <= 15) {
-      estrategia = 'Faseada (2 ondas)';
-      const metade = Math.ceil(numeroProcessos / 2);
-      fasesImplementacao = [
-        { fase: 1, processos: metade, duracao: '8-10 semanas', descricao: 'Processos críticos' },
-        { fase: 2, processos: numeroProcessos - metade, duracao: '6-8 semanas', descricao: 'Processos secundários' }
-      ];
+    // ===== PROFISSIONAIS NECESSÁRIOS =====
+    let numeroProfissionais = 1;
+    if (numeroProcessos <= 3) {
+      numeroProfissionais = 1;
+    } else if (numeroProcessos <= 10) {
+      numeroProfissionais = 2;
     } else {
-      estrategia = 'Incremental (3+ ondas)';
-      const terco = Math.ceil(numeroProcessos / 3);
-      fasesImplementacao = [
-        { fase: 1, processos: terco, duracao: '8-10 semanas', descricao: 'Quick Wins' },
-        { fase: 2, processos: terco, duracao: '8-10 semanas', descricao: 'Processos core' },
-        { fase: 3, processos: numeroProcessos - (terco * 2), duracao: '6-8 semanas', descricao: 'Processos restantes' }
-      ];
+      numeroProfissionais = 3;
     }
     
-    // ===== ECONOMIA POR PROCESSO =====
-    const economiaPorProcessoMensal = economiaMensal / numeroProcessos;
-    const economiaPorProcessoAnual = economiaAnual / numeroProcessos;
-    const investimentoPorProcesso = custoImplementacao / numeroProcessos;
-    const roiPorProcesso = ((economiaPorProcessoAnual - investimentoPorProcesso) / investimentoPorProcesso) * 100;
-    
-    // ===== ANÁLISE DE VIABILIDADE =====
-    const processosPorProfissional = numeroProcessos / numProfissionais;
-    let alertas = [];
-    
-    if (processosPorProfissional < 2) {
-      alertas.push({
-        tipo: 'warning',
-        mensagem: `Apenas ${processosPorProfissional.toFixed(1)} processos por profissional. Considere revisar o escopo ou mapear subprocessos.`
-      });
+    // ===== CRONOGRAMA DINÂMICO =====
+    // Discovery: baseado no PORTE do projeto
+    let tempoDiscovery = 2;
+    if (complexidadeProjeto === 'Baixa') {
+      tempoDiscovery = 1; // Projeto pequeno
+    } else if (complexidadeProjeto === 'Média') {
+      tempoDiscovery = 2; // Projeto médio
+    } else { // Alta ou Muito Alta
+      tempoDiscovery = 3; // Projeto grande
     }
     
-    if (processosPorProfissional > 10) {
-      alertas.push({
-        tipo: 'info',
-        mensagem: `${processosPorProfissional.toFixed(1)} processos por profissional indicam alta carga de trabalho. Priorize processos de maior impacto.`
-      });
+    // Desenvolvimento: Base 3 semanas por processo
+    const tempoBasePorProcesso = 3;
+    const multiplicadorSistemas = coeficienteEsforco;
+    const multiplicadorErros = errosFrequentes ? 1.2 : 1.0;
+    const tempoTotalProcessos = numeroProcessos * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros;
+    const tempoDev = Math.ceil(tempoTotalProcessos / numeroProfissionais);
+    
+    // Capacitação: baseado no PORTE do projeto
+    let tempoCapacitacao = 2;
+    if (complexidadeProjeto === 'Alta' || complexidadeProjeto === 'Muito Alta') {
+      tempoCapacitacao = 3;
     }
     
-    if (numeroProcessos < 5 && custoImplementacao > 30000) {
-      alertas.push({
-        tipo: 'warning',
-        mensagem: 'Poucos processos para investimento alto. Considere adicionar mais processos ao escopo.'
-      });
-    }
+    // Go-Live: fixo
+    const tempoGoLive = 1;
     
-    // Cálculos finais
+    // Total
+    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao + tempoGoLive;
+    
     const payback = custoImplementacao / economiaMensal;
-    const paybackReal = payback + (tempoTotal / 4.33);
-    const roiAnual = ((economiaAnual - custoImplementacao) / custoImplementacao * 100);
     
     return {
-      // Custos
       custoAtualMensal,
-      custoAtualMensalPorTempo,
-      custoAtualMensalPorProcessos,
-      custoErros,
-      custoTotal,
-      custoImplementacao,
-      
-      // Economias
       economiaMensal,
       economiaAnual,
-      economiaPorProcessoMensal,
-      economiaPorProcessoAnual,
-      
-      // ROI e Payback
-      roiAnual,
-      roiPorProcesso,
+      custoImplementacao,
       payback,
-      paybackReal,
-      
-      // Complexidade e Tempo
-      complexidadeProjeto,
+      roiAnual: ((economiaAnual - custoImplementacao) / custoImplementacao * 100),
       coeficienteEsforco,
       taxaAtividadeManual,
+      benchmark,
+      // Novos campos
+      complexidadeProjeto,
+      numeroProfissionais,
       tempoDiscovery,
       tempoDev,
       tempoCapacitacao,
-      tempoTotal,
-      
-      // Estratégia
-      estrategia,
-      fasesImplementacao,
-      
-      // Análises
-      processosPorProfissional,
-      investimentoPorProcesso,
-      alertas,
-      
-      // Benchmark
-      benchmark
+      tempoGoLive,
+      tempoTotal
     };
   };
 
-  const roi = calculateROI();
-  const timeline = getTimelinePorPrioridade();
-  const mensagemPrioridade = getMensagemPorPrioridade();
-
   const renderStepContent = () => {
+    const roi = calculateROI();
+    const timeline = getTimelinePorPrioridade();
+    const modeloInvestimento = getModeloInvestimento(roi.custoImplementacao);
+    const quickWins = getQuickWinsPriorizados();
+    const mensagemPrioridade = getMensagemPorPrioridade();
     switch(currentStep) {
       case 0:
         return (
@@ -848,10 +460,10 @@ const BusinessCaseBuilder = () => {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
-                  placeholder="joao@empresa.com"
+                  placeholder="joao.silva@empresa.com"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
                   WhatsApp *
@@ -864,7 +476,7 @@ const BusinessCaseBuilder = () => {
                   placeholder="(11) 99999-9999"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
                   Empresa *
@@ -880,7 +492,7 @@ const BusinessCaseBuilder = () => {
               
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Área de Atuação *
+                  Área de Atuação
                 </label>
                 <select
                   value={formData.area}
@@ -888,15 +500,14 @@ const BusinessCaseBuilder = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
                 >
                   <option value="tributaria">Tributária</option>
-                  <option value="fiscal">Fiscal</option>
                   <option value="auditoria">Auditoria</option>
-                  <option value="compliance">Compliance</option>
+                  <option value="compliance">Fiscal Compliance</option>
                 </select>
               </div>
               
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Seu Cargo *
+                  Seu Cargo
                 </label>
                 <select
                   value={formData.cargo}
@@ -997,7 +608,7 @@ const BusinessCaseBuilder = () => {
               
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Número de Processos Críticos
+                  Número de Processos Mensais
                 </label>
                 <input
                   type="number"
@@ -1006,9 +617,6 @@ const BusinessCaseBuilder = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#032c62] focus:border-transparent"
                   min="1"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Usado para calcular complexidade do projeto
-                </p>
               </div>
               
               <div>
@@ -1023,9 +631,6 @@ const BusinessCaseBuilder = () => {
                   min="0.5"
                   step="0.5"
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Usado para validação cruzada do ROI
-                </p>
               </div>
             </div>
             
@@ -1079,11 +684,6 @@ const BusinessCaseBuilder = () => {
                   Não
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                {formData.errosFrequentes 
-                  ? '⚠️ Erros frequentes aumentam o custo atual em ~15% por retrabalho'
-                  : '✓ Sem erros frequentes - cálculo baseado apenas em tempo manual'}
-              </p>
             </div>
           </div>
         );
@@ -1107,247 +707,38 @@ const BusinessCaseBuilder = () => {
               </div>
             </div>
             
-            {/* Cards de Métricas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-[#032c62] to-[#17203c] rounded-xl p-6 text-white shadow-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-5 border border-blue-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-300 text-sm font-medium">Economia Mensal</span>
-                  <Calculator className="w-5 h-5 text-gray-400" />
+                  <h3 className="text-sm font-semibold text-blue-900">Tempo de Resposta</h3>
+                  <TrendingUp className="w-5 h-5 text-blue-600" />
                 </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-gray-300 text-sm">
-                  Redução de {roi.benchmark.reducaoTempo}% em atividades manuais
-                </div>
+                <p className="text-3xl font-bold text-blue-700">{roi.benchmark.reducaoTempo}%</p>
+                <p className="text-xs text-blue-600 mt-1">Redução baseada em benchmark</p>
+                <p className="text-xs text-blue-800 mt-2 font-medium">Área: {roi.benchmark.nome}</p>
               </div>
               
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-5 border border-green-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-green-100 text-sm font-medium">Economia Anual</span>
-                  <TrendingUp className="w-5 h-5 text-green-200" />
+                  <h3 className="text-sm font-semibold text-green-900">Redução de Erros</h3>
+                  <Target className="w-5 h-5 text-green-600" />
                 </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-green-100 text-sm">
-                  Retorno em {roi.payback.toFixed(1)} meses
-                </div>
+                <p className="text-3xl font-bold text-green-700">{roi.benchmark.reducaoErros}%</p>
+                <p className="text-xs text-green-600 mt-1">Processos auditáveis e precisos</p>
+                <p className="text-xs text-green-800 mt-2 font-medium">Área: {roi.benchmark.nome}</p>
               </div>
               
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-5 border border-purple-200">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
-                  <Target className="w-5 h-5 text-purple-200" />
+                  <h3 className="text-sm font-semibold text-purple-900">Ganho em Velocidade</h3>
+                  <CheckCircle className="w-5 h-5 text-purple-600" />
                 </div>
-                <div className="text-3xl font-bold mb-1">
-                  {roi.roiAnual.toFixed(0)}%
-                </div>
-                <div className="text-purple-100 text-sm">
-                  Retorno sobre investimento
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-orange-100 text-sm font-medium">Investimento</span>
-                  <Download className="w-5 h-5 text-orange-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.custoImplementacao.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-orange-100 text-sm">
-                  Complexidade: {roi.complexidadeProjeto}
-                </div>
-              </div>
-
-              {/* NOVO: Card de Economia por Processo */}
-              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-lg md:col-span-2">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-teal-100 text-sm font-medium">Economia por Processo</span>
-                  <Calculator className="w-5 h-5 text-teal-200" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-2xl font-bold mb-1">
-                      R$ {roi.economiaPorProcessoMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                    </div>
-                    <div className="text-teal-100 text-xs">
-                      Por processo ({formData.numeroProcessos} processos)
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold mb-1">
-                      R$ {roi.investimentoPorProcesso.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                    </div>
-                    <div className="text-teal-100 text-xs">
-                      Investimento por processo
-                    </div>
-                  </div>
-                </div>
+                <p className="text-3xl font-bold text-purple-700">{roi.benchmark.ganhoVelocidade}%</p>
+                <p className="text-xs text-purple-600 mt-1">Entregas mais rápidas</p>
+                <p className="text-xs text-purple-800 mt-2 font-medium">Área: {roi.benchmark.nome}</p>
               </div>
             </div>
-
-            {/* NOVO: Metodologia de Cálculo com Validação Cruzada */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <button
-                onClick={() => setShowMethodology(!showMethodology)}
-                className="w-full flex items-center justify-between text-left hover:bg-gray-100 p-3 rounded-lg transition-colors"
-              >
-                <h3 className="text-lg font-semibold text-gray-800">Metodologia de Cálculo (Validação Cruzada)</h3>
-                <span className="text-gray-600">
-                  {showMethodology ? '▲' : '▼'}
-                </span>
-              </button>
-              
-              {showMethodology && (
-                <div className="space-y-4 mt-4">
-                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
-                    <h4 className="font-semibold text-blue-900 mb-2">🔍 Precisão com Dupla Validação</h4>
-                    <p className="text-sm text-blue-800 mb-3">
-                      Usamos dois métodos independentes e calculamos a média para maior precisão:
-                    </p>
-                  </div>
-
-                  <div className="bg-white p-4 rounded border border-gray-200">
-                    <p className="font-medium text-gray-800 mb-2">📊 Método 1: Por % de Tempo</p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {formData.numProfissionais} profissionais × 160h/mês × {formData.percentualAtividadesManuais}% × R$ {formData.custoPorHora} × {roi.coeficienteEsforco} (coef.)
-                    </p>
-                    <p className="text-lg font-bold text-[#032c62]">
-                      = R$ {roi.custoAtualMensalPorTempo.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                    </p>
-                  </div>
-
-                  <div className="bg-white p-4 rounded border border-gray-200">
-                    <p className="font-medium text-gray-800 mb-2">⚙️ Método 2: Por Processos</p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      {formData.numeroProcessos} processos × {formData.tempoMedioProcesso}h × R$ {formData.custoPorHora} × 4.33 (semanas/mês) × {roi.coeficienteEsforco}
-                    </p>
-                    <p className="text-lg font-bold text-[#032c62]">
-                      = R$ {roi.custoAtualMensalPorProcessos.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                    </p>
-                  </div>
-
-                  <div className="bg-green-50 p-4 rounded border-2 border-green-300">
-                    <p className="font-medium text-green-900 mb-2">✅ Custo Validado (Média)</p>
-                    <p className="text-2xl font-bold text-green-700">
-                      R$ {roi.custoAtualMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                    </p>
-                  </div>
-
-                  {formData.errosFrequentes && (
-                    <div className="bg-red-50 p-4 rounded border-2 border-red-300">
-                      <p className="font-medium text-red-900 mb-2">⚠️ Custo Adicional de Erros</p>
-                      <p className="text-sm text-red-700 mb-2">
-                        Retrabalho por erros frequentes: +15%
-                      </p>
-                      <p className="text-lg font-bold text-red-700">
-                        + R$ {roi.custoErros.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                      </p>
-                      <p className="text-xl font-bold text-red-900 mt-2 pt-2 border-t border-red-200">
-                        Custo Total: R$ {roi.custoTotal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="bg-white p-4 rounded border border-gray-200">
-                    <p className="font-medium text-gray-800 mb-2">💰 Economia com Automação</p>
-                    <p className="text-sm text-gray-600 mb-2">
-                      R$ {roi.custoTotal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})} × {roi.benchmark.reducaoTempo}% (benchmark {roi.benchmark.nome})
-                    </p>
-                    <p className="text-2xl font-bold text-green-600">
-                      = R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* NOVO: Análise de Complexidade do Projeto */}
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <Award className="w-6 h-6 text-blue-700 mr-2" />
-                Análise de Complexidade do Projeto
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
-                  <p className="text-sm text-gray-600 mb-1">Complexidade</p>
-                  <p className="text-2xl font-bold text-blue-700">{roi.complexidadeProjeto}</p>
-                  <p className="text-xs text-gray-500 mt-1">{formData.numeroProcessos} processos</p>
-                </div>
-                
-                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
-                  <p className="text-sm text-gray-600 mb-1">Tempo Estimado</p>
-                  <p className="text-2xl font-bold text-blue-700">{roi.tempoTotal} semanas</p>
-                  <p className="text-xs text-gray-500 mt-1">≈ {(roi.tempoTotal / 4.33).toFixed(1)} meses</p>
-                </div>
-                
-                <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
-                  <p className="text-sm text-gray-600 mb-1">Estratégia</p>
-                  <p className="text-xl font-bold text-blue-700">{roi.estrategia}</p>
-                  <p className="text-xs text-gray-500 mt-1">{roi.fasesImplementacao.length} fase(s)</p>
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-semibold text-gray-700">Fases de Implementação:</p>
-                {roi.fasesImplementacao.map((fase, index) => (
-                  <div key={index} className="bg-white rounded-lg p-3 border-l-4 border-blue-500">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-800">Fase {fase.fase}</span>
-                      <span className="text-sm text-blue-600">{fase.duracao}</span>
-                    </div>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {fase.processos} processos - {fase.descricao}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 bg-white rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Detalhado:</p>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Discovery:</span>
-                    <span className="font-semibold text-gray-800">{roi.tempoDiscovery} semanas</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Desenvolvimento:</span>
-                    <span className="font-semibold text-gray-800">{roi.tempoDev} semanas</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600">Capacitação:</span>
-                    <span className="font-semibold text-gray-800">{roi.tempoCapacitacao} semanas</span>
-                  </div>
-                  <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
-                    <span className="font-semibold text-gray-700">Total:</span>
-                    <span className="font-bold text-purple-700">{roi.tempoTotal} semanas</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* NOVO: Alertas de Viabilidade */}
-            {roi.alertas.length > 0 && (
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                <div className="flex items-start">
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-yellow-900 mb-2">⚠️ Pontos de Atenção</h4>
-                    <ul className="space-y-1">
-                      {roi.alertas.map((alerta, index) => (
-                        <li key={index} className="text-sm text-yellow-800">
-                          • {alerta.mensagem}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            )}
-
+            
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-2">
                 Qual a Prioridade desta Automação?
@@ -1357,69 +748,35 @@ const BusinessCaseBuilder = () => {
                   onClick={() => handleInputChange('prioridadeAutomacao', 'baixa')}
                   className={`px-4 py-3 rounded-lg border-2 transition-all ${
                     formData.prioridadeAutomacao === 'baixa'
-                      ? 'bg-blue-50 text-blue-700 border-blue-300 font-semibold'
+                      ? 'bg-blue-50 text-blue-700 border-blue-300 ring-2 ring-blue-200'
                       : 'bg-white text-gray-700 border-gray-300'
                   }`}
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">💡</div>
-                    <div className="text-sm">Baixa</div>
-                  </div>
+                  <div className="font-semibold">💡 Baixa</div>
+                  <div className="text-xs mt-1">Planejamento</div>
                 </button>
                 <button
                   onClick={() => handleInputChange('prioridadeAutomacao', 'media')}
                   className={`px-4 py-3 rounded-lg border-2 transition-all ${
                     formData.prioridadeAutomacao === 'media'
-                      ? 'bg-orange-50 text-orange-700 border-orange-300 font-semibold'
+                      ? 'bg-orange-50 text-orange-700 border-orange-300 ring-2 ring-orange-200'
                       : 'bg-white text-gray-700 border-gray-300'
                   }`}
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">⚠️</div>
-                    <div className="text-sm">Média</div>
-                  </div>
+                  <div className="font-semibold">⚠️ Média</div>
+                  <div className="text-xs mt-1">90 dias</div>
                 </button>
                 <button
                   onClick={() => handleInputChange('prioridadeAutomacao', 'alta')}
                   className={`px-4 py-3 rounded-lg border-2 transition-all ${
                     formData.prioridadeAutomacao === 'alta'
-                      ? 'bg-red-50 text-red-700 border-red-300 font-semibold'
+                      ? 'bg-red-50 text-red-700 border-red-300 ring-2 ring-red-200'
                       : 'bg-white text-gray-700 border-gray-300'
                   }`}
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">🚨</div>
-                    <div className="text-sm">Alta</div>
-                  </div>
+                  <div className="font-semibold">🚨 Alta</div>
+                  <div className="text-xs mt-1">Urgente</div>
                 </button>
-              </div>
-              <p className="text-xs text-gray-500 mt-2">
-                {formData.errosFrequentes 
-                  ? '💡 Auto-selecionada como "Alta" devido a erros frequentes'
-                  : '💡 Auto-selecionada como "Média" - você pode ajustar conforme necessário'}
-              </p>
-            </div>
-
-            {/* GRÁFICO: Distribuição do Tempo */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <svg className="w-6 h-6 text-[#032c62] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-                </svg>
-                Distribuição do Tempo da Equipe Hoje
-              </h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Visualização de como o tempo da equipe é atualmente distribuído entre tarefas manuais e trabalho estratégico.
-              </p>
-              <div className="chart-container">
-                <canvas id="chartPizzaTempo"></canvas>
-              </div>
-              <div className="mt-4 bg-red-50 rounded-lg p-4 border-l-4 border-red-500">
-                <p className="text-sm text-red-900">
-                  <strong>Impacto:</strong> {formData.percentualAtividadesManuais}% do tempo da equipe está sendo desperdiçado 
-                  em tarefas que podem ser automatizadas! Com a automação, esse tempo volta para atividades de maior valor.
-                </p>
               </div>
             </div>
           </div>
@@ -1429,152 +786,190 @@ const BusinessCaseBuilder = () => {
         return (
           <div className="space-y-6">
             <div className="bg-[#032c62] rounded-lg px-6 py-4 -mx-8 mb-6 shadow-md">
-              <h2 className="text-2xl font-bold text-white">Plano de Ação</h2>
+              <h2 className="text-2xl font-bold text-white">Plano de Implementação</h2>
             </div>
 
-            {/* SITUAÇÃO CRÍTICA IDENTIFICADA */}
-            <div className={`${mensagemPrioridade.bgColor} border-l-4 ${mensagemPrioridade.borderColor} rounded-lg p-6`}>
-              <div className="flex items-start">
-                <div className="flex-shrink-0 mr-4">
-                  <div className={`w-12 h-12 ${mensagemPrioridade.bgColor} rounded-full flex items-center justify-center text-2xl`}>
-                    {formData.prioridadeAutomacao === 'alta' ? '🚨' : formData.prioridadeAutomacao === 'media' ? '⚠️' : '💡'}
+            {/* Timeline Personalizada */}
+            <div className={`rounded-xl p-5 border-l-4 ${mensagemPrioridade.bgColor} ${mensagemPrioridade.borderColor}`}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className={`font-bold text-xl ${mensagemPrioridade.textColor}`}>
+                  {mensagemPrioridade.titulo}
+                </h3>
+                <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${modeloInvestimento.badgeColor}`}>
+                  {modeloInvestimento.badge}
+                </span>
+              </div>
+              <p className="text-sm text-gray-700 mb-4">{mensagemPrioridade.subtitulo}</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="bg-white bg-opacity-50 rounded-lg p-3">
+                  <div className="flex items-center mb-1">
+                    <Clock className="w-4 h-4 mr-2 text-gray-600" />
+                    <span className="text-xs font-semibold text-gray-600">TIMELINE TOTAL</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{timeline.total} semanas</p>
+                </div>
+                <div className="bg-white bg-opacity-50 rounded-lg p-3">
+                  <div className="flex items-center mb-1">
+                    <Calculator className="w-4 h-4 mr-2 text-gray-600" />
+                    <span className="text-xs font-semibold text-gray-600">INVESTIMENTO</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">R$ {modeloInvestimento.investimento.toLocaleString('pt-BR')}</p>
+                </div>
+                <div className="bg-white bg-opacity-50 rounded-lg p-3">
+                  <div className="flex items-center mb-1">
+                    <Zap className="w-4 h-4 mr-2 text-gray-600" />
+                    <span className="text-xs font-semibold text-gray-600">MODELO</span>
+                  </div>
+                  <p className="text-2xl font-bold text-gray-800">{modeloInvestimento.tipo}</p>
+                </div>
+              </div>
+              
+              <p className="text-xs text-gray-600 italic">{timeline.nota}</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-white border-l-4 border-[#032c62] rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-[#032c62] text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    1
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Discovery & Mapeamento</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: {timeline.discovery} semanas</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Análise detalhada dos processos atuais</li>
+                      <li>• Identificação de pontos críticos de automação</li>
+                      <li>• Definição de prioridades e quick wins</li>
+                    </ul>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className={`text-xl font-bold ${mensagemPrioridade.textColor} mb-1`}>
-                    {mensagemPrioridade.titulo}
-                  </h3>
-                  <p className={`text-sm ${mensagemPrioridade.textColor} mb-3`}>
-                    {mensagemPrioridade.subtitulo}
-                  </p>
-                  <div className="space-y-2">
-                    {formData.errosFrequentes && (
-                      <p className={`text-sm ${mensagemPrioridade.textColor} flex items-center`}>
-                        <AlertTriangle className="w-4 h-4 mr-2" />
-                        Erros frequentes detectados - aumenta urgência da automação
+              </div>
+              
+              <div className="bg-white border-l-4 border-blue-500 rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    2
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Desenvolvimento & Testes</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: {timeline.desenvolvimento} semanas</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Desenvolvimento de automações priorizadas</li>
+                      <li>• Integração com sistemas existentes</li>
+                      <li>• Testes de validação e ajustes</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border-l-4 border-green-500 rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    3
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Implantação & Capacitação</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: {timeline.implantacao} semanas</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Deploy em ambiente de produção</li>
+                      <li>• Treinamento da equipe</li>
+                      <li>• Documentação e procedimentos</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-white border-l-4 border-purple-500 rounded-r-lg p-4 shadow">
+                <div className="flex items-start">
+                  <div className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-4 flex-shrink-0 text-sm">
+                    4
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-800 mb-1">Monitoramento & Otimização</h3>
+                    <p className="text-sm text-gray-600 mb-2">Duração: Contínuo</p>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      <li>• Acompanhamento de performance</li>
+                      <li>• Ajustes e melhorias contínuas</li>
+                      <li>• Expansão gradual do escopo</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modelo de Investimento */}
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Modelo de Investimento: {modeloInvestimento.tipo}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-semibold text-sm text-gray-700 mb-2">Condições Incluídas:</h4>
+                  <ul className="space-y-1">
+                    {modeloInvestimento.condicoes.map((condicao, idx) => (
+                      <li key={idx} className="text-sm text-gray-600 flex items-start">
+                        <CheckCircle className="w-4 h-4 text-green-600 mr-2 flex-shrink-0 mt-0.5" />
+                        {condicao}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <div className="bg-white rounded-lg p-4">
+                    <p className="text-xs text-gray-600 mb-1">Investimento Total</p>
+                    <p className="text-3xl font-bold text-gray-800">
+                      R$ {modeloInvestimento.investimento.toLocaleString('pt-BR')}
+                    </p>
+                    {modeloInvestimento.desconto > 0 && (
+                      <p className="text-sm text-green-600 font-semibold mt-1">
+                        Economia de {modeloInvestimento.desconto}%
                       </p>
                     )}
-                    <p className={`text-sm ${mensagemPrioridade.textColor} flex items-center`}>
-                      <Calculator className="w-4 h-4 mr-2" />
-                      Economia potencial: R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                    </p>
-                    <p className={`text-sm ${mensagemPrioridade.textColor} flex items-center`}>
-                      <Clock className="w-4 h-4 mr-2" />
-                      Payback: {roi.payback.toFixed(1)} meses
-                    </p>
+                    <p className="text-xs text-gray-500 mt-2 italic">{modeloInvestimento.observacao}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Timeline */}
-            <div className="bg-white rounded-xl border-2 border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <Clock className="w-6 h-6 text-[#032c62] mr-2" />
-                Timeline de Implementação
-              </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="w-16 h-16 rounded-full bg-[#032c62] text-white flex items-center justify-center font-bold text-lg mr-4 flex-shrink-0">
-                    {timeline.discovery}s
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800">Discovery e Mapeamento</h4>
-                    <p className="text-sm text-gray-600">Identificação de processos e definição de escopo</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="w-16 h-16 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg mr-4 flex-shrink-0">
-                    {timeline.desenvolvimento}s
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800">Desenvolvimento de Workflows</h4>
-                    <p className="text-sm text-gray-600">Construção e testes dos processos automatizados</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start">
-                  <div className="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-lg mr-4 flex-shrink-0">
-                    {timeline.implantacao}s
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-800">Implantação e Go-Live</h4>
-                    <p className="text-sm text-gray-600">Capacitação da equipe e entrada em produção</p>
-                  </div>
-                </div>
+            {/* Quick Wins Priorizados */}
+            <div className="bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl p-5 border border-amber-200">
+              <div className="flex items-center mb-4">
+                <Zap className="w-6 h-6 text-amber-600 mr-2" />
+                <h3 className="text-lg font-bold text-gray-800">
+                  Quick Wins Priorizados
+                  {formData.prioridadeAutomacao === 'alta' && ' (Por Velocidade)'}
+                  {formData.prioridadeAutomacao === 'media' && ' (Por ROI)'}
+                  {formData.prioridadeAutomacao === 'baixa' && ' (Por Impacto)'}
+                </h3>
               </div>
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-700 font-semibold">Tempo Total:</span>
-                  <span className="text-2xl font-bold text-[#032c62]">{timeline.total} semanas</span>
-                </div>
-                <p className="text-sm text-gray-600 mt-2">{timeline.nota}</p>
-              </div>
-            </div>
-
-            {/* Entregas Principais */}
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Principais Entregas</h3>
               <div className="space-y-3">
-                {timeline.entregas.map((entrega, index) => (
-                  <div key={index} className="flex items-center bg-white rounded-lg p-3 border border-blue-200">
-                    <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0" />
-                    <p className="text-sm text-gray-700">{entrega}</p>
+                {quickWins.map((win, idx) => (
+                  <div key={idx} className="bg-white rounded-lg p-4 border border-amber-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-800 mb-1">{win.titulo}</h4>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="text-green-700 font-semibold">
+                            💰 R$ {win.economia.toLocaleString('pt-BR')}/mês
+                          </span>
+                          <span className="text-blue-700">
+                            ⏱️ {win.tempo} semanas
+                          </span>
+                          <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                            win.impacto === 'ALTO' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                          }`}>
+                            {win.impacto}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-2xl font-bold text-amber-600">#{idx + 1}</div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* Fatores Críticos */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
-                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                  <CheckCircle className="w-5 h-5 text-green-600 mr-2" />
-                  Fatores Críticos de Sucesso
-                </h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    Patrocínio executivo claro
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    Definição de métricas de sucesso
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    Envolvimento da equipe desde o início
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-green-600 mr-2">✓</span>
-                    Comunicação transparente
-                  </li>
-                </ul>
-              </div>
-
-              <div className="bg-white rounded-lg p-4 border-2 border-gray-200">
-                <h4 className="font-semibold text-gray-800 mb-3 flex items-center">
-                  <AlertTriangle className="w-5 h-5 text-yellow-600 mr-2" />
-                  Riscos e Mitigações
-                </h4>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">⚠</span>
-                    Resistência → Change management
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">⚠</span>
-                    Qualidade dados → Governança
-                  </li>
-                  <li className="flex items-start">
-                    <span className="text-red-500 mr-2">⚠</span>
-                    Dependência → Capacitação interna
-                  </li>
-                </ul>
-              </div>
+              <p className="text-xs text-gray-600 mt-3 italic">
+                * Quick wins ordenados por {formData.prioridadeAutomacao === 'alta' ? 'velocidade de implementação' : 
+                  formData.prioridadeAutomacao === 'media' ? 'retorno financeiro' : 'facilidade de implementação'}
+              </p>
             </div>
           </div>
         );
@@ -1582,312 +977,212 @@ const BusinessCaseBuilder = () => {
       case 4:
         return (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-[#032c62] to-[#17203c] rounded-xl p-8 text-white">
-              <h2 className="text-3xl font-bold mb-2">Business Case Completo</h2>
-              <p className="text-gray-300">Automação de Processos - {getBenchmark().nome}</p>
+            <div className="bg-gradient-to-r from-[#032c62] to-[#17203c] rounded-lg px-6 py-5 -mx-8 mb-6 shadow-lg">
+              <h2 className="text-3xl font-bold text-white mb-1">Business Case</h2>
+              <p className="text-blue-200 text-sm">Automação de Processos - {formData.empresa}</p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
-              {/* Resumo Executivo */}
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Resumo Executivo</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-gray-600">Gestor: <span className="font-semibold text-gray-800">{formData.nomeGestor}</span></p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Cargo: <span className="font-semibold text-gray-800">{formData.cargo.charAt(0).toUpperCase() + formData.cargo.slice(1)}</span></p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Área: <span className="font-semibold text-gray-800">{getBenchmark().nome}</span></p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Empresa: <span className="font-semibold text-gray-800">{formData.empresa}</span></p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Prioridade: <span className={`font-semibold ${
-                      formData.prioridadeAutomacao === 'alta' ? 'text-red-700' :
-                      formData.prioridadeAutomacao === 'media' ? 'text-orange-700' :
-                      'text-blue-700'
-                    }`}>
-                      {formData.prioridadeAutomacao.toUpperCase()}
-                    </span></p>
-                  </div>
-                  <div>
-                    <p className="text-gray-600">Erros Frequentes: <span className={`font-semibold ${formData.errosFrequentes ? 'text-red-700' : 'text-green-700'}`}>
-                      {formData.errosFrequentes ? 'Sim' : 'Não'}
-                    </span></p>
-                  </div>
+            {/* CONTEXTO DO PROJETO - MOVIDO PARA O INÍCIO */}
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-5 border border-indigo-200">
+              <h3 className="text-lg font-semibold text-indigo-900 mb-3">Contexto do Projeto</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <p className="text-indigo-600 font-medium">Gestor</p>
+                  <p className="text-indigo-900">{formData.nomeGestor}</p>
                 </div>
-              </div>
-
-              {/* Situação Atual */}
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Situação Atual</h3>
-                <div className="bg-red-50 border-l-4 border-red-500 p-4">
-                  <p className="text-sm font-medium text-red-900 mb-3">Desafios Identificados:</p>
-                  <ul className="space-y-2 text-sm text-red-800">
-                    <li>• Equipe gasta {formData.percentualAtividadesManuais}% do tempo com tarefas manuais</li>
-                    <li>• {formData.numeroProcessos} processos críticos gerando {roi.processosPorProfissional.toFixed(1)} processos/profissional</li>
-                    <li>• {formData.sistemasUtilizados.length} sistemas diferentes (complexidade {roi.coeficienteEsforco}x)</li>
-                    <li>• Custo mensal validado: R$ {roi.custoAtualMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</li>
-                    {formData.errosFrequentes && (
-                      <li className="font-semibold">• ⚠️ Erros frequentes adicionam R$ {roi.custoErros.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês em retrabalho</li>
-                    )}
-                  </ul>
+                <div>
+                  <p className="text-indigo-600 font-medium">Empresa</p>
+                  <p className="text-indigo-900">{formData.empresa}</p>
                 </div>
-
-                {/* GRÁFICO: Antes vs Depois */}
-                <div className="mt-6">
-                  <h4 className="text-md font-semibold text-gray-800 mb-4 flex items-center">
-                    <svg className="w-5 h-5 text-[#032c62] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Comparação: Cenário Atual vs Com Automação
-                  </h4>
-                  <div className="chart-container">
-                    <canvas id="chartAntesDepois"></canvas>
-                  </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Área</p>
+                  <p className="text-indigo-900">{roi.benchmark.nome}</p>
                 </div>
-              </div>
-            </div>
-
-            {/* SITUAÇÃO CRÍTICA NO BUSINESS CASE */}
-            <div className={`${mensagemPrioridade.bgColor} border-l-4 ${mensagemPrioridade.borderColor} rounded-lg p-6`}>
-              <div className="flex items-start">
-                <div className="flex-shrink-0 mr-4">
-                  <div className={`w-12 h-12 ${mensagemPrioridade.bgColor} rounded-full flex items-center justify-center text-2xl`}>
-                    {formData.prioridadeAutomacao === 'alta' ? '🚨' : formData.prioridadeAutomacao === 'media' ? '⚠️' : '💡'}
-                  </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Profissionais</p>
+                  <p className="text-indigo-900">{formData.numProfissionais} pessoas</p>
                 </div>
-                <div className="flex-1">
-                  <h3 className={`text-xl font-bold ${mensagemPrioridade.textColor} mb-1`}>
-                    {mensagemPrioridade.titulo}
-                  </h3>
-                  <p className={`text-sm ${mensagemPrioridade.textColor} mb-3`}>
-                    Prioridade: <strong>{formData.prioridadeAutomacao.toUpperCase()}</strong> | 
-                    {formData.errosFrequentes ? ' Erros frequentes detectados' : ' Sem erros frequentes'}
+                <div>
+                  <p className="text-indigo-600 font-medium">Email</p>
+                  <p className="text-indigo-900 text-xs">{formData.email}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">WhatsApp</p>
+                  <p className="text-indigo-900">{formData.whatsapp}</p>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Prioridade</p>
+                  <p className="text-indigo-900 font-semibold">
+                    {formData.prioridadeAutomacao === 'alta' ? '🚨 Alta' : 
+                     formData.prioridadeAutomacao === 'media' ? '⚠️ Média' : '💡 Baixa'}
                   </p>
-                  <div className="grid grid-cols-2 gap-4 mt-3">
-                    <div className={`bg-white bg-opacity-50 rounded-lg p-3`}>
-                      <p className="text-xs text-gray-700">Economia Potencial</p>
-                      <p className={`text-xl font-bold ${mensagemPrioridade.textColor}`}>
-                        R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                      </p>
-                    </div>
-                    <div className={`bg-white bg-opacity-50 rounded-lg p-3`}>
-                      <p className="text-xs text-gray-700">Payback</p>
-                      <p className={`text-xl font-bold ${mensagemPrioridade.textColor}`}>
-                        {roi.payback.toFixed(1)} meses
-                      </p>
-                    </div>
-                  </div>
+                </div>
+                <div>
+                  <p className="text-indigo-600 font-medium">Timeline</p>
+                  <p className="text-indigo-900">{timeline.total} semanas</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
-              {/* Análise Financeira */}
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Análise Financeira</h3>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <div className="bg-green-50 rounded-lg p-4 text-center border border-green-200">
-                    <p className="text-xs text-gray-600 mb-1">Economia Mensal</p>
-                    <p className="text-xl font-bold text-green-700">
-                      R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                    </p>
+            {/* Métricas Financeiras */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 shadow">
+                <p className="text-xs font-semibold text-gray-600 uppercase mb-1">Situação Atual</p>
+                <p className="text-3xl font-bold text-gray-800 mb-1">
+                  R$ {roi.custoAtualMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-gray-600">Custo mensal com processos manuais</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-5 border border-green-200 shadow">
+                <p className="text-xs font-semibold text-green-700 uppercase mb-1">Economia Mensal</p>
+                <p className="text-3xl font-bold text-green-700 mb-1">
+                  R$ {roi.economiaMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-green-600">Redução de {roi.benchmark.reducaoTempo}% (benchmark {roi.benchmark.nome})</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200 shadow">
+                <p className="text-xs font-semibold text-blue-700 uppercase mb-1">Economia Anual</p>
+                <p className="text-3xl font-bold text-blue-700 mb-1">
+                  R$ {roi.economiaAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                </p>
+                <p className="text-xs text-blue-600">Ganho anual projetado</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                  <Calculator className="w-4 h-4 mr-2 text-[#032c62]" />
+                  Investimento & Retorno
+                </h3>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Modelo:</span>
+                    <span className="font-semibold text-gray-800">{modeloInvestimento.tipo}</span>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-4 text-center border border-green-200">
-                    <p className="text-xs text-gray-600 mb-1">Economia Anual</p>
-                    <p className="text-xl font-bold text-green-700">
-                      R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                    </p>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Investimento Inicial:</span>
+                    <span className="font-semibold text-gray-800">R$ {modeloInvestimento.investimento.toLocaleString('pt-BR')}</span>
                   </div>
-                  <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-200">
-                    <p className="text-xs text-gray-600 mb-1">Investimento</p>
-                    <p className="text-xl font-bold text-blue-700">
-                      R$ {roi.custoImplementacao.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">{roi.complexidadeProjeto}</p>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Payback:</span>
+                    <span className="font-semibold text-[#032c62]">{roi.payback.toFixed(1)} meses</span>
                   </div>
-                  <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-200">
-                    <p className="text-xs text-gray-600 mb-1">Payback</p>
-                    <p className="text-xl font-bold text-purple-700">
-                      {roi.payback.toFixed(1)} meses
-                    </p>
+                  <div className="flex justify-between text-sm pt-2 border-t">
+                    <span className="text-gray-600">ROI Anual:</span>
+                    <span className="font-bold text-green-600 text-lg">{roi.roiAnual.toFixed(0)}%</span>
                   </div>
                 </div>
-
-                {/* GRÁFICO: Validação Cruzada */}
-                <div className="mt-6 bg-blue-50 rounded-xl p-6 border-2 border-blue-200">
-                  <h4 className="text-md font-semibold text-blue-900 mb-3 flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                    </svg>
-                    Validação Cruzada dos Cálculos dos Custos
-                  </h4>
-                  <p className="text-sm text-blue-800 mb-4">
-                    Comparação dos dois métodos independentes de cálculo dos custos para maior precisão e credibilidade.
-                  </p>
-                  <div className="chart-container">
-                    <canvas id="chartValidacao"></canvas>
-                  </div>
-                </div>
-
-                <div className="mt-4 bg-teal-50 rounded-lg p-4 border border-teal-200">
-                  <h4 className="font-semibold text-teal-900 mb-2">Economia por Processo</h4>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
+              </div>
+              
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-5 border border-purple-200 shadow">
+                <h3 className="text-sm font-semibold text-purple-900 mb-3">Ganhos Qualitativos - {roi.benchmark.nome}</h3>
+                <div className="space-y-2">
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-teal-700">Mensal por processo:</p>
-                      <p className="font-bold text-teal-900">
-                        R$ {roi.economiaPorProcessoMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                      </p>
+                      <p className="font-medium text-gray-800 text-sm">Redução de até {roi.benchmark.reducaoErros}% em erros</p>
+                      <p className="text-xs text-gray-600">Processos automatizados e auditáveis</p>
                     </div>
+                  </div>
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-teal-700">Investimento por processo:</p>
-                      <p className="font-bold text-teal-900">
-                        R$ {roi.investimentoPorProcesso.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                      </p>
+                      <p className="font-medium text-gray-800 text-sm">Ganho de {roi.benchmark.ganhoVelocidade}% em velocidade</p>
+                      <p className="text-xs text-gray-600">Entregas mais rápidas e confiáveis</p>
                     </div>
                   </div>
-                </div>
-
-                {/* GRÁFICO: Análise de Payback */}
-                <div className="mt-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
-                  <h4 className="text-md font-semibold text-green-900 mb-3 flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    Análise de Payback - Ponto de Equilíbrio
-                  </h4>
-                  <p className="text-sm text-green-800 mb-4">
-                    Visualização de quando o investimento se paga. A linha verde mostra a economia acumulada crescendo até ultrapassar o investimento inicial.
-                  </p>
-                  <div className="chart-container">
-                    <canvas id="chartPayback"></canvas>
-                  </div>
-                  <div className="mt-4 bg-white rounded-lg p-4 border-l-4 border-green-500">
-                    <p className="text-sm text-green-900">
-                      <strong>Ponto de Equilíbrio:</strong> Em {roi.payback.toFixed(1)} meses o investimento está completamente pago. 
-                      A partir daí, toda economia é lucro líquido! ROI anual de {roi.roiAnual.toFixed(0)}%.
-                    </p>
-                  </div>
-                </div>
-
-                {/* GRÁFICO: Evolução da Economia */}
-                <div className="mt-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-6 border-2 border-purple-200">
-                  <h4 className="text-md font-semibold text-purple-900 mb-3 flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                    </svg>
-                    Evolução da Economia ao Longo de 12 Meses
-                  </h4>
-                  <p className="text-sm text-purple-800 mb-4">
-                    Projeção da economia acumulada mês a mês. Veja como o benefício cresce continuamente ao longo do primeiro ano.
-                  </p>
-                  <div className="chart-container">
-                    <canvas id="chartEvolucao"></canvas>
-                  </div>
-                  <div className="mt-4 bg-white rounded-lg p-4 border-l-4 border-purple-500">
-                    <div className="grid grid-cols-3 gap-4 text-center">
-                      <div>
-                        <p className="text-xs text-gray-600">Economia Total Ano 1</p>
-                        <p className="text-lg font-bold text-purple-700">
-                          R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Investimento</p>
-                        <p className="text-lg font-bold text-blue-700">
-                          R$ {roi.custoImplementacao.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-600">Lucro Líquido Ano 1</p>
-                        <p className="text-lg font-bold text-green-700">
-                          R$ {(roi.economiaAnual - roi.custoImplementacao).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                        </p>
-                      </div>
+                  <div className="flex items-start space-x-2">
+                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-gray-800 text-sm">Autonomia da equipe</p>
+                      <p className="text-xs text-gray-600">Capacitação para novos processos</p>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Plano de Implementação */}
-              <div className="border-b pb-4">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Plano de Implementação</h3>
-                
-                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200 mb-4">
-                  <h4 className="font-semibold text-purple-900 mb-2">Estratégia: {roi.estrategia}</h4>
-                  <p className="text-sm text-purple-700 mb-3">
-                    Complexidade {roi.complexidadeProjeto} | Tempo total: {roi.tempoTotal} semanas
-                  </p>
-                  
-                  <div className="space-y-2">
-                    {roi.fasesImplementacao.map((fase, index) => (
-                      <div key={index} className="bg-white rounded p-3 border border-purple-200">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="font-semibold text-gray-800">Fase {fase.fase}</span>
-                          <span className="text-sm text-purple-600">{fase.duracao}</span>
-                        </div>
-                        <p className="text-sm text-gray-600">
-                          {fase.processos} processos - {fase.descricao}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-3">Cronograma Detalhado</h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Discovery:</span>
-                      <span className="font-semibold">{roi.tempoDiscovery} semanas</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Desenvolvimento:</span>
-                      <span className="font-semibold">{roi.tempoDev} semanas</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Capacitação:</span>
-                      <span className="font-semibold">{roi.tempoCapacitacao} semanas</span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-gray-300">
-                      <span className="font-bold text-gray-800">Total:</span>
-                      <span className="font-bold text-[#032c62]">{roi.tempoTotal} semanas</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Próximos Passos */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-4">Próximos Passos</h3>
-                <div className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-[#032c62] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
-                    <p className="text-gray-700 text-sm pt-1">Apresentar business case para stakeholders</p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-[#032c62] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
-                    <p className="text-gray-700 text-sm pt-1">Agendar reunião de discovery com HupData</p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-[#032c62] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">3</div>
-                    <p className="text-gray-700 text-sm pt-1">Definir escopo e cronograma detalhado</p>
-                  </div>
-                  <div className="flex items-start space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-[#032c62] text-white flex items-center justify-center text-sm font-bold flex-shrink-0">4</div>
-                    <p className="text-gray-700 text-sm pt-1">Iniciar fase de mapeamento de processos</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Botões de Ação */}
-            <div className="flex gap-3 justify-center flex-wrap">
+            {/* CASES DE SUCESSO KNIME - INSERIDO ANTES DE PRÓXIMOS PASSOS */}
+            <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl p-6 text-white">
+              <div className="flex items-center mb-4">
+                <Award className="w-8 h-8 mr-3 text-yellow-400" />
+                <h3 className="text-2xl font-bold">Cases de Sucesso com KNIME</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏦 Rabobank</h4>
+                  <p className="text-sm text-blue-100">
+                    Treinou <strong>300 auditores em 2 dias</strong> para usar KNIME em detecção de anomalias 
+                    e anti-lavagem de dinheiro, democratizando analytics avançado
+                  </p>
+                </div>
+
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏦 ING</h4>
+                  <p className="text-sm text-blue-100">
+                    <strong>400 auditores economizam 400h/ano</strong>, reduziram tempo de coleta de dados 
+                    de <strong>8 semanas para acesso instantâneo</strong>
+                  </p>
+                </div>
+
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏭 Tata Steel</h4>
+                  <p className="text-sm text-blue-100">
+                    Economia de tempo de até <strong>95%</strong> ao migrar de Excel para KNIME, 
+                    identificando erros em cálculos e conciliações
+                  </p>
+                </div>
+
+                <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                  <h4 className="font-bold text-yellow-400 mb-2">🏦 Banco BV (HupData)</h4>
+                  <p className="text-sm text-blue-100">
+                    Automatização de <strong>processos de dados em área tributária</strong> com KNIME Business Hub, 
+                    gerando economia significativa
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs text-blue-200 mt-4 text-center italic">
+                Fonte: KNIME Case Studies & HupData Portfolio
+              </p>
+            </div>
+
+            {/* Próximos Passos */}
+            <div>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Próximos Passos</h3>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    1
+                  </div>
+                  <p className="text-gray-700">Apresentar business case para stakeholders e obter aprovação</p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    2
+                  </div>
+                  <p className="text-gray-700">Agendar reunião de descoberta com especialistas HupData</p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    3
+                  </div>
+                  <p className="text-gray-700">Definir escopo e cronograma detalhado do projeto</p>
+                </div>
+                <div className="flex items-center space-x-3 text-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#e8eaf0] flex items-center justify-center text-[#032c62] font-semibold flex-shrink-0">
+                    4
+                  </div>
+                  <p className="text-gray-700">Iniciar fase de mapeamento de processos críticos</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 justify-center">
               <button
                 onClick={() => window.print()}
                 className="px-6 py-3 bg-[#032c62] text-white rounded-lg hover:bg-[#17203c] transition-colors flex items-center gap-2 shadow-lg"
@@ -1898,7 +1193,19 @@ const BusinessCaseBuilder = () => {
               
               <button
                 onClick={() => {
-                  const mailto = `mailto:?subject=Business Case - Automação ${formData.empresa}&body=Confira o business case desenvolvido`;
+                  const body = `Confira o business case desenvolvido para automação de processos na área de ${roi.benchmark.nome}.
+
+Economia Anual Projetada: R$ ${roi.economiaAnual.toLocaleString('pt-BR')}
+ROI: ${roi.roiAnual.toFixed(0)}%
+Payback: ${roi.payback.toFixed(1)} meses
+Prioridade: ${formData.prioridadeAutomacao.toUpperCase()}
+
+Contato: ${formData.nomeGestor}
+Email: ${formData.email}
+WhatsApp: ${formData.whatsapp}
+Empresa: ${formData.empresa}`;
+                  
+                  const mailto = `mailto:?subject=Business Case - ${formData.empresa} - Automação ${roi.benchmark.nome}&body=${encodeURIComponent(body)}`;
                   window.location.href = mailto;
                 }}
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow-lg"
@@ -1907,13 +1214,22 @@ const BusinessCaseBuilder = () => {
                 Compartilhar por Email
               </button>
             </div>
-
-            {/* CTA Final */}
-            <div className="bg-gradient-to-r from-[#17203c] to-[#032c62] rounded-xl p-6 text-white text-center">
-              <p className="text-lg font-semibold mb-2">Pronto para começar?</p>
-              <p className="text-gray-300 text-sm mb-4">Agende uma conversa com nossos especialistas</p>
+            
+            <div className={`rounded-xl p-6 text-white text-center ${
+              formData.prioridadeAutomacao === 'alta' ? 'bg-gradient-to-r from-red-600 to-red-700' :
+              formData.prioridadeAutomacao === 'media' ? 'bg-gradient-to-r from-orange-600 to-orange-700' :
+              'bg-gradient-to-r from-[#17203c] to-[#032c62]'
+            }`}>
+              <p className="text-lg font-semibold mb-2">{mensagemPrioridade.cta}</p>
+              <p className="text-gray-200 text-sm mb-4">
+                {formData.prioridadeAutomacao === 'alta' 
+                  ? `Cada mês de atraso custa R$ ${roi.economiaMensal.toLocaleString('pt-BR')} à ${formData.empresa}`
+                  : 'Agende uma conversa com nossos especialistas'}
+              </p>
               <a
-                href="https://hupdata.com/servicos/auditoria-tax/"
+                href={`https://api.whatsapp.com/send?phone=5511999999999&text=${encodeURIComponent(
+                  `Olá! Gostaria de conversar sobre automação para ${roi.benchmark.nome}. Meu nome é ${formData.nomeGestor} da empresa ${formData.empresa}. Prioridade: ${formData.prioridadeAutomacao.toUpperCase()}`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block px-6 py-2 bg-white text-[#032c62] rounded-lg font-medium hover:bg-gray-100 transition-colors"
@@ -1931,7 +1247,7 @@ const BusinessCaseBuilder = () => {
 
   const canProceed = () => {
     if (currentStep === 0) {
-      return formData.nomeGestor && formData.email && formData.whatsapp && formData.empresa;
+      return formData.nomeGestor && formData.empresa && formData.email && formData.whatsapp;
     }
     return true;
   };
@@ -1950,14 +1266,14 @@ const BusinessCaseBuilder = () => {
         
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="bg-[#032c62] px-6 py-4">
-            <div className="flex justify-between items-center overflow-x-auto">
+            <div className="flex justify-between items-center">
               {steps.map((step, index) => {
                 const Icon = step.icon;
                 return (
                   <div key={step.id} className="flex items-center">
-                    <div className={`flex items-center ${index <= currentStep ? 'text-white' : 'text-gray-400'}`}>
+                    <div className={`flex items-center ${index <= currentStep ? 'text-white' : 'text-gray-300'}`}>
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        index <= currentStep ? 'bg-white text-[#032c62]' : 'bg-[#17203c] text-gray-400'
+                        index <= currentStep ? 'bg-white text-[#032c62]' : 'bg-[#17203c] text-gray-300'
                       }`}>
                         <Icon className="w-5 h-5" />
                       </div>
@@ -1966,7 +1282,7 @@ const BusinessCaseBuilder = () => {
                       </span>
                     </div>
                     {index < steps.length - 1 && (
-                      <ChevronRight className="w-5 h-5 mx-2 text-gray-400" />
+                      <ChevronRight className="w-5 h-5 mx-2 text-gray-300" />
                     )}
                   </div>
                 );
