@@ -596,30 +596,6 @@ const BusinessCaseBuilder = () => {
     return mensagens[formData.prioridadeAutomacao];
   };
 
-  const getTimelinePorPrioridade = () => {
-    const roi = calculateROI();
-    
-    // Usa os valores calculados do ROI
-    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
-    
-    // Entregas baseadas no tempo real
-    const tempoQuickWin = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.3));
-    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
-    
-    return {
-      discovery: roi.tempoDiscovery,
-      desenvolvimento: roi.tempoDev,
-      implantacao: tempoImplantacaoTotal,
-      total: roi.tempoTotal,
-      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
-      entregas: [
-        `Discovery completo em ${roi.tempoDiscovery} semanas`,
-        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
-        `Go-live completo em ${roi.tempoTotal} semanas`
-      ]
-    };
-  };
-
   // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
   const calculateROI = () => {
     const percentualAtividadesManuais = formData.percentualAtividadesManuais || 40;
@@ -840,6 +816,30 @@ const BusinessCaseBuilder = () => {
       
       // Benchmark
       benchmark
+    };
+  };
+
+  const getTimelinePorPrioridade = () => {
+    const roi = calculateROI();
+    
+    // Usa os valores calculados do ROI
+    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
+    
+    // Entregas baseadas no tempo real
+    const tempoQuickWin = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.3));
+    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
+    
+    return {
+      discovery: roi.tempoDiscovery,
+      desenvolvimento: roi.tempoDev,
+      implantacao: tempoImplantacaoTotal,
+      total: roi.tempoTotal,
+      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
+      entregas: [
+        `Discovery completo em ${roi.tempoDiscovery} semanas`,
+        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
+        `Go-live completo em ${roi.tempoTotal} semanas`
+      ]
     };
   };
 
