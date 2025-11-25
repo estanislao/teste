@@ -178,14 +178,44 @@
       // ESTATÍSTICAS
       // ============================================
       
+      // Debug: Mostrar campos do primeiro lead
+      if (leads.length > 0) {
+        console.log('📊 DEBUG - Campos disponíveis no primeiro lead:');
+        Object.keys(leads[0]).forEach(key => {
+          if (key.includes('ROI') || key.includes('Investimento') || key.includes('Economia')) {
+            console.log(`   - "${key}": ${leads[0][key]}`);
+          }
+        });
+      }
+      
       const stats = {
         totalLeads: leads.length,
         investimentoTotal: leads.reduce((sum, lead) => {
-          const valor = parseFloat(lead['ROI - Investimento']) || 0;
+          // Tenta múltiplas variações do nome do campo
+          let valor = parseFloat(lead['ROI - Investimento']) || 
+                      parseFloat(lead['ROI - Investimento (R$)']) ||
+                      parseFloat(lead['Investimento']) ||
+                      parseFloat(lead['Investimento Estimado']) ||
+                      0;
+          
+          // Se o valor vier como string com R$, remove formatação
+          if (typeof lead['ROI - Investimento'] === 'string') {
+            const cleanValue = lead['ROI - Investimento'].replace(/[R$\s.]/g, '').replace(',', '.');
+            valor = parseFloat(cleanValue) || 0;
+          }
+          
+          console.log(`💰 Lead ${lead.Nome}: Investimento = ${valor}`);
           return sum + valor;
         }, 0),
         economiaAnual: leads.reduce((sum, lead) => {
-          const valor = parseFloat(lead['ROI - Economia Anual']) || 0;
+          let valor = parseFloat(lead['ROI - Economia Anual']) || 0;
+          
+          // Se vier como string formatada
+          if (typeof lead['ROI - Economia Anual'] === 'string') {
+            const cleanValue = lead['ROI - Economia Anual'].replace(/[R$\s.]/g, '').replace(',', '.');
+            valor = parseFloat(cleanValue) || 0;
+          }
+          
           return sum + valor;
         }, 0),
         paybackMedio: leads.length > 0 ? leads.reduce((sum, lead) => {
@@ -193,6 +223,12 @@
           return sum + valor;
         }, 0) / leads.length : 0
       };
+      
+      console.log('📈 ESTATÍSTICAS CALCULADAS:');
+      console.log(`   Total Leads: ${stats.totalLeads}`);
+      console.log(`   Investimento Total: R$ ${stats.investimentoTotal.toFixed(2)}`);
+      console.log(`   Economia Anual: R$ ${stats.economiaAnual.toFixed(2)}`);
+      console.log(`   Payback Médio: ${stats.paybackMedio.toFixed(1)} meses`);
       
       // Distribuição por área
       const areas = [...new Set(leads.map(l => l.Área || l['Área'] || 'Não informado'))];
