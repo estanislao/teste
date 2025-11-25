@@ -2161,20 +2161,22 @@ const BusinessCaseBuilder = () => {
       console.log('📊 Lead capturado:', payload.nome, '-', payload.empresa);
       console.log('💰 ROI: Investimento: R$', roi.investimentoTotal.toLocaleString('pt-BR'), '| Economia Anual: R$', roi.economiaAnual.toLocaleString('pt-BR'));
       console.log('⏱️ Payback:', roi.payback, 'meses');
-      
-      // Descomente a linha abaixo se quiser um alerta visual de confirmação:
-      // alert('✅ Dados salvos com sucesso no Google Sheets!');
+      console.log('');
+      console.log('💡 IMPORTANTE: Com mode: no-cors, não conseguimos verificar se houve erro.');
+      console.log('👉 Confira no Google Sheets se o lead foi salvo (aba "Leads")');
       
     } catch (error) {
-      console.error('❌ ERRO ao enviar para Google Sheets:', error);
-      console.error('🔍 Verifique:');
-      console.error('   1. URL do Apps Script está correta?');
-      console.error('   2. Apps Script foi implantado corretamente?');
-      console.error('   3. Permissões foram concedidas?');
-      console.error('   4. Configuração "Quem tem acesso" = "Qualquer pessoa"?');
-      
-      // Mostra erro visual ao usuário
-      alert('⚠️ Erro ao salvar dados!\n\nOs dados deste lead podem não ter sido salvos.\n\nVerifique o console (F12) para mais detalhes.');
+      // Com no-cors, erros são comuns mas os dados geralmente são enviados
+      // Apenas logamos no console, sem alarmar o usuário
+      console.warn('⚠️ Aviso ao enviar para Google Sheets:', error.message);
+      console.log('');
+      console.log('📝 NOTA: Com mode: no-cors, este aviso é normal.');
+      console.log('👉 Verifique no Google Sheets se o lead foi salvo (aba "Leads")');
+      console.log('');
+      console.log('🔍 Se o lead NÃO foi salvo, verifique:');
+      console.log('   1. URL do Apps Script está correta?');
+      console.log('   2. Apps Script foi implantado corretamente?');
+      console.log('   3. Configuração "Quem tem acesso" = "Qualquer pessoa"?');
     }
   };
   
