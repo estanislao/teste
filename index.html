@@ -196,6 +196,27 @@
           { titulo: 'Calendário de Obrigações', economia: 9000, tempo: 2, impacto: 'MEDIO' },
           { titulo: 'Conciliação de Dados', economia: 11000, tempo: 3, impacto: 'ALTO' }
         ]
+      },
+      esg: {
+        nome: 'ESG',
+        reducaoTempo: 68,
+        reducaoErros: 88,
+        ganhoVelocidade: 72,
+        desafiosComuns: [
+          'Coleta de dados de múltiplas fontes',
+          'Consistência e auditabilidade dos dados',
+          'Complexidade de frameworks (GRI, TCFD, IFRS)'
+        ],
+        beneficiosEspecificos: [
+          'Centralização automática de dados ESG de IoT, sensores e sistemas',
+          'Dashboards em tempo real com KPIs de sustentabilidade',
+          'Relatórios padronizados para stakeholders e reguladores'
+        ],
+        quickWins: [
+          { titulo: 'Consolidação de Dados de Emissões', economia: 16000, tempo: 4, impacto: 'ALTO' },
+          { titulo: 'Automação de Relatórios ESG', economia: 13000, tempo: 3, impacto: 'ALTO' },
+          { titulo: 'Monitoramento de Consumo Energético', economia: 9000, tempo: 2, impacto: 'MEDIO' }
+        ]
       }
     };
 
@@ -597,45 +618,24 @@ const BusinessCaseBuilder = () => {
   };
 
   const getTimelinePorPrioridade = () => {
-    const timelines = {
-      alta: {
-        discovery: 2,
-        desenvolvimento: 6,
-        implantacao: 2,
-        total: 10,
-        nota: "Timeline acelerada para atender urgência",
-        entregas: [
-          "Quick win em 3 semanas",
-          "Primeiro processo automatizado em 6 semanas",
-          "Go-live completo em 10 semanas"
-        ]
-      },
-      media: {
-        discovery: 3,
-        desenvolvimento: 8,
-        implantacao: 3,
-        total: 14,
-        nota: "Timeline balanceada entre qualidade e velocidade",
-        entregas: [
-          "Discovery completo em 3 semanas",
-          "Protótipo em 7 semanas",
-          "Go-live completo em 14 semanas"
-        ]
-      },
-      baixa: {
-        discovery: 4,
-        desenvolvimento: 10,
-        implantacao: 4,
-        total: 18,
-        nota: "Timeline otimizada para minimizar disrupção",
-        entregas: [
-          "Planejamento detalhado em 4 semanas",
-          "Implementação gradual em fases",
-          "Go-live completo em 18 semanas"
-        ]
-      }
+    const roi = calculateROI();
+    
+    // Usa os valores calculados do ROI
+    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
+    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
+    
+    return {
+      discovery: roi.tempoDiscovery,
+      desenvolvimento: roi.tempoDev,
+      implantacao: tempoImplantacaoTotal,
+      total: roi.tempoTotal,
+      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
+      entregas: [
+        `Discovery completo em ${roi.tempoDiscovery} semanas`,
+        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
+        `Go-live completo em ${roi.tempoTotal} semanas`
+      ]
     };
-    return timelines[formData.prioridadeAutomacao];
   };
 
   // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
@@ -700,11 +700,47 @@ const BusinessCaseBuilder = () => {
       complexidadeProjeto = 'Muito Alta';
     }
     
-    // ===== TEMPO DE IMPLEMENTAÇÃO BASEADO EM PROCESSOS =====
-    const tempoDiscovery = Math.ceil(numeroProcessos / 5); // 1 semana a cada 5 processos
-    const tempoDev = Math.ceil(numeroProcessos / 2); // 1 semana a cada 2 processos
-    const tempoCapacitacao = 3; // Fixo
-    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao;
+    // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
+    let numeroProfissionais = 1;
+    if (numeroProcessos <= 3) {
+      numeroProfissionais = 1;
+    } else if (numeroProcessos <= 10) {
+      numeroProfissionais = 2;
+    } else {
+      numeroProfissionais = 3;
+    }
+    
+    // ===== TEMPO DE IMPLEMENTAÇÃO APERFEIÇOADO =====
+    // Discovery: baseado no PORTE do projeto (complexidade)
+    let tempoDiscovery = 2;
+    if (complexidadeProjeto === 'Baixa') {
+      tempoDiscovery = 1; // Projeto pequeno
+    } else if (complexidadeProjeto === 'Média') {
+      tempoDiscovery = 2; // Projeto médio
+    } else { // Alta ou Muito Alta
+      tempoDiscovery = 3; // Projeto grande
+    }
+    
+    // Desenvolvimento: Base 3 semanas por processo
+    const tempoBasePorProcesso = 3;
+    const multiplicadorSistemas = coeficienteEsforco; // 1.0 a 1.08
+    const multiplicadorErros = formData.errosFrequentes ? 1.2 : 1.0; // +20% se há erros
+    
+    // Tempo total de desenvolvimento (distribuído entre profissionais)
+    const tempoTotalProcessos = numeroProcessos * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros;
+    const tempoDev = Math.ceil(tempoTotalProcessos / numeroProfissionais);
+    
+    // Capacitação: baseado no PORTE do projeto
+    let tempoCapacitacao = 2;
+    if (complexidadeProjeto === 'Alta' || complexidadeProjeto === 'Muito Alta') {
+      tempoCapacitacao = 3; // Projetos grandes precisam mais capacitação
+    }
+    
+    // Go-Live: fixo
+    const tempoGoLive = 1;
+    
+    // Total
+    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao + tempoGoLive;
     
     // ===== ESTRATÉGIA DE PRIORIZAÇÃO =====
     let estrategia = '';
@@ -796,7 +832,12 @@ const BusinessCaseBuilder = () => {
       tempoDiscovery,
       tempoDev,
       tempoCapacitacao,
+      tempoGoLive,
       tempoTotal,
+      numeroProfissionais,
+      tempoBasePorProcesso: 3,
+      multiplicadorSistemas: coeficienteEsforco,
+      multiplicadorErros: formData.errosFrequentes ? 1.2 : 1.0,
       
       // Estratégia
       estrategia,
@@ -812,11 +853,10 @@ const BusinessCaseBuilder = () => {
     };
   };
 
-  const roi = calculateROI();
-  const timeline = getTimelinePorPrioridade();
-  const mensagemPrioridade = getMensagemPorPrioridade();
-
   const renderStepContent = () => {
+    const roi = calculateROI();
+    const timeline = getTimelinePorPrioridade();
+    const mensagemPrioridade = getMensagemPorPrioridade();
     switch(currentStep) {
       case 0:
         return (
@@ -891,6 +931,7 @@ const BusinessCaseBuilder = () => {
                   <option value="fiscal">Fiscal</option>
                   <option value="auditoria">Auditoria</option>
                   <option value="compliance">Compliance</option>
+                  <option value="esg">ESG</option>
                 </select>
               </div>
               
@@ -1307,7 +1348,7 @@ const BusinessCaseBuilder = () => {
               </div>
 
               <div className="mt-4 bg-white rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Detalhado:</p>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Estimado:</p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Discovery:</span>
@@ -1321,9 +1362,17 @@ const BusinessCaseBuilder = () => {
                     <span className="text-gray-600">Capacitação:</span>
                     <span className="font-semibold text-gray-800">{roi.tempoCapacitacao} semanas</span>
                   </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Go-Live:</span>
+                    <span className="font-semibold text-gray-800">{roi.tempoGoLive} semana</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Equipe:</span>
+                    <span className="font-semibold text-gray-800">{roi.numeroProfissionais} profissional(is)</span>
+                  </div>
                   <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
                     <span className="font-semibold text-gray-700">Total:</span>
-                    <span className="font-bold text-purple-700">{roi.tempoTotal} semanas</span>
+                    <span className="font-bold text-blue-700">{roi.tempoTotal} semanas</span>
                   </div>
                 </div>
               </div>
@@ -1840,7 +1889,7 @@ const BusinessCaseBuilder = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-3">Cronograma Detalhado</h4>
+                  <h4 className="font-semibold text-gray-800 mb-3">Cronograma Estimado</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Discovery:</span>
@@ -1854,12 +1903,62 @@ const BusinessCaseBuilder = () => {
                       <span className="text-gray-600">Capacitação:</span>
                       <span className="font-semibold">{roi.tempoCapacitacao} semanas</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Go-Live:</span>
+                      <span className="font-semibold">{roi.tempoGoLive} semana</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Equipe:</span>
+                      <span className="font-semibold">{roi.numeroProfissionais} profissional(is)</span>
+                    </div>
                     <div className="flex justify-between pt-2 border-t border-gray-300">
                       <span className="font-bold text-gray-800">Total:</span>
                       <span className="font-bold text-[#032c62]">{roi.tempoTotal} semanas</span>
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* CASES DE SUCESSO KNIME - INSERIDO ANTES DE PRÓXIMOS PASSOS */}
+              <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl p-6 text-white">
+                <div className="flex items-center mb-4">
+                  <Award className="w-8 h-8 mr-3 text-yellow-400" />
+                  <h3 className="text-2xl font-bold">Cases de Sucesso com KNIME</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏦 Rabobank</h4>
+                    <p className="text-sm text-blue-100">
+                      Treinou <strong>300 auditores em 2 dias</strong> para usar KNIME em detecção de anomalias 
+                      e anti-lavagem de dinheiro, democratizando analytics avançado
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏦 ING</h4>
+                    <p className="text-sm text-blue-100">
+                      <strong>400 auditores economizam 400h/ano</strong>, reduziram tempo de coleta de dados 
+                      de <strong>8 semanas para acesso instantâneo</strong>
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏭 Tata Steel</h4>
+                    <p className="text-sm text-blue-100">
+                      Economia de tempo de até <strong>95%</strong> ao migrar de Excel para KNIME, 
+                      identificando erros em cálculos e conciliações
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏦 Banco BV (HupData)</h4>
+                    <p className="text-sm text-blue-100">
+                      Automatização de <strong>processos de dados em área tributária</strong> com KNIME Business Hub, 
+                      gerando economia significativa
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-blue-200 mt-4 text-center italic">
+                  Fonte: KNIME Case Studies & HupData Portfolio
+                </p>
               </div>
 
               {/* Próximos Passos */}
