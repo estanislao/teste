@@ -741,6 +741,7 @@ const BusinessCaseBuilder = () => {
     
     // Total
     const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao + tempoGoLive;
+    const tempoTotalMinimo = Math.ceil(tempoTotal * 0.7); // 70% do tempo total
     
     // ===== ESTRATÉGIA DE PRIORIZAÇÃO =====
     let estrategia = '';
@@ -834,6 +835,7 @@ const BusinessCaseBuilder = () => {
       tempoCapacitacao,
       tempoGoLive,
       tempoTotal,
+      tempoTotalMinimo,
       numeroProfissionais,
       tempoBasePorProcesso: 3,
       multiplicadorSistemas: coeficienteEsforco,
@@ -1321,8 +1323,8 @@ const BusinessCaseBuilder = () => {
                 
                 <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
                   <p className="text-sm text-gray-600 mb-1">Tempo Estimado</p>
-                  <p className="text-2xl font-bold text-blue-700">{roi.tempoTotal} semanas</p>
-                  <p className="text-xs text-gray-500 mt-1">≈ {(roi.tempoTotal / 4.33).toFixed(1)} meses</p>
+                  <p className="text-2xl font-bold text-blue-700">{roi.tempoTotalMinimo}-{roi.tempoTotal} semanas</p>
+                  <p className="text-xs text-gray-500 mt-1">≈ {(roi.tempoTotalMinimo / 4.33).toFixed(1)}-{(roi.tempoTotal / 4.33).toFixed(1)} meses</p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
@@ -1372,8 +1374,13 @@ const BusinessCaseBuilder = () => {
                   </div>
                   <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
                     <span className="font-semibold text-gray-700">Total:</span>
-                    <span className="font-bold text-blue-700">{roi.tempoTotal} semanas</span>
+                    <span className="font-bold text-blue-700">{roi.tempoTotalMinimo}-{roi.tempoTotal} semanas</span>
                   </div>
+                </div>
+                <div className="mt-2 bg-blue-50 rounded p-3">
+                  <p className="text-xs text-blue-800">
+                    <strong>ℹ️ Sobre o prazo:</strong> O tempo varia de acordo com a complexidade do acesso aos dados e regras de negócio. O prazo mínimo pressupõe dados estruturados e regras claras, enquanto o máximo considera cenários mais complexos.
+                  </p>
                 </div>
               </div>
             </div>
@@ -1558,7 +1565,7 @@ const BusinessCaseBuilder = () => {
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700 font-semibold">Tempo Total:</span>
-                  <span className="text-2xl font-bold text-[#032c62]">{timeline.total} semanas</span>
+                  <span className="text-2xl font-bold text-[#032c62]">{roi.tempoTotalMinimo}-{timeline.total} semanas</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">{timeline.nota}</p>
               </div>
@@ -1870,7 +1877,7 @@ const BusinessCaseBuilder = () => {
                 <div className="bg-purple-50 rounded-lg p-4 border border-purple-200 mb-4">
                   <h4 className="font-semibold text-purple-900 mb-2">Estratégia: {roi.estrategia}</h4>
                   <p className="text-sm text-purple-700 mb-3">
-                    Complexidade {roi.complexidadeProjeto} | Tempo total: {roi.tempoTotal} semanas
+                    Complexidade {roi.complexidadeProjeto} | Tempo total: {roi.tempoTotalMinimo}-{roi.tempoTotal} semanas
                   </p>
                   
                   <div className="space-y-2">
@@ -1913,7 +1920,7 @@ const BusinessCaseBuilder = () => {
                     </div>
                     <div className="flex justify-between pt-2 border-t border-gray-300">
                       <span className="font-bold text-gray-800">Total:</span>
-                      <span className="font-bold text-[#032c62]">{roi.tempoTotal} semanas</span>
+                      <span className="font-bold text-[#032c62]">{roi.tempoTotalMinimo}-{roi.tempoTotal} semanas</span>
                     </div>
                   </div>
                 </div>
@@ -2039,9 +2046,16 @@ const BusinessCaseBuilder = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Business Case Builder
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <img 
+              src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
+              alt="HupData Logo" 
+              className="h-12"
+            />
+            <h1 className="text-4xl font-bold text-gray-900">
+              Business Case Builder
+            </h1>
+          </div>
           <p className="text-gray-600">
             Construa seu business case de automação em minutos
           </p>
