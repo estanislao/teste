@@ -2097,11 +2097,21 @@ const BusinessCaseBuilder = () => {
   const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec';
   
   const sendToGoogleSheets = async () => {
-    // Se não tiver URL configurada, apenas avisa no console
-    if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec') {
-      console.log('Google Sheets não configurado. Configure a URL do Apps Script.');
+    // Se não tiver URL configurada, avisa visualmente
+    if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT') {
+      console.warn('⚠️ Google Sheets NÃO configurado. Os dados NÃO serão salvos!');
+      console.warn('📝 Para configurar: Cole a URL do Google Apps Script na linha 2097');
+      
+      // Mostra alerta visual (apenas uma vez)
+      if (!window.alertaGoogleSheetsExibido) {
+        alert('⚠️ ATENÇÃO: Google Sheets não configurado!\n\nOs dados deste lead NÃO serão salvos.\n\nPara habilitar, configure a URL do Google Apps Script no código.');
+        window.alertaGoogleSheetsExibido = true;
+      }
       return;
     }
+    
+    console.log('📤 Enviando dados para Google Sheets...');
+    console.log('🔗 URL configurada:', GOOGLE_APPS_SCRIPT_URL.substring(0, 50) + '...');
     
     try {
       const roi = calculateROI();
@@ -2146,10 +2156,25 @@ const BusinessCaseBuilder = () => {
         body: JSON.stringify(payload)
       });
       
-      console.log('✅ Dados enviados para Google Sheets com sucesso!');
+      // Com no-cors, não conseguimos ler a resposta, mas se chegou aqui, foi enviado
+      console.log('✅ Dados enviados com sucesso para Google Sheets!');
+      console.log('📊 Lead capturado:', payload.nome, '-', payload.empresa);
+      console.log('💰 ROI: Investimento: R$', roi.investimentoTotal.toLocaleString('pt-BR'), '| Economia Anual: R$', roi.economiaAnual.toLocaleString('pt-BR'));
+      console.log('⏱️ Payback:', roi.payback, 'meses');
+      
+      // Descomente a linha abaixo se quiser um alerta visual de confirmação:
+      // alert('✅ Dados salvos com sucesso no Google Sheets!');
       
     } catch (error) {
-      console.error('❌ Erro ao enviar para Google Sheets:', error);
+      console.error('❌ ERRO ao enviar para Google Sheets:', error);
+      console.error('🔍 Verifique:');
+      console.error('   1. URL do Apps Script está correta?');
+      console.error('   2. Apps Script foi implantado corretamente?');
+      console.error('   3. Permissões foram concedidas?');
+      console.error('   4. Configuração "Quem tem acesso" = "Qualquer pessoa"?');
+      
+      // Mostra erro visual ao usuário
+      alert('⚠️ Erro ao salvar dados!\n\nOs dados deste lead podem não ter sido salvos.\n\nVerifique o console (F12) para mais detalhes.');
     }
   };
   
