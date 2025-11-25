@@ -68,6 +68,7 @@
       const [filterPrioridade, setFilterPrioridade] = useState('all');
       const [selectedLead, setSelectedLead] = useState(null);
       const [showDetail, setShowDetail] = useState(false);
+      const [error, setError] = useState(null);
       const chartRef = useRef(null);
       const chartInstance = useRef(null);
       
@@ -287,6 +288,31 @@
       // TELA DE LOGIN
       // ============================================
       
+      // Mostra erro se houver
+      if (error) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-red-900 to-red-800 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+              <div className="text-center">
+                <div className="text-6xl mb-4">⚠️</div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Erro no Dashboard</h1>
+                <p className="text-gray-600 mb-6">{error}</p>
+                <button
+                  onClick={() => {
+                    setError(null);
+                    setIsAuthenticated(false);
+                    setLeads([]);
+                  }}
+                  className="bg-[#032c62] text-white px-6 py-3 rounded-lg hover:bg-[#17203c]"
+                >
+                  Tentar Novamente
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
       if (!isAuthenticated) {
         return (
           <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
@@ -499,24 +525,25 @@
       // DASHBOARD PRINCIPAL
       // ============================================
       
-      return (
-        <div className="min-h-screen bg-gray-50">
-          {/* Header */}
-          <div className="bg-white shadow-sm border-b no-print">
-            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <img 
-                  src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
-                  alt="HupData Logo" 
-                  className="h-8"
-                />
-                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
-              </div>
-              
-              <div className="flex gap-2">
-                <button
-                  onClick={fetchLeads}
-                  disabled={loading}
+      try {
+        return (
+          <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <div className="bg-white shadow-sm border-b no-print">
+              <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <img 
+                    src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
+                    alt="HupData Logo" 
+                    className="h-8"
+                  />
+                  <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+                </div>
+                
+                <div className="flex gap-2">
+                  <button
+                    onClick={fetchLeads}
+                    disabled={loading}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                 >
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -738,6 +765,29 @@
           </div>
         </div>
       );
+      } catch (renderError) {
+        console.error('❌ Erro ao renderizar dashboard:', renderError);
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-red-900 to-red-800 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+              <div className="text-center">
+                <div className="text-6xl mb-4">💥</div>
+                <h1 className="text-2xl font-bold text-gray-900 mb-4">Erro de Renderização</h1>
+                <p className="text-gray-600 mb-4">Houve um erro ao exibir o dashboard.</p>
+                <p className="text-sm text-gray-500 mb-6 font-mono bg-gray-100 p-3 rounded">
+                  {renderError.message}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-[#032c62] text-white px-6 py-3 rounded-lg hover:bg-[#17203c]"
+                >
+                  Recarregar Página
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      }
     };
 
     ReactDOM.render(<AdminDashboard />, document.getElementById('root'));
