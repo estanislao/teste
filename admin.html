@@ -50,10 +50,10 @@
       // ============================================
       
       // IMPORTANTE: Cole aqui a URL do seu Google Apps Script (mesma do index.html)
-      const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec';
+      const GOOGLE_APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT';
       
       // Senha do admin (você pode mudar isso)
-      const ADMIN_PASSWORD = 'hupdata2025';
+      const ADMIN_PASSWORD = 'hupdata2024';
       
       // ============================================
       // ESTADO
@@ -104,24 +104,48 @@
       // ============================================
       
       const fetchLeads = async () => {
-        if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec') {
-          alert('Configure a URL do Google Apps Script no código!');
+        if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT') {
+          console.warn('⚠️ Google Sheets não configurado!');
+          alert('⚠️ Google Sheets não configurado!\n\nConfigure a URL do Apps Script no código (linha ~55)\n\nEnquanto isso, o dashboard funcionará mas sem dados.');
           return;
         }
         
         setLoading(true);
+        console.log('📥 Buscando leads do Google Sheets...');
+        console.log('🔗 URL:', GOOGLE_APPS_SCRIPT_URL.substring(0, 50) + '...');
+        
         try {
           const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
+          
+          console.log('📡 Resposta recebida, status:', response.status);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
           const data = await response.json();
+          console.log('📊 Dados recebidos:', data);
           
           if (data.success) {
-            setLeads(data.leads || []);
+            const leadsCarregados = data.leads || [];
+            setLeads(leadsCarregados);
+            console.log(`✅ ${leadsCarregados.length} leads carregados com sucesso!`);
           } else {
-            alert('Erro ao buscar leads: ' + data.message);
+            console.error('❌ Erro na resposta:', data.message);
+            alert('Erro ao buscar leads:\n\n' + data.message + '\n\nVerifique o console (F12) para mais detalhes.');
           }
         } catch (error) {
-          console.error('Erro:', error);
-          alert('Erro ao conectar com Google Sheets. Verifique a URL.');
+          console.error('❌ ERRO ao conectar com Google Sheets:', error);
+          console.error('🔍 Verifique:');
+          console.error('   1. URL do Apps Script está correta?');
+          console.error('   2. Apps Script foi implantado como "Aplicativo da Web"?');
+          console.error('   3. Acesso está configurado como "Qualquer pessoa"?');
+          console.error('   4. Você autorizou as permissões?');
+          
+          alert('⚠️ Erro ao conectar com Google Sheets!\n\nVerifique o console (F12) para mais detalhes.\n\nO dashboard continuará funcionando, mas sem dados.');
+          
+          // Define leads vazio para não quebrar a interface
+          setLeads([]);
         } finally {
           setLoading(false);
         }
