@@ -51,7 +51,7 @@
       
       // ⚠️ IMPORTANTE: Substitua o texto abaixo pela URL do seu Google Apps Script
       // Exemplo: 'https://script.google.com/macros/s/AKfycbxXXXXXXXXXXXXXXX/exec'
-      const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec';
+      const GOOGLE_APPS_SCRIPT_URL = 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT';
       
       // Senha de acesso (mude se quiser)
       const ADMIN_PASSWORD = 'hupdata2024';
@@ -99,15 +99,24 @@
       const fetchLeads = async () => {
         // Log para debug - mostra URL configurada
         console.log('🔗 URL configurada:', GOOGLE_APPS_SCRIPT_URL);
+        console.log('📏 Tamanho da URL:', GOOGLE_APPS_SCRIPT_URL.length, 'caracteres');
         
-        if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec') {
-          console.error('❌ URL NÃO configurada ou ainda é o placeholder');
-          console.log('📝 Configure a URL na linha 52 do código');
-          alert('⚠️ Configure a URL do Google Apps Script no código (linha 52)');
+        // Verifica se é o placeholder (não URL real)
+        if (!GOOGLE_APPS_SCRIPT_URL || 
+            GOOGLE_APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT' ||
+            !GOOGLE_APPS_SCRIPT_URL.startsWith('https://script.google.com/') ||
+            !GOOGLE_APPS_SCRIPT_URL.endsWith('/exec')) {
+          console.error('❌ URL inválida ou não configurada');
+          console.log('📝 A URL deve:');
+          console.log('   ✓ Começar com: https://script.google.com/');
+          console.log('   ✓ Terminar com: /exec');
+          console.log('   ✓ Ter pelo menos 80 caracteres');
+          alert('⚠️ Configure a URL do Google Apps Script corretamente (linha 54)\n\nA URL deve começar com https://script.google.com/ e terminar com /exec');
           return;
         }
         
-        console.log('✅ URL validada, iniciando busca...');
+        console.log('✅ URL validada com sucesso!');
+        console.log('📡 Iniciando busca de leads...');
         setLoading(true);
         
         try {
