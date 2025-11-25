@@ -532,7 +532,37 @@
                 </div>
                 <div className="text-3xl font-bold text-gray-900">{stats.totalLeads}</div>
               </div>
-            
+              
+              <div className="stat-card bg-white p-6 rounded-xl shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm text-gray-600">Investimento Total</div>
+                  <div className="text-2xl">💰</div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {formatCurrency(stats.investimentoTotal)}
+                </div>
+              </div>
+              
+              <div className="stat-card bg-white p-6 rounded-xl shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm text-gray-600">Economia Anual Total</div>
+                  <div className="text-2xl">📈</div>
+                </div>
+                <div className="text-2xl font-bold text-green-600">
+                  {formatCurrency(stats.economiaAnual)}
+                </div>
+              </div>
+              
+              <div className="stat-card bg-white p-6 rounded-xl shadow">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm text-gray-600">Payback Médio</div>
+                  <div className="text-2xl">⏱️</div>
+                </div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {stats.paybackMedio > 0 ? `${stats.paybackMedio.toFixed(1)} meses` : '-'}
+                </div>
+              </div>
+            </div>
             
             {/* Filtros e Busca */}
             <div className="bg-white rounded-xl shadow p-6 mb-6 no-print">
