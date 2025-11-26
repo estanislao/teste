@@ -665,40 +665,155 @@ const BusinessCaseBuilder = () => {
     // ===== MÉTODO 2: CÁLCULO POR PROCESSOS =====
     const custoAtualMensalPorProcessos = numeroProcessos * tempoMedioProcesso * custoPorHora * 4.33 * coeficienteEsforco;
     
-    // ===== VALIDAÇÃO CRUZADA: USA MÉDIA DOS DOIS MÉTODOS =====
-    const custoAtualMensal = (custoAtualMensalPorTempo + custoAtualMensalPorProcessos) / 2;
+    // ===== MÉTODO 3: CÁLCULO DIRETO (FÓRMULA DEFINITIVA) =====
+    // Custo Médio Mensal = Tempo × Multiplicador Erros × Processos × Profissionais × Custo/h × 1.20 (gestão)
+    const multiplicadorErros = formData.errosFrequentes ? 1.15 : 1.0;
+    const custoMedioMensalBase = tempoMedioProcesso * multiplicadorErros * numeroProcessos * numProfissionais * custoPorHora;
     
-    // ===== AJUSTE POR ERROS FREQUENTES =====
-    let custoErros = 0;
-    let custoTotal = custoAtualMensal;
+    // Adiciona 20% de custo de gestão (SEMPRE)
+    const custoMedioMensalDireto = custoMedioMensalBase * 1.20;
     
-    if (formData.errosFrequentes) {
-      // Adiciona 15% de custo por retrabalho de erros
-      custoErros = custoAtualMensal * 0.15;
-      custoTotal = custoAtualMensal + custoErros;
-    }
+    // USA APENAS A FÓRMULA MARCUS (não faz média)
+    const custoAtualMensal = custoMedioMensalDireto;
+    
+    // Custo total (sem adicionar erros novamente, já está no multiplicador)
+    const custoErros = formData.errosFrequentes ? (custoMedioMensalBase * 0.15) : 0; // Para exibição apenas
+    const custoTotal = custoAtualMensal;
     
     // Economia mensal e anual
     const economiaMensal = custoTotal * reducaoEstimada;
     const economiaAnual = economiaMensal * 12;
     
-    // ===== AJUSTE DE INVESTIMENTO POR COMPLEXIDADE (numeroProcessos) =====
-    let custoImplementacao = 45000;
-    let complexidadeProjeto = 'Média';
+    // ===== CÁLCULO DE INVESTIMENTO (NOVA FÓRMULA COM INTEGRAÇÃO) =====
     
+    // Função para carregar configuração do localStorage (salva pelo calculoinvestimento.html)
+    const carregarConfiguracaoInvestimento = () => {
+      const configSalva = localStorage.getItem('hupdata_config_investimento');
+      
+      if (configSalva) {
+        try {
+          const config = JSON.parse(configSalva);
+          console.log('✅ Configuração de investimento carregada do localStorage');
+          console.log('📅 Última atualização:', config.dataAtualizacao);
+          return config;
+        } catch (e) {
+          console.error('❌ Erro ao carregar configuração:', e);
+          return null;
+        }
+      }
+      
+      console.log('ℹ️ Usando valores padrão (nenhuma configuração salva)');
+      return null;
+    };
+    
+    // Carregar configuração
+    const configInvestimento = carregarConfiguracaoInvestimento();
+    
+    // TABELA 1: HORAS POR ETAPA (usa config salva ou valores padrão)
+    const HORAS_DISCOVERY = configInvestimento ? {
+      'Baixa': configInvestimento.horasPorEtapa.discoveryBaixa,
+      'Média': configInvestimento.horasPorEtapa.discoveryMedia,
+      'Alta': configInvestimento.horasPorEtapa.discoveryAlta,
+      'Muito Alta': configInvestimento.horasPorEtapa.discoveryAlta
+    } : {
+      'Baixa': 40,
+      'Média': 80,
+      'Alta': 96,
+      'Muito Alta': 96
+    };
+    
+    const HORAS_POR_PROCESSO = configInvestimento 
+      ? configInvestimento.horasPorEtapa.horasPorProcesso 
+      : 160;
+    
+    const COEFICIENTE_SISTEMAS = {
+      2: 1.0,    // 1-2 sistemas
+      4: 1.05,   // 3-4 sistemas
+      5: 1.08    // 5+ sistemas
+    };
+    
+    const HORAS_CAPACITACAO = configInvestimento ? {
+      'Baixa': configInvestimento.horasPorEtapa.capacitacaoBaixa,
+      'Média': configInvestimento.horasPorEtapa.capacitacaoBaixa,
+      'Alta': configInvestimento.horasPorEtapa.capacitacaoAlta,
+      'Muito Alta': configInvestimento.horasPorEtapa.capacitacaoAlta
+    } : {
+      'Baixa': 20,
+      'Média': 20,
+      'Alta': 40,
+      'Muito Alta': 40
+    };
+    
+    const HORAS_GO_LIVE = configInvestimento 
+      ? configInvestimento.horasPorEtapa.goLive 
+      : 20;
+    
+    // TABELA 2: VALOR POR HORA (RANGES) (usa config salva ou valores padrão)
+    const VALOR_POR_HORA_RANGES = configInvestimento ? [
+      { max: 100, valor: configInvestimento.valoresPorHora.valor1 },
+      { max: 300, valor: configInvestimento.valoresPorHora.valor2 },
+      { max: 600, valor: configInvestimento.valoresPorHora.valor3 },
+      { max: Infinity, valor: configInvestimento.valoresPorHora.valor4 }
+    ] : [
+      { max: 100, valor: 290 },      // Até 100h
+      { max: 300, valor: 250 },      // 100-300h
+      { max: 600, valor: 200 },      // 301-600h
+      { max: Infinity, valor: 190 }  // Acima 601h
+    ];
+    
+    // Determinar complexidade do projeto
+    let complexidadeProjeto = 'Média';
     if (numeroProcessos <= 5) {
-      custoImplementacao = 30000;
       complexidadeProjeto = 'Baixa';
     } else if (numeroProcessos <= 15) {
-      custoImplementacao = 45000;
       complexidadeProjeto = 'Média';
     } else if (numeroProcessos <= 25) {
-      custoImplementacao = 65000;
       complexidadeProjeto = 'Alta';
     } else {
-      custoImplementacao = 85000;
       complexidadeProjeto = 'Muito Alta';
     }
+    
+    // Determinar coeficiente de sistemas
+    let coeficienteSistemas = 1.0;
+    if (fontesDados <= 2) {
+      coeficienteSistemas = 1.0;
+    } else if (fontesDados <= 4) {
+      coeficienteSistemas = 1.05;
+    } else {
+      coeficienteSistemas = 1.08;
+    }
+    
+    // === FÓRMULA DO INVESTIMENTO ===
+    
+    // 1. Discovery (horas)
+    const horasDiscovery = HORAS_DISCOVERY[complexidadeProjeto];
+    
+    // 2. Desenvolvimento (horas)
+    // Base: Processos × HorasPorProcesso × 80%
+    const base = numeroProcessos * HORAS_POR_PROCESSO * 0.8;
+    // DesenvolvimentoHora = Base × Coeficiente
+    const horasDesenvolvimento = base * coeficienteSistemas;
+    
+    // 3. Capacitação (horas)
+    const horasCapacitacao = HORAS_CAPACITACAO[complexidadeProjeto];
+    
+    // 4. Go-Live (horas)
+    const horasGoLive = HORAS_GO_LIVE;
+    
+    // 5. Total de Horas
+    const totalHorasInvestimento = horasDiscovery + horasDesenvolvimento + horasCapacitacao + horasGoLive;
+    
+    // 6. Determinar valor por hora baseado no range
+    let valorPorHora = 190; // Default
+    for (let range of VALOR_POR_HORA_RANGES) {
+      if (totalHorasInvestimento <= range.max) {
+        valorPorHora = range.valor;
+        break;
+      }
+    }
+    
+    // 7. INVESTIMENTO FINAL
+    const custoImplementacao = totalHorasInvestimento * valorPorHora;
     
     // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
     let numeroProfissionais = 1;
@@ -810,9 +925,13 @@ const BusinessCaseBuilder = () => {
       custoAtualMensal,
       custoAtualMensalPorTempo,
       custoAtualMensalPorProcessos,
+      custoMedioMensalDireto,
+      custoMedioMensalBase,
       custoErros,
       custoTotal,
       custoImplementacao,
+      multiplicadorErrosCalculo: multiplicadorErros,
+      custoGestao: custoMedioMensalBase * 0.20,
       
       // Economias
       economiaMensal,
@@ -851,7 +970,16 @@ const BusinessCaseBuilder = () => {
       alertas,
       
       // Benchmark
-      benchmark
+      benchmark,
+      
+      // Detalhamento do Investimento (NOVO)
+      horasDiscovery,
+      horasDesenvolvimento,
+      horasCapacitacao,
+      horasGoLive,
+      totalHorasInvestimento,
+      valorPorHora,
+      coeficienteSistemas
     };
   };
 
