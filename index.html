@@ -584,61 +584,6 @@ const BusinessCaseBuilder = () => {
     return areaBenchmarks[formData.area] || areaBenchmarks.tributaria;
   };
 
-  const getMensagemPorPrioridade = () => {
-    const mensagens = {
-      alta: {
-        titulo: "🚨 Situação Crítica Identificada",
-        subtitulo: "Ação imediata recomendada",
-        cor: "red",
-        bgColor: "bg-red-50",
-        borderColor: "border-red-500",
-        textColor: "text-red-900",
-        cta: "Agendar Reunião de Emergência"
-      },
-      media: {
-        titulo: "⚠️ Oportunidade de Melhoria",
-        subtitulo: "Implementação recomendada nos próximos 90 dias",
-        cor: "orange",
-        bgColor: "bg-orange-50",
-        borderColor: "border-orange-500",
-        textColor: "text-orange-900",
-        cta: "Agendar Reunião de Discovery"
-      },
-      baixa: {
-        titulo: "💡 Potencial de Otimização",
-        subtitulo: "Planejamento para próximo ciclo orçamentário",
-        cor: "blue",
-        bgColor: "bg-blue-50",
-        borderColor: "border-blue-500",
-        textColor: "text-blue-900",
-        cta: "Receber Mais Informações"
-      }
-    };
-    return mensagens[formData.prioridadeAutomacao];
-  };
-
-  const getTimelinePorPrioridade = () => {
-    const roi = calculateROI();
-    
-    // Usa os valores calculados do ROI
-    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
-    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
-    
-    return {
-      discovery: roi.tempoDiscovery,
-      desenvolvimento: roi.tempoDev,
-      implantacao: tempoImplantacaoTotal,
-      total: roi.tempoTotal,
-      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
-      entregas: [
-        `Discovery completo em ${roi.tempoDiscovery} semanas`,
-        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
-        `Go-live completo em ${roi.tempoTotal} semanas`
-      ]
-    };
-  };
-
-  // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
   const calculateROI = () => {
     const percentualAtividadesManuais = formData.percentualAtividadesManuais || 40;
     const numProfissionais = formData.numProfissionais || 1;
@@ -982,6 +927,63 @@ const BusinessCaseBuilder = () => {
       coeficienteSistemas
     };
   };
+
+
+  const getMensagemPorPrioridade = () => {
+    const mensagens = {
+      alta: {
+        titulo: "🚨 Situação Crítica Identificada",
+        subtitulo: "Ação imediata recomendada",
+        cor: "red",
+        bgColor: "bg-red-50",
+        borderColor: "border-red-500",
+        textColor: "text-red-900",
+        cta: "Agendar Reunião de Emergência"
+      },
+      media: {
+        titulo: "⚠️ Oportunidade de Melhoria",
+        subtitulo: "Implementação recomendada nos próximos 90 dias",
+        cor: "orange",
+        bgColor: "bg-orange-50",
+        borderColor: "border-orange-500",
+        textColor: "text-orange-900",
+        cta: "Agendar Reunião de Discovery"
+      },
+      baixa: {
+        titulo: "💡 Potencial de Otimização",
+        subtitulo: "Planejamento para próximo ciclo orçamentário",
+        cor: "blue",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-500",
+        textColor: "text-blue-900",
+        cta: "Receber Mais Informações"
+      }
+    };
+    return mensagens[formData.prioridadeAutomacao];
+  };
+
+  const getTimelinePorPrioridade = () => {
+    const roi = calculateROI();
+    
+    // Usa os valores calculados do ROI
+    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
+    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
+    
+    return {
+      discovery: roi.tempoDiscovery,
+      desenvolvimento: roi.tempoDev,
+      implantacao: tempoImplantacaoTotal,
+      total: roi.tempoTotal,
+      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
+      entregas: [
+        `Discovery completo em ${roi.tempoDiscovery} semanas`,
+        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
+        `Go-live completo em ${roi.tempoTotal} semanas`
+      ]
+    };
+  };
+
+  // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
 
   // Função para salvar lead no localStorage
   const saveLeadData = () => {
