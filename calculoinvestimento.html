@@ -331,14 +331,7 @@
             <span id="valorHoraCopia">R$ 190/h</span>
           </div>
           
-          <div class="flex gap-4 justify-center mt-6">
-            <button 
-              onclick="copiarValor()" 
-              class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-purple-50 transition"
-            >
-              📋 Copiar Valor
-            </button>
-            
+          <div class="flex justify-center mt-6">
             <button 
               onclick="salvarConfiguracao()" 
               class="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition"
@@ -361,7 +354,7 @@
           <li><strong>2.</strong> Ajuste as horas de cada etapa nos campos amarelos (se necessário)</li>
           <li><strong>3.</strong> Ajuste os valores por hora nos ranges (se necessário)</li>
           <li><strong>4.</strong> O cálculo é automático - veja o resultado no card roxo</li>
-          <li><strong>5.</strong> Clique em "Copiar Valor" para usar no index.html</li>
+          <li><strong>5.</strong> Clique em "💾 Salvar Configuração" para o index.html usar estes valores</li>
         </ol>
       </div>
     </div>
@@ -459,12 +452,6 @@
       localStorage.setItem('totalHorasCalculadas', totalHoras);
     }
     
-    function copiarValor() {
-      const investimento = document.getElementById('investimentoFinal').textContent;
-      navigator.clipboard.writeText(investimento).then(() => {
-        alert('✅ Valor copiado: ' + investimento + '\n\nUse este valor no index.html');
-      });
-    }
     
     function salvarConfiguracao() {
       // Coletar todos os valores das tabelas
