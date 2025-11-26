@@ -1263,61 +1263,31 @@ const BusinessCaseBuilder = () => {
               </div>
             </div>
             
-            {/* Cards de Métricas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Novo: Card de Custo */}
-              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-red-100 text-sm font-medium">Custo</span>
-                  <Download className="w-5 h-5 text-red-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
+            {/* Quadro de Resumo Superior */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-2 border-gray-800 rounded-lg overflow-hidden mb-6 bg-white">
+              <div className="border-r border-b border-gray-800 p-6">
+                <p className="text-xl font-bold text-red-700 mb-2">
+                  Custo mensal: <br />
                   R$ {roi.custoTotal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-red-100 text-sm">
-                  Custo mensal atual
-                </div>
+                </p>
+                <p className="text-lg font-bold text-red-700 mb-3">
+                  Equipe gasta {formData.percentualAtividadesManuais}% do tempo com tarefas manuais
+                </p>
+                <p className="text-lg font-bold text-red-700">
+                  {formData.numeroProcessos} processos críticos gerando {(formData.numeroProcessos / formData.numProfissionais).toFixed(1)} processos/profissional
+                </p>
               </div>
-              
-              <div className="bg-gradient-to-br from-[#032c62] to-[#17203c] rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-300 text-sm font-medium">Economia Mensal</span>
-                  <Calculator className="w-5 h-5 text-gray-400" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-gray-300 text-sm">
-                  Redução de {roi.benchmark.reducaoTempo}% em atividades manuais
-                </div>
+              <div className="border-b border-gray-800 p-6 flex flex-col justify-center">
+                <p className="text-xl font-bold text-red-700">
+                  Custo Anual: <br />
+                  R$ {(roi.custoTotal * 12).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </p>
               </div>
-              
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-green-100 text-sm font-medium">Economia Anual</span>
-                  <TrendingUp className="w-5 h-5 text-green-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-green-100 text-sm">
-                  Retorno em {roi.payback.toFixed(1)} meses
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
-                  <Target className="w-5 h-5 text-purple-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  {roi.roiAnual.toFixed(0)}%
-                </div>
-                <div className="text-purple-100 text-sm">
-                  Retorno sobre investimento
-                </div>
-              </div>
-              
+            </div>
+
+            {/* Cards de Métricas - Nova Ordem */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* 1. Investimento (Laranja) */}
               <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-orange-100 text-sm font-medium">Investimento</span>
@@ -1331,9 +1301,51 @@ const BusinessCaseBuilder = () => {
                 </div>
               </div>
 
-              {/* NOVO: Card de Economia por Processo */}
-              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-lg md:col-span-2">
+              {/* 2. ROI Anual (Roxo) */}
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
                 <div className="flex items-center justify-between mb-2">
+                  <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
+                  <Target className="w-5 h-5 text-purple-200" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  {roi.roiAnual.toFixed(0)}%
+                </div>
+                <div className="text-purple-100 text-sm">
+                  Retorno sobre investimento
+                </div>
+              </div>
+
+              {/* 3. Economia Mensal (Azul Escuro) */}
+              <div className="bg-gradient-to-br from-[#032c62] to-[#17203c] rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-300 text-sm font-medium">Economia Mensal</span>
+                  <Calculator className="w-5 h-5 text-gray-400" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="text-gray-300 text-sm">
+                  Redução de {roi.benchmark.reducaoTempo}% em atividades manuais
+                </div>
+              </div>
+
+              {/* 4. Economia Anual (Verde) */}
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-green-100 text-sm font-medium">Economia Anual</span>
+                  <TrendingUp className="w-5 h-5 text-green-200" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="text-green-100 text-sm">
+                  Retorno em {roi.payback.toFixed(1)} meses
+                </div>
+              </div>
+
+              {/* 5. Economia por Processo (Teal - Full Width) */}
+              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-lg md:col-span-2">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-teal-100 text-sm font-medium">Economia por Processo</span>
                   <Calculator className="w-5 h-5 text-teal-200" />
                 </div>
