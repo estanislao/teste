@@ -1,34 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <title>Diagnóstico</title>
-</head>
-<body>
-  <h1>Abrindo console...</h1>
-  <script>
-    console.log('=== TESTE DE CARREGAMENTO ===');
-    
-    // Testar se as libs carregam
-    function testarBibliotecas() {
-      setTimeout(() => {
-        console.log('1. React carregado?', typeof React !== 'undefined' ? '✅ SIM' : '❌ NÃO');
-        console.log('2. ReactDOM carregado?', typeof ReactDOM !== 'undefined' ? '✅ SIM' : '❌ NÃO');
-        console.log('3. Babel carregado?', typeof Babel !== 'undefined' ? '✅ SIM' : '❌ NÃO');
-        
-        if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-          alert('❌ ERRO: React ou ReactDOM não carregou!\n\nVerifique sua conexão com internet.');
-        } else {
-          alert('✅ OK: Bibliotecas carregadas!\n\nAgora vou tentar carregar o index-FINAL-v2.html');
-          window.location.href = 'index-FINAL-v2.html';
-        }
-      }, 2000);
-    }
-    
-    testarBibliotecas();
-  </script>
-  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Case Builder - HupData - TESTE</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const TestApp = () => {
+      const [step, setStep] = React.useState(1);
+      const [formData, setFormData] = React.useState({
+        nome: '',
+        email: '',
+        numeroProcessos: 10
+      });
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8">
+          <div className="max-w-4xl mx-auto px-4">
+            
+            {/* Header */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+              <h1 className="text-3xl font-bold text-gray-900">
+                Business Case Builder - HupData
+              </h1>
+              <p className="text-gray-600 mt-2">Versão de Teste - Funcional</p>
+            </div>
+
+            {/* Main Content */}
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  Passo {step} de 3
+                </h2>
+              </div>
+
+              {step === 1 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold mb-4">Informações de Contato</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nome Completo *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.nome}
+                      onChange={(e) => setFormData({...formData, nome: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Digite seu nome"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Corporativo *
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="seu@email.com"
+                    />
+                  </div>
+
+                  <button
+                    onClick={() => setStep(2)}
+                    disabled={!formData.nome || !formData.email}
+                    className="w-full mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold mb-4">Diagnóstico Operacional</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Número de Processos
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.numeroProcessos}
+                      onChange={(e) => setFormData({...formData, numeroProcessos: parseInt(e.target.value)})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="flex gap-4 mt-6">
+                    <button
+                      onClick={() => setStep(1)}
+                      className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      onClick={() => setStep(3)}
+                      className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+                    >
+                      Próximo
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold mb-4">Resultado</h3>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <h4 className="font-bold text-lg mb-2">✅ Seus Dados:</h4>
+                    <p className="text-gray-700">Nome: {formData.nome}</p>
+                    <p className="text-gray-700">Email: {formData.email}</p>
+                    <p className="text-gray-700">Processos: {formData.numeroProcessos}</p>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-6 mt-4">
+                    <h4 className="font-bold text-lg mb-2">💰 Investimento Estimado:</h4>
+                    <p className="text-3xl font-bold text-green-600">
+                      R$ {(formData.numeroProcessos * 26600).toLocaleString('pt-BR')}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Baseado em {formData.numeroProcessos} processos
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => setStep(1)}
+                    className="w-full mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700"
+                  >
+                    Reiniciar
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-6 text-center text-sm text-gray-600">
+              <p>Desenvolvido por <span className="font-semibold text-blue-600">HupData</span></p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    console.log('✅ Script carregado');
+    console.log('✅ React:', typeof React !== 'undefined' ? 'OK' : 'ERRO');
+    console.log('✅ ReactDOM:', typeof ReactDOM !== 'undefined' ? 'OK' : 'ERRO');
+    
+    ReactDOM.render(<TestApp />, document.getElementById('root'));
+    
+    console.log('✅ Render executado com sucesso!');
+  </script>
 </body>
 </html>
