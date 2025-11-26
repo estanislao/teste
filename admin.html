@@ -128,48 +128,6 @@
       };
       
       // ============================================
-      // DELETAR LEAD
-      // ============================================
-      
-      const deleteLead = (leadToDelete) => {
-        // Confirmação
-        const confirmDelete = window.confirm(
-          `⚠️ ATENÇÃO!\n\n` +
-          `Deseja realmente deletar este lead?\n\n` +
-          `Nome: ${leadToDelete.Nome || '-'}\n` +
-          `Email: ${leadToDelete.Email || '-'}\n` +
-          `Empresa: ${leadToDelete.Empresa || '-'}\n\n` +
-          `Esta ação não pode ser desfeita!`
-        );
-        
-        if (!confirmDelete) {
-          return;
-        }
-        
-        // Filtra o lead removendo ele da lista
-        const updatedLeads = leads.filter(lead => {
-          // Compara por múltiplos campos para garantir que é o lead correto
-          return !(
-            lead.Email === leadToDelete.Email &&
-            lead.Timestamp === leadToDelete.Timestamp &&
-            lead.Nome === leadToDelete.Nome
-          );
-        });
-        
-        // Atualiza o estado
-        setLeads(updatedLeads);
-        
-        // Fecha a tela de detalhes se estiver aberta
-        if (showDetail) {
-          setShowDetail(false);
-          setSelectedLead(null);
-        }
-        
-        // Feedback visual
-        alert('✅ Lead deletado com sucesso!');
-      };
-      
-      // ============================================
       // EFFECT
       // ============================================
       
@@ -316,21 +274,12 @@
         return (
           <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-4xl mx-auto">
-              <div className="flex justify-between items-center mb-6">
-                <button
-                  onClick={() => setShowDetail(false)}
-                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
-                >
-                  <span>←</span> Voltar
-                </button>
-                
-                <button
-                  onClick={() => deleteLead(selectedLead)}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
-                >
-                  🗑️ Deletar Lead
-                </button>
-              </div>
+              <button
+                onClick={() => setShowDetail(false)}
+                className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
+              >
+                <span>←</span> Voltar
+              </button>
               
               <div className="bg-white rounded-xl shadow-lg p-8 fade-in">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">Detalhes do Lead</h2>
@@ -621,27 +570,14 @@
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm no-print">
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => {
-                                  setSelectedLead(lead);
-                                  setShowDetail(true);
-                                }}
-                                className="text-blue-600 hover:text-blue-900 font-medium"
-                              >
-                                Ver detalhes →
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteLead(lead);
-                                }}
-                                className="text-red-600 hover:text-red-900 font-medium ml-2"
-                                title="Deletar lead"
-                              >
-                                🗑️ Deletar
-                              </button>
-                            </div>
+                            <button
+                              onClick={() => {
+                                setSelectedLead(lead);
+                                setShowDetail(true);
+                              }}
+                              className="text-blue-600 hover:text-blue-900 font-medium"
+                            >
+                              Ver detalhes →
                             </button>
                           </td>
                         </tr>
