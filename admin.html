@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HupData - Admin Dashboard</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .stat-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    function AdminDashboard() {
+      // ============================================
+      // CONFIGURAÇÃO
+      // ============================================
+      
+      const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec';
+      const ADMIN_PASSWORD = 'hupdata2024';
+      
+      // ============================================
+      // ESTADO
+      // ============================================
+      
+      const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        return localStorage.getItem('admin_authenticated') === 'true';
+      });
+      const [password, setPassword] = useState('');
+      const [leads, setLeads] = useState([]);
+      const [loading, setLoading] = useState(false);
+      const [searchTerm, setSearchTerm] = useState('');
+      const [filterArea, setFilterArea] = useState('all');
+      const [filterPrioridade, setFilterPrioridade] = useState('all');
+      const [selectedLead, setSelectedLead] = useState(null);
+      const [showDetail, setShowDetail] = useState(false);
+      
+      // ============================================
+      // AUTENTICAÇÃO
+      // ============================================
+      
+      const handleLogin = (e) => {
+        e.preventDefault();
+        if (password === ADMIN_PASSWORD) {
+          localStorage.setItem('admin_authenticated', 'true');
+          setIsAuthenticated(true);
+        } else {
+          alert('Senha incorreta!');
+        }
+      };
+      
+      const handleLogout = () => {
+        localStorage.removeItem('admin_authenticated');
+        setIsAuthenticated(false);
+        setLeads([]);
+      };
+      
+      // ============================================
+      // BUSCAR LEADS
+      // ============================================
+      
+      const fetchLeads = async () => {
+        if (!GOOGLE_APPS_SCRIPT_URL || 
+            GOOGLE_APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT' ||
+            !GOOGLE_APPS_SCRIPT_URL.startsWith('https://script.google.com/') ||
+            !GOOGLE_APPS_SCRIPT_URL.endsWith('/exec')) {
+          alert('⚠️ Configure a URL do Google Apps Script corretamente (linha 36)');
+          return;
+        }
+        
+        setLoading(true);
+        
+        try {
+          const response = await fetch(GOOGLE_APPS_SCRIPT_URL);
+          
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            setLeads(data.leads || []);
+          } else {
+            alert('Erro ao buscar leads: ' + (data.message || 'Erro desconhecido'));
+            setLeads([]);
+          }
+          
+        } catch (error) {
+          console.error('Erro ao buscar leads:', error);
+          alert('Erro ao conectar com Google Sheets.\n\n' + error.message);
+          setLeads([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      // ============================================
+      // DELETAR LEAD
+      // ============================================
+      
+      const deleteLead = (leadToDelete) => {
+        // Confirmação
+        const confirmDelete = window.confirm(
+          `⚠️ ATENÇÃO!\n\n` +
+          `Deseja realmente deletar este lead?\n\n` +
+          `Nome: ${leadToDelete.Nome || '-'}\n` +
+          `Email: ${leadToDelete.Email || '-'}\n` +
+          `Empresa: ${leadToDelete.Empresa || '-'}\n\n` +
+          `Esta ação não pode ser desfeita!`
+        );
+        
+        if (!confirmDelete) {
+          return;
+        }
+        
+        // Filtra o lead removendo ele da lista
+        const updatedLeads = leads.filter(lead => {
+          // Compara por múltiplos campos para garantir que é o lead correto
+          return !(
+            lead.Email === leadToDelete.Email &&
+            lead.Timestamp === leadToDelete.Timestamp &&
+            lead.Nome === leadToDelete.Nome
+          );
+        });
+        
+        // Atualiza o estado
+        setLeads(updatedLeads);
+        
+        // Fecha a tela de detalhes se estiver aberta
+        if (showDetail) {
+          setShowDetail(false);
+          setSelectedLead(null);
+        }
+        
+        // Feedback visual
+        alert('✅ Lead deletado com sucesso!');
+      };
+      
+      // ============================================
+      // EFFECT
+      // ============================================
+      
+      useEffect(() => {
+        if (isAuthenticated) {
+          fetchLeads();
+        }
+      }, [isAuthenticated]);
+      
+      // ============================================
+      // FILTROS E BUSCA
+      // ============================================
+      
+      const filteredLeads = leads.filter(lead => {
+        const matchSearch = !searchTerm || 
+          (lead.Nome && lead.Nome.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (lead.Email && lead.Email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (lead.Empresa && lead.Empresa.toString().toLowerCase().includes(searchTerm.toLowerCase()));
+        
+        const matchArea = filterArea === 'all' || 
+          (lead.Área && lead.Área.toLowerCase() === filterArea.toLowerCase()) ||
+          (lead['Área'] && lead['Área'].toLowerCase() === filterArea.toLowerCase());
+        
+        const matchPrioridade = filterPrioridade === 'all' || 
+          (lead.Prioridade && lead.Prioridade.toLowerCase() === filterPrioridade.toLowerCase());
+        
+        return matchSearch && matchArea && matchPrioridade;
+      });
+      
+      // Distribuição por área
+      const areas = [...new Set(leads.map(l => l.Área || l['Área'] || 'Não informado'))];
+      
+      // ============================================
+      // EXPORTAR CSV
+      // ============================================
+      
+      const exportToCSV = () => {
+        if (filteredLeads.length === 0) {
+          alert('Nenhum lead para exportar!');
+          return;
+        }
+        
+        const headers = Object.keys(filteredLeads[0]);
+        const csvContent = [
+          headers.join(','),
+          ...filteredLeads.map(lead => 
+            headers.map(header => {
+              const value = lead[header] || '';
+              return `"${value.toString().replace(/"/g, '""')}"`;
+            }).join(',')
+          )
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `leads-hupdata-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+      };
+      
+      // ============================================
+      // FORMATAÇÃO
+      // ============================================
+      
+      const formatCurrency = (value) => {
+        const num = parseFloat(value) || 0;
+        return new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        }).format(num);
+      };
+      
+      const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        try {
+          const date = new Date(dateString);
+          return date.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+        } catch {
+          return dateString;
+        }
+      };
+      
+      // ============================================
+      // TELA DE LOGIN
+      // ============================================
+      
+      if (!isAuthenticated) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md fade-in">
+              <div className="text-center mb-8">
+                <img 
+                  src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
+                  alt="HupData Logo" 
+                  className="h-12 mx-auto mb-6"
+                />
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+                <p className="text-gray-600">Acesso restrito ao time comercial</p>
+              </div>
+              
+              <form onSubmit={handleLogin}>
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Senha de Acesso
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    placeholder="Digite a senha"
+                    required
+                    autoFocus
+                  />
+                </div>
+                
+                <button
+                  type="submit"
+                  className="w-full bg-[#032c62] text-white py-3 rounded-lg hover:bg-[#17203c] transition-colors font-medium"
+                >
+                  Entrar
+                </button>
+              </form>
+              
+              <p className="text-xs text-gray-500 text-center mt-6">
+                Se você não tem acesso, contate o administrador
+              </p>
+            </div>
+          </div>
+        );
+      }
+      
+      // ============================================
+      // TELA DE DETALHES
+      // ============================================
+      
+      if (showDetail && selectedLead) {
+        return (
+          <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex justify-between items-center mb-6">
+                <button
+                  onClick={() => setShowDetail(false)}
+                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
+                >
+                  <span>←</span> Voltar
+                </button>
+                
+                <button
+                  onClick={() => deleteLead(selectedLead)}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                  🗑️ Deletar Lead
+                </button>
+              </div>
+              
+              <div className="bg-white rounded-xl shadow-lg p-8 fade-in">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Detalhes do Lead</h2>
+                
+                {/* Informações Básicas */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações Básicas</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm text-gray-600">Nome</div>
+                      <div className="font-medium">{selectedLead.Nome || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Email</div>
+                      <div className="font-medium">{selectedLead.Email || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">WhatsApp</div>
+                      <div className="font-medium">{selectedLead.WhatsApp || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Cargo</div>
+                      <div className="font-medium">{selectedLead.Cargo || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Empresa</div>
+                      <div className="font-medium">{selectedLead.Empresa || '-'}</div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Data/Hora</div>
+                      <div className="font-medium">{formatDate(selectedLead.Timestamp)}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Diagnóstico */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Diagnóstico Operacional</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-900 mb-1">Área</div>
+                      <div className="font-semibold text-blue-900">{selectedLead.Área || selectedLead['Área'] || '-'}</div>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-900 mb-1">Processos</div>
+                      <div className="font-semibold text-blue-900">{selectedLead['Número de Processos'] || '-'}</div>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-900 mb-1">% Manual</div>
+                      <div className="font-semibold text-blue-900">{selectedLead['Percentual Manual'] || '-'}%</div>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-900 mb-1">Prioridade</div>
+                      <div className="font-semibold text-blue-900">{selectedLead.Prioridade || '-'}</div>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-900 mb-1">Erros Frequentes</div>
+                      <div className="font-semibold text-blue-900">{selectedLead['Erros Frequentes'] || '-'}</div>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-900 mb-1">Sistemas</div>
+                      <div className="font-semibold text-blue-900 text-sm">{selectedLead['Sistemas Utilizados'] || '-'}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* ROI */}
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Análise de ROI</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <div className="text-sm text-green-900 mb-1">Economia Mensal</div>
+                      <div className="font-semibold text-green-900 text-xl">
+                        {formatCurrency(selectedLead['ROI - Economia Mensal'])}
+                      </div>
+                    </div>
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <div className="text-sm text-green-900 mb-1">Economia Anual</div>
+                      <div className="font-semibold text-green-900 text-xl">
+                        {formatCurrency(selectedLead['ROI - Economia Anual'])}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      
+      // ============================================
+      // DASHBOARD PRINCIPAL
+      // ============================================
+      
+      return (
+        <div className="min-h-screen bg-gray-50">
+          {/* Header */}
+          <div className="bg-white shadow-sm border-b no-print">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+              <div className="flex items-center gap-4">
+                <img 
+                  src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
+                  alt="HupData Logo" 
+                  className="h-8"
+                />
+                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+              </div>
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={fetchLeads}
+                  disabled={loading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center gap-2"
+                >
+                  {loading ? (
+                    <>⏳ Carregando...</>
+                  ) : (
+                    <>🔄 Atualizar</>
+                  )}
+                </button>
+                
+                <button
+                  onClick={handleLogout}
+                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                >
+                  Sair
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          {/* Main Content */}
+          <div className="max-w-7xl mx-auto p-6">
+            {/* Card Único - Total de Leads */}
+            <div className="mb-8">
+              <div className="stat-card bg-white p-8 rounded-xl shadow-lg max-w-md">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-lg font-medium text-gray-600">Total de Leads Capturados</div>
+                  <div className="text-4xl">👥</div>
+                </div>
+                <div className="text-5xl font-bold text-gray-900">{leads.length}</div>
+                <div className="text-sm text-gray-500 mt-2">
+                  {filteredLeads.length !== leads.length && (
+                    <span>({filteredLeads.length} filtrados)</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Filtros e Busca */}
+            <div className="bg-white rounded-xl shadow p-6 mb-6 no-print">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Buscar
+                  </label>
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Nome, email ou empresa..."
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Área
+                  </label>
+                  <select
+                    value={filterArea}
+                    onChange={(e) => setFilterArea(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="all">Todas</option>
+                    {areas.map(area => (
+                      <option key={area} value={area}>{area}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Prioridade
+                  </label>
+                  <select
+                    value={filterPrioridade}
+                    onChange={(e) => setFilterPrioridade(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="all">Todas</option>
+                    <option value="alta">Alta</option>
+                    <option value="média">Média</option>
+                    <option value="baixa">Baixa</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="mt-4 flex justify-between items-center">
+                <div className="text-sm text-gray-600">
+                  {filteredLeads.length} de {leads.length} leads
+                </div>
+                <button
+                  onClick={exportToCSV}
+                  disabled={filteredLeads.length === 0}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
+                >
+                  📥 Exportar CSV
+                </button>
+              </div>
+            </div>
+            
+            {/* Tabela de Leads */}
+            <div className="bg-white rounded-xl shadow overflow-hidden">
+              {loading ? (
+                <div className="p-12 text-center">
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent mb-4"></div>
+                  <div className="text-gray-600">Carregando leads...</div>
+                </div>
+              ) : filteredLeads.length === 0 ? (
+                <div className="p-12 text-center">
+                  <div className="text-6xl mb-4">📭</div>
+                  <div className="text-xl font-semibold text-gray-900 mb-2">
+                    {leads.length === 0 ? 'Nenhum lead encontrado' : 'Nenhum lead corresponde aos filtros'}
+                  </div>
+                  <p className="text-gray-600 mb-6">
+                    {leads.length === 0 
+                      ? 'Aguardando os primeiros leads serem capturados' 
+                      : 'Tente ajustar os filtros de busca'}
+                  </p>
+                  {leads.length === 0 && (
+                    <button
+                      onClick={fetchLeads}
+                      className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    >
+                      🔄 Atualizar
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Data
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Contato
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Empresa
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Área
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Prioridade
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">
+                          Ações
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredLeads.map((lead, index) => (
+                        <tr key={index} className="hover:bg-gray-50 transition fade-in">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {formatDate(lead.Timestamp)}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm font-medium text-gray-900">{lead.Nome || '-'}</div>
+                            <div className="text-sm text-gray-600">{lead.Email || '-'}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.Empresa || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {lead.Área || lead['Área'] || '-'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                              lead.Prioridade === 'alta' ? 'bg-red-100 text-red-800' :
+                              lead.Prioridade === 'média' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-green-100 text-green-800'
+                            }`}>
+                              {lead.Prioridade || '-'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm no-print">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedLead(lead);
+                                  setShowDetail(true);
+                                }}
+                                className="text-blue-600 hover:text-blue-900 font-medium"
+                              >
+                                Ver detalhes →
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLead(lead);
+                                }}
+                                className="text-red-600 hover:text-red-900 font-medium ml-2"
+                                title="Deletar lead"
+                              >
+                                🗑️ Deletar
+                              </button>
+                            </div>
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Renderizar aplicação
+    ReactDOM.render(<AdminDashboard />, document.getElementById('root'));
+  </script>
+</body>
+</html>
