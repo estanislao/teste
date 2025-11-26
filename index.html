@@ -665,10 +665,6 @@ const BusinessCaseBuilder = () => {
     // ===== MÉTODO 2: CÁLCULO POR PROCESSOS =====
     const custoAtualMensalPorProcessos = numeroProcessos * tempoMedioProcesso * custoPorHora * 4.33 * coeficienteEsforco;
     
-    // ===== NOVA VARIÁVEL (TESTE) =====
-    const multiplicadorErros = formData.errosFrequentes ? 1.15 : 1.0;
-    console.log('🧪 TESTE: multiplicadorErros =', multiplicadorErros);
-    
     // ===== VALIDAÇÃO CRUZADA: USA MÉDIA DOS DOIS MÉTODOS =====
     const custoAtualMensal = (custoAtualMensalPorTempo + custoAtualMensalPorProcessos) / 2;
     
