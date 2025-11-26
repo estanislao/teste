@@ -682,22 +682,88 @@ const BusinessCaseBuilder = () => {
     const economiaMensal = custoTotal * reducaoEstimada;
     const economiaAnual = economiaMensal * 12;
     
+    // ===== INTEGRAÇÃO COM CALCULOINVESTIMENTO.HTML (OPCIONAL) =====
+    // Tenta carregar configuração salva
+    let configInvestimento = null;
+    try {
+      const configSalva = localStorage.getItem('hupdata_config_investimento');
+      if (configSalva) {
+        configInvestimento = JSON.parse(configSalva);
+        console.log('✅ Configuração personalizada carregada');
+      }
+    } catch (e) {
+      console.log('ℹ️ Usando valores padrão');
+    }
+    
     // ===== AJUSTE DE INVESTIMENTO POR COMPLEXIDADE (numeroProcessos) =====
     let custoImplementacao = 45000;
     let complexidadeProjeto = 'Média';
     
-    if (numeroProcessos <= 5) {
-      custoImplementacao = 30000;
-      complexidadeProjeto = 'Baixa';
-    } else if (numeroProcessos <= 15) {
-      custoImplementacao = 45000;
-      complexidadeProjeto = 'Média';
-    } else if (numeroProcessos <= 25) {
-      custoImplementacao = 65000;
-      complexidadeProjeto = 'Alta';
+    // Se tiver configuração personalizada, calcula com a nova fórmula
+    if (configInvestimento) {
+      // Determinar complexidade
+      if (numeroProcessos <= 5) {
+        complexidadeProjeto = 'Baixa';
+      } else if (numeroProcessos <= 15) {
+        complexidadeProjeto = 'Média';
+      } else if (numeroProcessos <= 25) {
+        complexidadeProjeto = 'Alta';
+      } else {
+        complexidadeProjeto = 'Muito Alta';
+      }
+      
+      // Coeficiente de sistemas
+      let coefSistemas = 1.0;
+      if (fontesDados > 4) {
+        coefSistemas = 1.08;
+      } else if (fontesDados >= 3) {
+        coefSistemas = 1.05;
+      }
+      
+      // Calcular horas
+      const horasDiscovery = configInvestimento.horasPorEtapa[
+        complexidadeProjeto === 'Baixa' ? 'discoveryBaixa' :
+        complexidadeProjeto === 'Média' ? 'discoveryMedia' : 'discoveryAlta'
+      ];
+      
+      const base = numeroProcessos * configInvestimento.horasPorEtapa.horasPorProcesso * 0.8;
+      const horasDesenvolvimento = base * coefSistemas;
+      
+      const horasCapacitacao = (complexidadeProjeto === 'Baixa' || complexidadeProjeto === 'Média') 
+        ? configInvestimento.horasPorEtapa.capacitacaoBaixa 
+        : configInvestimento.horasPorEtapa.capacitacaoAlta;
+      
+      const horasGoLive = configInvestimento.horasPorEtapa.goLive;
+      
+      const totalHoras = horasDiscovery + horasDesenvolvimento + horasCapacitacao + horasGoLive;
+      
+      // Determinar valor por hora baseado no range
+      let valorPorHora = configInvestimento.valoresPorHora.valor4;
+      if (totalHoras <= 100) {
+        valorPorHora = configInvestimento.valoresPorHora.valor1;
+      } else if (totalHoras <= 300) {
+        valorPorHora = configInvestimento.valoresPorHora.valor2;
+      } else if (totalHoras <= 600) {
+        valorPorHora = configInvestimento.valoresPorHora.valor3;
+      }
+      
+      custoImplementacao = totalHoras * valorPorHora;
+      console.log('💰 Investimento calculado:', custoImplementacao);
     } else {
-      custoImplementacao = 85000;
-      complexidadeProjeto = 'Muito Alta';
+      // Sem configuração: usa valores fixos (comportamento original)
+      if (numeroProcessos <= 5) {
+        custoImplementacao = 30000;
+        complexidadeProjeto = 'Baixa';
+      } else if (numeroProcessos <= 15) {
+        custoImplementacao = 45000;
+        complexidadeProjeto = 'Média';
+      } else if (numeroProcessos <= 25) {
+        custoImplementacao = 65000;
+        complexidadeProjeto = 'Alta';
+      } else {
+        custoImplementacao = 85000;
+        complexidadeProjeto = 'Muito Alta';
+      }
     }
     
     // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
