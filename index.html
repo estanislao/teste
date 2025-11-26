@@ -665,91 +665,44 @@ const BusinessCaseBuilder = () => {
     // ===== MÉTODO 2: CÁLCULO POR PROCESSOS =====
     const custoAtualMensalPorProcessos = numeroProcessos * tempoMedioProcesso * custoPorHora * 4.33 * coeficienteEsforco;
     
-    // ===== MÉTODO 3: FÓRMULA MARCUS (NOVO) =====
+    // ===== NOVA VARIÁVEL (TESTE) =====
     const multiplicadorErros = formData.errosFrequentes ? 1.15 : 1.0;
-    const custoMedioMensalBase = tempoMedioProcesso * multiplicadorErros * numeroProcessos * numProfissionais * custoPorHora;
-    const custoMedioMensalDireto = custoMedioMensalBase * 1.20; // +20% gestão
+    console.log('🧪 TESTE: multiplicadorErros =', multiplicadorErros);
     
-    // USA FÓRMULA MARCUS
-    const custoAtualMensal = custoMedioMensalDireto;
+    // ===== VALIDAÇÃO CRUZADA: USA MÉDIA DOS DOIS MÉTODOS =====
+    const custoAtualMensal = (custoAtualMensalPorTempo + custoAtualMensalPorProcessos) / 2;
     
-    // Custo erros para exibição
-    const custoErros = formData.errosFrequentes ? (custoMedioMensalBase * 0.15) : 0;
-    const custoTotal = custoAtualMensal;
+    // ===== AJUSTE POR ERROS FREQUENTES =====
+    let custoErros = 0;
+    let custoTotal = custoAtualMensal;
+    
+    if (formData.errosFrequentes) {
+      // Adiciona 15% de custo por retrabalho de erros
+      custoErros = custoAtualMensal * 0.15;
+      custoTotal = custoAtualMensal + custoErros;
+    }
     
     // Economia mensal e anual
     const economiaMensal = custoTotal * reducaoEstimada;
     const economiaAnual = economiaMensal * 12;
     
-    // ===== CÁLCULO DE INVESTIMENTO (NOVA FÓRMULA) =====
-    
-    // TABELAS FIXAS (sem localStorage por enquanto)
-    const HORAS_DISCOVERY = {
-      'Baixa': 40,
-      'Média': 80,
-      'Alta': 96,
-      'Muito Alta': 96
-    };
-    
-    const HORAS_POR_PROCESSO = 160;
-    
-    const HORAS_CAPACITACAO = {
-      'Baixa': 20,
-      'Média': 20,
-      'Alta': 40,
-      'Muito Alta': 40
-    };
-    
-    const HORAS_GO_LIVE = 20;
-    
-    const VALOR_POR_HORA_RANGES = [
-      { max: 100, valor: 290 },
-      { max: 300, valor: 250 },
-      { max: 600, valor: 200 },
-      { max: Infinity, valor: 190 }
-    ];
-    
-    // Determinar complexidade
+    // ===== AJUSTE DE INVESTIMENTO POR COMPLEXIDADE (numeroProcessos) =====
+    let custoImplementacao = 45000;
     let complexidadeProjeto = 'Média';
+    
     if (numeroProcessos <= 5) {
+      custoImplementacao = 30000;
       complexidadeProjeto = 'Baixa';
     } else if (numeroProcessos <= 15) {
+      custoImplementacao = 45000;
       complexidadeProjeto = 'Média';
     } else if (numeroProcessos <= 25) {
+      custoImplementacao = 65000;
       complexidadeProjeto = 'Alta';
     } else {
+      custoImplementacao = 85000;
       complexidadeProjeto = 'Muito Alta';
     }
-    
-    // Coeficiente sistemas
-    let coeficienteSistemas = 1.0;
-    if (fontesDados <= 2) {
-      coeficienteSistemas = 1.0;
-    } else if (fontesDados <= 4) {
-      coeficienteSistemas = 1.05;
-    } else {
-      coeficienteSistemas = 1.08;
-    }
-    
-    // FÓRMULA
-    const horasDiscovery = HORAS_DISCOVERY[complexidadeProjeto];
-    const base = numeroProcessos * HORAS_POR_PROCESSO * 0.8;
-    const horasDesenvolvimento = base * coeficienteSistemas;
-    const horasCapacitacao = HORAS_CAPACITACAO[complexidadeProjeto];
-    const horasGoLive = HORAS_GO_LIVE;
-    const totalHorasInvestimento = horasDiscovery + horasDesenvolvimento + horasCapacitacao + horasGoLive;
-    
-    // Determinar valor por hora
-    let valorPorHora = 190;
-    for (let range of VALOR_POR_HORA_RANGES) {
-      if (totalHorasInvestimento <= range.max) {
-        valorPorHora = range.valor;
-        break;
-      }
-    }
-    
-    // INVESTIMENTO FINAL
-    const custoImplementacao = totalHorasInvestimento * valorPorHora;
     
     // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
     let numeroProfissionais = 1;
@@ -861,12 +814,9 @@ const BusinessCaseBuilder = () => {
       custoAtualMensal,
       custoAtualMensalPorTempo,
       custoAtualMensalPorProcessos,
-      custoMedioMensalBase,
-      custoMedioMensalDireto,
       custoErros,
       custoTotal,
       custoImplementacao,
-      multiplicadorErrosCalculo: multiplicadorErros,
       
       // Economias
       economiaMensal,
@@ -905,16 +855,7 @@ const BusinessCaseBuilder = () => {
       alertas,
       
       // Benchmark
-      benchmark,
-      
-      // NOVAS: Detalhamento Investimento
-      horasDiscovery,
-      horasDesenvolvimento,
-      horasCapacitacao,
-      horasGoLive,
-      totalHorasInvestimento,
-      valorPorHora,
-      coeficienteSistemas
+      benchmark
     };
   };
 
