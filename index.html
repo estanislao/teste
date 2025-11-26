@@ -681,23 +681,75 @@ const BusinessCaseBuilder = () => {
     const economiaMensal = custoTotal * reducaoEstimada;
     const economiaAnual = economiaMensal * 12;
     
-    // ===== AJUSTE DE INVESTIMENTO POR COMPLEXIDADE (numeroProcessos) =====
-    let custoImplementacao = 45000;
-    let complexidadeProjeto = 'Média';
+    // ===== CÁLCULO DE INVESTIMENTO (NOVA FÓRMULA) =====
     
+    // TABELAS FIXAS (sem localStorage por enquanto)
+    const HORAS_DISCOVERY = {
+      'Baixa': 40,
+      'Média': 80,
+      'Alta': 96,
+      'Muito Alta': 96
+    };
+    
+    const HORAS_POR_PROCESSO = 160;
+    
+    const HORAS_CAPACITACAO = {
+      'Baixa': 20,
+      'Média': 20,
+      'Alta': 40,
+      'Muito Alta': 40
+    };
+    
+    const HORAS_GO_LIVE = 20;
+    
+    const VALOR_POR_HORA_RANGES = [
+      { max: 100, valor: 290 },
+      { max: 300, valor: 250 },
+      { max: 600, valor: 200 },
+      { max: Infinity, valor: 190 }
+    ];
+    
+    // Determinar complexidade
+    let complexidadeProjeto = 'Média';
     if (numeroProcessos <= 5) {
-      custoImplementacao = 30000;
       complexidadeProjeto = 'Baixa';
     } else if (numeroProcessos <= 15) {
-      custoImplementacao = 45000;
       complexidadeProjeto = 'Média';
     } else if (numeroProcessos <= 25) {
-      custoImplementacao = 65000;
       complexidadeProjeto = 'Alta';
     } else {
-      custoImplementacao = 85000;
       complexidadeProjeto = 'Muito Alta';
     }
+    
+    // Coeficiente sistemas
+    let coeficienteSistemas = 1.0;
+    if (fontesDados <= 2) {
+      coeficienteSistemas = 1.0;
+    } else if (fontesDados <= 4) {
+      coeficienteSistemas = 1.05;
+    } else {
+      coeficienteSistemas = 1.08;
+    }
+    
+    // FÓRMULA
+    const horasDiscovery = HORAS_DISCOVERY[complexidadeProjeto];
+    const base = numeroProcessos * HORAS_POR_PROCESSO * 0.8;
+    const horasDesenvolvimento = base * coeficienteSistemas;
+    const horasCapacitacao = HORAS_CAPACITACAO[complexidadeProjeto];
+    const horasGoLive = HORAS_GO_LIVE;
+    const totalHorasInvestimento = horasDiscovery + horasDesenvolvimento + horasCapacitacao + horasGoLive;
+    
+    // Determinar valor por hora
+    let valorPorHora = 190;
+    for (let range of VALOR_POR_HORA_RANGES) {
+      if (totalHorasInvestimento <= range.max) {
+        valorPorHora = range.valor;
+        break;
+      }
+    }
+    
+    // INVESTIMENTO FINAL
+    const custoImplementacao = totalHorasInvestimento * valorPorHora;
     
     // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
     let numeroProfissionais = 1;
@@ -809,9 +861,12 @@ const BusinessCaseBuilder = () => {
       custoAtualMensal,
       custoAtualMensalPorTempo,
       custoAtualMensalPorProcessos,
+      custoMedioMensalBase,
+      custoMedioMensalDireto,
       custoErros,
       custoTotal,
       custoImplementacao,
+      multiplicadorErrosCalculo: multiplicadorErros,
       
       // Economias
       economiaMensal,
@@ -850,7 +905,16 @@ const BusinessCaseBuilder = () => {
       alertas,
       
       // Benchmark
-      benchmark
+      benchmark,
+      
+      // NOVAS: Detalhamento Investimento
+      horasDiscovery,
+      horasDesenvolvimento,
+      horasCapacitacao,
+      horasGoLive,
+      totalHorasInvestimento,
+      valorPorHora,
+      coeficienteSistemas
     };
   };
 
