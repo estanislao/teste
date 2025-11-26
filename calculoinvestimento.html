@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HupData - Calculadora de Investimento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    }
+    
+    .editable-field {
+      background: #fffbeb;
+      border: 2px solid #f59e0b;
+      transition: all 0.3s;
+    }
+    
+    .editable-field:focus {
+      background: white;
+      border-color: #3b82f6;
+      outline: none;
+    }
+    
+    .result-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div class="min-h-screen py-8 px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Calculadora de Investimento</h1>
+            <p class="text-gray-600">Configure os parâmetros e calcule o investimento automaticamente</p>
+            <div id="statusConfiguracao" class="mt-2 text-sm">
+              <span class="text-gray-500">Carregando...</span>
+            </div>
+          </div>
+          <img 
+            src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
+            alt="HupData Logo" 
+            class="h-10"
+          />
+        </div>
+      </div>
+
+      <!-- Inputs do Projeto -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">📋 Dados do Projeto</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Número de Processos</label>
+            <input 
+              type="number" 
+              id="numeroProcessos" 
+              value="10" 
+              min="1"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              oninput="calcular()"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Número de Sistemas</label>
+            <select 
+              id="numeroSistemas" 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              onchange="calcular()"
+            >
+              <option value="1">1-2 sistemas</option>
+              <option value="1.05">3-4 sistemas</option>
+              <option value="1.08">5+ sistemas</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Complexidade do Projeto</label>
+            <select 
+              id="complexidade" 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              onchange="calcular()"
+            >
+              <option value="baixa">Baixa (1-5 processos)</option>
+              <option value="media" selected>Média (6-15 processos)</option>
+              <option value="alta">Alta (16-25 processos)</option>
+              <option value="muito-alta">Muito Alta (26+ processos)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de Horas Editável -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">⏱️ Configuração de Horas por Etapa</h2>
+        <p class="text-sm text-gray-600 mb-4">✏️ Campos com fundo amarelo são editáveis</p>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Etapa</th>
+                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Característica</th>
+                <th class="px-4 py-3 text-right text-sm font-semibold text-gray-900">Horas</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <!-- Discovery -->
+              <tr>
+                <td class="px-4 py-3 font-medium text-gray-900" rowspan="3">Discovery</td>
+                <td class="px-4 py-3 text-gray-600">Baixa</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="discoveryBaixa" 
+                    value="40" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-600">Média</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="discoveryMedia" 
+                    value="80" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-600">Alta/Muito Alta</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="discoveryAlta" 
+                    value="96" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              
+              <!-- Desenvolvimento -->
+              <tr>
+                <td class="px-4 py-3 font-medium text-gray-900">Desenvolvimento</td>
+                <td class="px-4 py-3 text-gray-600">Horas por processo</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="horasPorProcesso" 
+                    value="160" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              
+              <!-- Capacitação -->
+              <tr>
+                <td class="px-4 py-3 font-medium text-gray-900" rowspan="2">Capacitação</td>
+                <td class="px-4 py-3 text-gray-600">Baixa/Média</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="capacitacaoBaixa" 
+                    value="20" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-600">Alta/Muito Alta</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="capacitacaoAlta" 
+                    value="40" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              
+              <!-- Go-Live -->
+              <tr>
+                <td class="px-4 py-3 font-medium text-gray-900">Go-Live</td>
+                <td class="px-4 py-3 text-gray-600">Sempre</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="goLive" 
+                    value="20" 
+                    class="editable-field w-24 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabela de Valores por Hora -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">💰 Valor por Hora (Ranges)</h2>
+        <p class="text-sm text-gray-600 mb-4">✏️ Campos com fundo amarelo são editáveis</p>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Range de Horas</th>
+                <th class="px-4 py-3 text-right text-sm font-semibold text-gray-900">Valor por Hora (R$)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="px-4 py-3 text-gray-900">Até 100 horas</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="valor1" 
+                    value="290" 
+                    class="editable-field w-32 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-900">Entre 100 e 300 horas</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="valor2" 
+                    value="250" 
+                    class="editable-field w-32 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-900">Entre 301 e 600 horas</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="valor3" 
+                    value="200" 
+                    class="editable-field w-32 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-gray-900">Acima de 601 horas</td>
+                <td class="px-4 py-3 text-right">
+                  <input 
+                    type="number" 
+                    id="valor4" 
+                    value="190" 
+                    class="editable-field w-32 px-3 py-2 rounded text-right"
+                    oninput="calcular()"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Detalhamento do Cálculo -->
+      <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">🧮 Detalhamento do Cálculo</h2>
+        
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg">
+            <div>
+              <div class="text-sm text-blue-900 mb-1">Discovery (horas)</div>
+              <div id="horasDiscovery" class="text-2xl font-bold text-blue-900">80</div>
+            </div>
+            <div>
+              <div class="text-sm text-blue-900 mb-1">Desenvolvimento (horas)</div>
+              <div id="horasDesenvolvimento" class="text-2xl font-bold text-blue-900">1,280</div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 p-4 bg-green-50 rounded-lg">
+            <div>
+              <div class="text-sm text-green-900 mb-1">Capacitação (horas)</div>
+              <div id="horasCapacitacao" class="text-2xl font-bold text-green-900">20</div>
+            </div>
+            <div>
+              <div class="text-sm text-green-900 mb-1">Go-Live (horas)</div>
+              <div id="horasGoLive" class="text-2xl font-bold text-green-900">20</div>
+            </div>
+          </div>
+          
+          <div class="p-4 bg-purple-50 rounded-lg">
+            <div class="text-sm text-purple-900 mb-1">Total de Horas</div>
+            <div id="totalHoras" class="text-3xl font-bold text-purple-900">1,400</div>
+          </div>
+          
+          <div class="p-4 bg-orange-50 rounded-lg">
+            <div class="text-sm text-orange-900 mb-1">Valor por Hora Aplicado</div>
+            <div id="valorHoraAplicado" class="text-2xl font-bold text-orange-900">R$ 190,00</div>
+            <div class="text-xs text-orange-700 mt-1">Range: Acima de 601 horas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resultado Final -->
+      <div class="result-box mb-6">
+        <div class="text-center">
+          <div class="text-sm uppercase tracking-wider mb-2 opacity-90">Investimento Total</div>
+          <div id="investimentoFinal" class="text-6xl font-bold mb-4">R$ 266.000,00</div>
+          <div class="text-sm opacity-90">
+            <span id="totalHorasCopia">1,400 horas</span> × 
+            <span id="valorHoraCopia">R$ 190/h</span>
+          </div>
+          
+          <div class="flex gap-4 justify-center mt-6">
+            <button 
+              onclick="copiarValor()" 
+              class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-purple-50 transition"
+            >
+              📋 Copiar Valor
+            </button>
+            
+            <button 
+              onclick="salvarConfiguracao()" 
+              class="bg-green-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-600 transition"
+            >
+              💾 Salvar Configuração
+            </button>
+          </div>
+          
+          <div id="mensagemSucesso" class="mt-4 text-sm opacity-0 transition-opacity duration-500">
+            ✅ Configuração salva! O index.html usará estes valores.
+          </div>
+        </div>
+      </div>
+
+      <!-- Instruções -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+        <h3 class="text-lg font-bold text-blue-900 mb-3">📝 Como Usar</h3>
+        <ol class="space-y-2 text-sm text-blue-900">
+          <li><strong>1.</strong> Configure o número de processos e complexidade do projeto</li>
+          <li><strong>2.</strong> Ajuste as horas de cada etapa nos campos amarelos (se necessário)</li>
+          <li><strong>3.</strong> Ajuste os valores por hora nos ranges (se necessário)</li>
+          <li><strong>4.</strong> O cálculo é automático - veja o resultado no card roxo</li>
+          <li><strong>5.</strong> Clique em "Copiar Valor" para usar no index.html</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcular() {
+      // Dados do projeto
+      const numeroProcessos = parseInt(document.getElementById('numeroProcessos').value) || 0;
+      const coeficienteSistemas = parseFloat(document.getElementById('numeroSistemas').value);
+      const complexidade = document.getElementById('complexidade').value;
+      
+      // Horas por etapa
+      const discoveryBaixa = parseFloat(document.getElementById('discoveryBaixa').value) || 0;
+      const discoveryMedia = parseFloat(document.getElementById('discoveryMedia').value) || 0;
+      const discoveryAlta = parseFloat(document.getElementById('discoveryAlta').value) || 0;
+      const horasPorProcesso = parseFloat(document.getElementById('horasPorProcesso').value) || 0;
+      const capacitacaoBaixa = parseFloat(document.getElementById('capacitacaoBaixa').value) || 0;
+      const capacitacaoAlta = parseFloat(document.getElementById('capacitacaoAlta').value) || 0;
+      const goLive = parseFloat(document.getElementById('goLive').value) || 0;
+      
+      // Valores por hora
+      const valor1 = parseFloat(document.getElementById('valor1').value) || 0;
+      const valor2 = parseFloat(document.getElementById('valor2').value) || 0;
+      const valor3 = parseFloat(document.getElementById('valor3').value) || 0;
+      const valor4 = parseFloat(document.getElementById('valor4').value) || 0;
+      
+      // === CÁLCULO DAS HORAS ===
+      
+      // 1. Discovery
+      let horasDiscovery = 0;
+      if (complexidade === 'baixa') {
+        horasDiscovery = discoveryBaixa;
+      } else if (complexidade === 'media') {
+        horasDiscovery = discoveryMedia;
+      } else {
+        horasDiscovery = discoveryAlta;
+      }
+      
+      // 2. Desenvolvimento
+      // Base: Processos × HorasPorProcesso × 80%
+      const base = numeroProcessos * horasPorProcesso * 0.8;
+      const horasDesenvolvimento = base * coeficienteSistemas;
+      
+      // 3. Capacitação
+      let horasCapacitacao = 0;
+      if (complexidade === 'baixa' || complexidade === 'media') {
+        horasCapacitacao = capacitacaoBaixa;
+      } else {
+        horasCapacitacao = capacitacaoAlta;
+      }
+      
+      // 4. Go-Live
+      const horasGoLive = goLive;
+      
+      // 5. Total de Horas
+      const totalHoras = horasDiscovery + horasDesenvolvimento + horasCapacitacao + horasGoLive;
+      
+      // === DETERMINAR VALOR POR HORA ===
+      let valorPorHora = 0;
+      let rangeTexto = '';
+      
+      if (totalHoras <= 100) {
+        valorPorHora = valor1;
+        rangeTexto = 'Até 100 horas';
+      } else if (totalHoras <= 300) {
+        valorPorHora = valor2;
+        rangeTexto = 'Entre 100 e 300 horas';
+      } else if (totalHoras <= 600) {
+        valorPorHora = valor3;
+        rangeTexto = 'Entre 301 e 600 horas';
+      } else {
+        valorPorHora = valor4;
+        rangeTexto = 'Acima de 601 horas';
+      }
+      
+      // === INVESTIMENTO FINAL ===
+      const investimentoTotal = totalHoras * valorPorHora;
+      
+      // === ATUALIZAR INTERFACE ===
+      document.getElementById('horasDiscovery').textContent = horasDiscovery.toLocaleString('pt-BR');
+      document.getElementById('horasDesenvolvimento').textContent = horasDesenvolvimento.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+      document.getElementById('horasCapacitacao').textContent = horasCapacitacao.toLocaleString('pt-BR');
+      document.getElementById('horasGoLive').textContent = horasGoLive.toLocaleString('pt-BR');
+      document.getElementById('totalHoras').textContent = totalHoras.toLocaleString('pt-BR', {maximumFractionDigits: 0});
+      document.getElementById('valorHoraAplicado').textContent = 'R$ ' + valorPorHora.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('valorHoraAplicado').nextElementSibling.textContent = 'Range: ' + rangeTexto;
+      
+      document.getElementById('investimentoFinal').textContent = 'R$ ' + investimentoTotal.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('totalHorasCopia').textContent = totalHoras.toLocaleString('pt-BR', {maximumFractionDigits: 0}) + ' horas';
+      document.getElementById('valorHoraCopia').textContent = 'R$ ' + valorPorHora.toLocaleString('pt-BR', {maximumFractionDigits: 0}) + '/h';
+      
+      // Salvar no localStorage para uso no index.html
+      localStorage.setItem('investimentoCalculado', investimentoTotal);
+      localStorage.setItem('totalHorasCalculadas', totalHoras);
+    }
+    
+    function copiarValor() {
+      const investimento = document.getElementById('investimentoFinal').textContent;
+      navigator.clipboard.writeText(investimento).then(() => {
+        alert('✅ Valor copiado: ' + investimento + '\n\nUse este valor no index.html');
+      });
+    }
+    
+    function salvarConfiguracao() {
+      // Coletar todos os valores das tabelas
+      const config = {
+        horasPorEtapa: {
+          discoveryBaixa: parseFloat(document.getElementById('discoveryBaixa').value),
+          discoveryMedia: parseFloat(document.getElementById('discoveryMedia').value),
+          discoveryAlta: parseFloat(document.getElementById('discoveryAlta').value),
+          horasPorProcesso: parseFloat(document.getElementById('horasPorProcesso').value),
+          capacitacaoBaixa: parseFloat(document.getElementById('capacitacaoBaixa').value),
+          capacitacaoAlta: parseFloat(document.getElementById('capacitacaoAlta').value),
+          goLive: parseFloat(document.getElementById('goLive').value)
+        },
+        valoresPorHora: {
+          valor1: parseFloat(document.getElementById('valor1').value),
+          valor2: parseFloat(document.getElementById('valor2').value),
+          valor3: parseFloat(document.getElementById('valor3').value),
+          valor4: parseFloat(document.getElementById('valor4').value)
+        },
+        dataAtualizacao: new Date().toISOString()
+      };
+      
+      // Salvar no localStorage
+      localStorage.setItem('hupdata_config_investimento', JSON.stringify(config));
+      
+      // Mostrar mensagem de sucesso
+      const mensagem = document.getElementById('mensagemSucesso');
+      mensagem.style.opacity = '1';
+      
+      // Esconder mensagem após 3 segundos
+      setTimeout(() => {
+        mensagem.style.opacity = '0';
+      }, 3000);
+      
+      console.log('✅ Configuração salva no localStorage:', config);
+    }
+    
+    function carregarConfiguracao() {
+      // Tentar carregar configuração salva
+      const configSalva = localStorage.getItem('hupdata_config_investimento');
+      const statusDiv = document.getElementById('statusConfiguracao');
+      
+      if (configSalva) {
+        try {
+          const config = JSON.parse(configSalva);
+          
+          // Aplicar valores salvos
+          document.getElementById('discoveryBaixa').value = config.horasPorEtapa.discoveryBaixa;
+          document.getElementById('discoveryMedia').value = config.horasPorEtapa.discoveryMedia;
+          document.getElementById('discoveryAlta').value = config.horasPorEtapa.discoveryAlta;
+          document.getElementById('horasPorProcesso').value = config.horasPorEtapa.horasPorProcesso;
+          document.getElementById('capacitacaoBaixa').value = config.horasPorEtapa.capacitacaoBaixa;
+          document.getElementById('capacitacaoAlta').value = config.horasPorEtapa.capacitacaoAlta;
+          document.getElementById('goLive').value = config.horasPorEtapa.goLive;
+          
+          document.getElementById('valor1').value = config.valoresPorHora.valor1;
+          document.getElementById('valor2').value = config.valoresPorHora.valor2;
+          document.getElementById('valor3').value = config.valoresPorHora.valor3;
+          document.getElementById('valor4').value = config.valoresPorHora.valor4;
+          
+          // Mostrar status
+          const dataAtualizacao = new Date(config.dataAtualizacao);
+          statusDiv.innerHTML = `
+            <span class="text-green-600 font-medium">✅ Configuração ativa</span>
+            <span class="text-gray-500"> • Salva em ${dataAtualizacao.toLocaleDateString('pt-BR')} às ${dataAtualizacao.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</span>
+            <span class="text-gray-500"> • O index.html está usando estes valores</span>
+          `;
+          
+          console.log('✅ Configuração carregada do localStorage');
+          console.log('📅 Última atualização:', config.dataAtualizacao);
+        } catch (e) {
+          console.error('❌ Erro ao carregar configuração:', e);
+          statusDiv.innerHTML = '<span class="text-red-600">❌ Erro ao carregar configuração</span>';
+        }
+      } else {
+        statusDiv.innerHTML = `
+          <span class="text-orange-600 font-medium">⚠️ Usando valores padrão</span>
+          <span class="text-gray-500"> • Clique em "Salvar Configuração" para o index.html usar estes valores</span>
+        `;
+      }
+    }
+    
+    // Carregar configuração ao iniciar e calcular
+    carregarConfiguracao();
+    calcular();
+  </script>
+</body>
+</html>
