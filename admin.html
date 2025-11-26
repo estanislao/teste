@@ -8,7 +8,6 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/lucide-static@latest/font/lucide.css">
   
   <style>
     @media print {
@@ -42,18 +41,14 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect } = React;
     
     function AdminDashboard() {
       // ============================================
-      // CONFIGURAÇÃO - ALTERE AQUI
+      // CONFIGURAÇÃO
       // ============================================
       
-      // ⚠️ IMPORTANTE: Substitua o texto abaixo pela URL do seu Google Apps Script
-      // Exemplo: 'https://script.google.com/macros/s/AKfycbxXXXXXXXXXXXXXXX/exec'
       const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec';
-      
-      // Senha de acesso (mude se quiser)
       const ADMIN_PASSWORD = 'hupdata2024';
       
       // ============================================
@@ -97,26 +92,14 @@
       // ============================================
       
       const fetchLeads = async () => {
-        // Log para debug - mostra URL configurada
-        console.log('🔗 URL configurada:', GOOGLE_APPS_SCRIPT_URL);
-        console.log('📏 Tamanho da URL:', GOOGLE_APPS_SCRIPT_URL.length, 'caracteres');
-        
-        // Verifica se é o placeholder (não URL real)
         if (!GOOGLE_APPS_SCRIPT_URL || 
             GOOGLE_APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT' ||
             !GOOGLE_APPS_SCRIPT_URL.startsWith('https://script.google.com/') ||
             !GOOGLE_APPS_SCRIPT_URL.endsWith('/exec')) {
-          console.error('❌ URL inválida ou não configurada');
-          console.log('📝 A URL deve:');
-          console.log('   ✓ Começar com: https://script.google.com/');
-          console.log('   ✓ Terminar com: /exec');
-          console.log('   ✓ Ter pelo menos 80 caracteres');
-          alert('⚠️ Configure a URL do Google Apps Script corretamente (linha 54)\n\nA URL deve começar com https://script.google.com/ e terminar com /exec');
+          alert('⚠️ Configure a URL do Google Apps Script corretamente (linha 36)');
           return;
         }
         
-        console.log('✅ URL validada com sucesso!');
-        console.log('📡 Iniciando busca de leads...');
         setLoading(true);
         
         try {
@@ -173,62 +156,6 @@
         
         return matchSearch && matchArea && matchPrioridade;
       });
-      
-      // ============================================
-      // ESTATÍSTICAS
-      // ============================================
-      
-      // Debug: Mostrar campos do primeiro lead
-      if (leads.length > 0) {
-        console.log('📊 DEBUG - Campos disponíveis no primeiro lead:');
-        Object.keys(leads[0]).forEach(key => {
-          if (key.includes('ROI') || key.includes('Investimento') || key.includes('Economia')) {
-            console.log(`   - "${key}": ${leads[0][key]}`);
-          }
-        });
-      }
-      
-      const stats = {
-        totalLeads: leads.length,
-        investimentoTotal: leads.reduce((sum, lead) => {
-          // Tenta múltiplas variações do nome do campo
-          let valor = parseFloat(lead['ROI - Investimento']) || 
-                      parseFloat(lead['ROI - Investimento (R$)']) ||
-                      parseFloat(lead['Investimento']) ||
-                      parseFloat(lead['Investimento Estimado']) ||
-                      0;
-          
-          // Se o valor vier como string com R$, remove formatação
-          if (typeof lead['ROI - Investimento'] === 'string') {
-            const cleanValue = lead['ROI - Investimento'].replace(/[R$\s.]/g, '').replace(',', '.');
-            valor = parseFloat(cleanValue) || 0;
-          }
-          
-          console.log(`💰 Lead ${lead.Nome}: Investimento = ${valor}`);
-          return sum + valor;
-        }, 0),
-        economiaAnual: leads.reduce((sum, lead) => {
-          let valor = parseFloat(lead['ROI - Economia Anual']) || 0;
-          
-          // Se vier como string formatada
-          if (typeof lead['ROI - Economia Anual'] === 'string') {
-            const cleanValue = lead['ROI - Economia Anual'].replace(/[R$\s.]/g, '').replace(',', '.');
-            valor = parseFloat(cleanValue) || 0;
-          }
-          
-          return sum + valor;
-        }, 0),
-        paybackMedio: leads.length > 0 ? leads.reduce((sum, lead) => {
-          const valor = parseFloat(lead['ROI - Payback (meses)']) || 0;
-          return sum + valor;
-        }, 0) / leads.length : 0
-      };
-      
-      console.log('📈 ESTATÍSTICAS CALCULADAS:');
-      console.log(`   Total Leads: ${stats.totalLeads}`);
-      console.log(`   Investimento Total: R$ ${stats.investimentoTotal.toFixed(2)}`);
-      console.log(`   Economia Anual: R$ ${stats.economiaAnual.toFixed(2)}`);
-      console.log(`   Payback Médio: ${stats.paybackMedio.toFixed(1)} meses`);
       
       // Distribuição por área
       const areas = [...new Set(leads.map(l => l.Área || l['Área'] || 'Não informado'))];
@@ -424,12 +351,6 @@
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Análise de ROI</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="bg-green-50 p-4 rounded-lg">
-                      <div className="text-sm text-green-900 mb-1">Investimento Estimado</div>
-                      <div className="font-semibold text-green-900 text-xl">
-                        {formatCurrency(selectedLead['ROI - Investimento'])}
-                      </div>
-                    </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
                       <div className="text-sm text-green-900 mb-1">Economia Mensal</div>
                       <div className="font-semibold text-green-900 text-xl">
                         {formatCurrency(selectedLead['ROI - Economia Mensal'])}
@@ -440,37 +361,6 @@
                       <div className="font-semibold text-green-900 text-xl">
                         {formatCurrency(selectedLead['ROI - Economia Anual'])}
                       </div>
-                    </div>
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <div className="text-sm text-green-900 mb-1">Payback</div>
-                      <div className="font-semibold text-green-900 text-xl">
-                        {selectedLead['ROI - Payback (meses)'] ? 
-                          `${parseFloat(selectedLead['ROI - Payback (meses)']).toFixed(1)} meses` : 
-                          '-'}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Implementação */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Plano de Implementação</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <div className="text-sm text-purple-900 mb-1">Complexidade</div>
-                      <div className="font-semibold text-purple-900">{selectedLead['ROI - Complexidade'] || '-'}</div>
-                    </div>
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <div className="text-sm text-purple-900 mb-1">Tempo Estimado</div>
-                      <div className="font-semibold text-purple-900">
-                        {selectedLead['ROI - Tempo Mínimo (semanas)'] && selectedLead['ROI - Tempo Total (semanas)'] ?
-                          `${selectedLead['ROI - Tempo Mínimo (semanas)']}-${selectedLead['ROI - Tempo Total (semanas)']} semanas` :
-                          '-'}
-                      </div>
-                    </div>
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <div className="text-sm text-purple-900 mb-1">Estratégia</div>
-                      <div className="font-semibold text-purple-900">{selectedLead['ROI - Estratégia'] || '-'}</div>
                     </div>
                   </div>
                 </div>
@@ -523,43 +413,18 @@
           
           {/* Main Content */}
           <div className="max-w-7xl mx-auto p-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="stat-card bg-white p-6 rounded-xl shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm text-gray-600">Total de Leads</div>
-                  <div className="text-2xl">👥</div>
+            {/* Card Único - Total de Leads */}
+            <div className="mb-8">
+              <div className="stat-card bg-white p-8 rounded-xl shadow-lg max-w-md">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-lg font-medium text-gray-600">Total de Leads Capturados</div>
+                  <div className="text-4xl">👥</div>
                 </div>
-                <div className="text-3xl font-bold text-gray-900">{stats.totalLeads}</div>
-              </div>
-              
-              <div className="stat-card bg-white p-6 rounded-xl shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm text-gray-600">Investimento Total</div>
-                  <div className="text-2xl">💰</div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(stats.investimentoTotal)}
-                </div>
-              </div>
-              
-              <div className="stat-card bg-white p-6 rounded-xl shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm text-gray-600">Economia Anual Total</div>
-                  <div className="text-2xl">📈</div>
-                </div>
-                <div className="text-2xl font-bold text-green-600">
-                  {formatCurrency(stats.economiaAnual)}
-                </div>
-              </div>
-              
-              <div className="stat-card bg-white p-6 rounded-xl shadow">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-sm text-gray-600">Payback Médio</div>
-                  <div className="text-2xl">⏱️</div>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {stats.paybackMedio > 0 ? `${stats.paybackMedio.toFixed(1)} meses` : '-'}
+                <div className="text-5xl font-bold text-gray-900">{leads.length}</div>
+                <div className="text-sm text-gray-500 mt-2">
+                  {filteredLeads.length !== leads.length && (
+                    <span>({filteredLeads.length} filtrados)</span>
+                  )}
                 </div>
               </div>
             </div>
@@ -674,12 +539,6 @@
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Prioridade
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Economia Anual
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Payback
-                        </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">
                           Ações
                         </th>
@@ -709,14 +568,6 @@
                             }`}>
                               {lead.Prioridade || '-'}
                             </span>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-green-600">
-                            {formatCurrency(lead['ROI - Economia Anual'])}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {lead['ROI - Payback (meses)'] ? 
-                              `${parseFloat(lead['ROI - Payback (meses)']).toFixed(1)} meses` : 
-                              '-'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm no-print">
                             <button
