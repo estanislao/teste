@@ -1107,7 +1107,7 @@ const BusinessCaseBuilder = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Número de Profissionais na Equipe
+                  Número de Profissionais na Equipe de Automação de Processos
                 </label>
                 <input
                   type="number"
@@ -1139,7 +1139,7 @@ const BusinessCaseBuilder = () => {
               
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Custo Médio por Hora (R$)
+                  Custo Médio por Hora (R$) da equipe
                 </label>
                 <input
                   type="number"
@@ -1149,6 +1149,9 @@ const BusinessCaseBuilder = () => {
                   min="0"
                   step="10"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  💡 Custo CLT: multiplique o salário/hora por 70%-80% para custo total
+                </p>
               </div>
               
               <div>
@@ -1297,21 +1300,7 @@ const BusinessCaseBuilder = () => {
 
             {/* Cards de Métricas - Nova Ordem */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* 1. Investimento (Laranja) */}
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-orange-100 text-sm font-medium">Investimento</span>
-                  <Download className="w-5 h-5 text-orange-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.custoImplementacao.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-orange-100 text-sm">
-                  Complexidade: {roi.complexidadeProjeto}
-                </div>
-              </div>
-
-              {/* 2. ROI Anual (Roxo) */}
+              {/* 1. ROI Anual (Roxo) */}
               <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
@@ -1322,6 +1311,20 @@ const BusinessCaseBuilder = () => {
                 </div>
                 <div className="text-purple-100 text-sm">
                   Retorno sobre investimento
+                </div>
+              </div>
+
+              {/* 2. Investimento (Laranja) */}
+              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-orange-100 text-sm font-medium">Investimento</span>
+                  <Download className="w-5 h-5 text-orange-200" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  R$ {roi.custoImplementacao.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="text-orange-100 text-sm">
+                  Complexidade: {roi.complexidadeProjeto}
                 </div>
               </div>
 
