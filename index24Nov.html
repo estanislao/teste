@@ -196,6 +196,27 @@
           { titulo: 'Calendário de Obrigações', economia: 9000, tempo: 2, impacto: 'MEDIO' },
           { titulo: 'Conciliação de Dados', economia: 11000, tempo: 3, impacto: 'ALTO' }
         ]
+      },
+      esg: {
+        nome: 'ESG',
+        reducaoTempo: 68,
+        reducaoErros: 88,
+        ganhoVelocidade: 72,
+        desafiosComuns: [
+          'Coleta de dados de múltiplas fontes',
+          'Consistência e auditabilidade dos dados',
+          'Complexidade de frameworks (GRI, TCFD, IFRS)'
+        ],
+        beneficiosEspecificos: [
+          'Centralização automática de dados ESG de IoT, sensores e sistemas',
+          'Dashboards em tempo real com KPIs de sustentabilidade',
+          'Relatórios padronizados para stakeholders e reguladores'
+        ],
+        quickWins: [
+          { titulo: 'Consolidação de Dados de Emissões', economia: 16000, tempo: 4, impacto: 'ALTO' },
+          { titulo: 'Automação de Relatórios ESG', economia: 13000, tempo: 3, impacto: 'ALTO' },
+          { titulo: 'Monitoramento de Consumo Energético', economia: 9000, tempo: 2, impacto: 'MEDIO' }
+        ]
       }
     };
 
@@ -597,45 +618,24 @@ const BusinessCaseBuilder = () => {
   };
 
   const getTimelinePorPrioridade = () => {
-    const timelines = {
-      alta: {
-        discovery: 2,
-        desenvolvimento: 6,
-        implantacao: 2,
-        total: 10,
-        nota: "Timeline acelerada para atender urgência",
-        entregas: [
-          "Quick win em 3 semanas",
-          "Primeiro processo automatizado em 6 semanas",
-          "Go-live completo em 10 semanas"
-        ]
-      },
-      media: {
-        discovery: 3,
-        desenvolvimento: 8,
-        implantacao: 3,
-        total: 14,
-        nota: "Timeline balanceada entre qualidade e velocidade",
-        entregas: [
-          "Discovery completo em 3 semanas",
-          "Protótipo em 7 semanas",
-          "Go-live completo em 14 semanas"
-        ]
-      },
-      baixa: {
-        discovery: 4,
-        desenvolvimento: 10,
-        implantacao: 4,
-        total: 18,
-        nota: "Timeline otimizada para minimizar disrupção",
-        entregas: [
-          "Planejamento detalhado em 4 semanas",
-          "Implementação gradual em fases",
-          "Go-live completo em 18 semanas"
-        ]
-      }
+    const roi = calculateROI();
+    
+    // Usa os valores calculados do ROI
+    const tempoImplantacaoTotal = roi.tempoCapacitacao + roi.tempoGoLive;
+    const tempoPrimeiroProcesso = Math.ceil(roi.tempoDiscovery + (roi.tempoDev * 0.5));
+    
+    return {
+      discovery: roi.tempoDiscovery,
+      desenvolvimento: roi.tempoDev,
+      implantacao: tempoImplantacaoTotal,
+      total: roi.tempoTotal,
+      nota: `Baseado em ${formData.numeroProcessos} processos, ${roi.numeroProfissionais} profissional(is), ${formData.sistemasUtilizados.length} sistemas${formData.errosFrequentes ? ' e presença de erros frequentes' : ''}`,
+      entregas: [
+        `Discovery completo em ${roi.tempoDiscovery} semanas`,
+        `Primeiro processo em ${tempoPrimeiroProcesso} semanas`,
+        `Go-live completo em ${roi.tempoTotal} semanas`
+      ]
     };
-    return timelines[formData.prioridadeAutomacao];
   };
 
   // ===== CÁLCULO DE ROI COMPLETO COM TODAS AS NOVAS FUNCIONALIDADES =====
@@ -682,29 +682,132 @@ const BusinessCaseBuilder = () => {
     const economiaMensal = custoTotal * reducaoEstimada;
     const economiaAnual = economiaMensal * 12;
     
+    // ===== INTEGRAÇÃO COM CALCULOINVESTIMENTO.HTML (OPCIONAL) =====
+    // Tenta carregar configuração salva
+    let configInvestimento = null;
+    try {
+      const configSalva = localStorage.getItem('hupdata_config_investimento');
+      if (configSalva) {
+        configInvestimento = JSON.parse(configSalva);
+        console.log('✅ Configuração personalizada carregada');
+      }
+    } catch (e) {
+      console.log('ℹ️ Usando valores padrão');
+    }
+    
     // ===== AJUSTE DE INVESTIMENTO POR COMPLEXIDADE (numeroProcessos) =====
     let custoImplementacao = 45000;
     let complexidadeProjeto = 'Média';
     
-    if (numeroProcessos <= 5) {
-      custoImplementacao = 30000;
-      complexidadeProjeto = 'Baixa';
-    } else if (numeroProcessos <= 15) {
-      custoImplementacao = 45000;
-      complexidadeProjeto = 'Média';
-    } else if (numeroProcessos <= 25) {
-      custoImplementacao = 65000;
-      complexidadeProjeto = 'Alta';
+    // Se tiver configuração personalizada, calcula com a nova fórmula
+    if (configInvestimento) {
+      // Determinar complexidade
+      if (numeroProcessos <= 5) {
+        complexidadeProjeto = 'Baixa';
+      } else if (numeroProcessos <= 15) {
+        complexidadeProjeto = 'Média';
+      } else if (numeroProcessos <= 25) {
+        complexidadeProjeto = 'Alta';
+      } else {
+        complexidadeProjeto = 'Muito Alta';
+      }
+      
+      // Coeficiente de sistemas
+      let coefSistemas = 1.0;
+      if (fontesDados > 4) {
+        coefSistemas = 1.08;
+      } else if (fontesDados >= 3) {
+        coefSistemas = 1.05;
+      }
+      
+      // Calcular horas
+      const horasDiscovery = configInvestimento.horasPorEtapa[
+        complexidadeProjeto === 'Baixa' ? 'discoveryBaixa' :
+        complexidadeProjeto === 'Média' ? 'discoveryMedia' : 'discoveryAlta'
+      ];
+      
+      const base = numeroProcessos * configInvestimento.horasPorEtapa.horasPorProcesso * 0.8;
+      const horasDesenvolvimento = base * coefSistemas;
+      
+      const horasCapacitacao = (complexidadeProjeto === 'Baixa' || complexidadeProjeto === 'Média') 
+        ? configInvestimento.horasPorEtapa.capacitacaoBaixa 
+        : configInvestimento.horasPorEtapa.capacitacaoAlta;
+      
+      const horasGoLive = configInvestimento.horasPorEtapa.goLive;
+      
+      const totalHoras = horasDiscovery + horasDesenvolvimento + horasCapacitacao + horasGoLive;
+      
+      // Determinar valor por hora baseado no range
+      let valorPorHora = configInvestimento.valoresPorHora.valor4;
+      if (totalHoras <= 100) {
+        valorPorHora = configInvestimento.valoresPorHora.valor1;
+      } else if (totalHoras <= 300) {
+        valorPorHora = configInvestimento.valoresPorHora.valor2;
+      } else if (totalHoras <= 600) {
+        valorPorHora = configInvestimento.valoresPorHora.valor3;
+      }
+      
+      custoImplementacao = totalHoras * valorPorHora;
+      console.log('💰 Investimento calculado:', custoImplementacao);
     } else {
-      custoImplementacao = 85000;
-      complexidadeProjeto = 'Muito Alta';
+      // Sem configuração: usa valores fixos (comportamento original)
+      if (numeroProcessos <= 5) {
+        custoImplementacao = 30000;
+        complexidadeProjeto = 'Baixa';
+      } else if (numeroProcessos <= 15) {
+        custoImplementacao = 45000;
+        complexidadeProjeto = 'Média';
+      } else if (numeroProcessos <= 25) {
+        custoImplementacao = 65000;
+        complexidadeProjeto = 'Alta';
+      } else {
+        custoImplementacao = 85000;
+        complexidadeProjeto = 'Muito Alta';
+      }
     }
     
-    // ===== TEMPO DE IMPLEMENTAÇÃO BASEADO EM PROCESSOS =====
-    const tempoDiscovery = Math.ceil(numeroProcessos / 5); // 1 semana a cada 5 processos
-    const tempoDev = Math.ceil(numeroProcessos / 2); // 1 semana a cada 2 processos
-    const tempoCapacitacao = 3; // Fixo
-    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao;
+    // ===== CÁLCULO DE PROFISSIONAIS NECESSÁRIOS =====
+    let numeroProfissionais = 1;
+    if (numeroProcessos <= 3) {
+      numeroProfissionais = 1;
+    } else if (numeroProcessos <= 10) {
+      numeroProfissionais = 2;
+    } else {
+      numeroProfissionais = 3;
+    }
+    
+    // ===== TEMPO DE IMPLEMENTAÇÃO APERFEIÇOADO =====
+    // Discovery: baseado no PORTE do projeto (complexidade)
+    let tempoDiscovery = 2;
+    if (complexidadeProjeto === 'Baixa') {
+      tempoDiscovery = 1; // Projeto pequeno
+    } else if (complexidadeProjeto === 'Média') {
+      tempoDiscovery = 2; // Projeto médio
+    } else { // Alta ou Muito Alta
+      tempoDiscovery = 3; // Projeto grande
+    }
+    
+    // Desenvolvimento: Base 3 semanas por processo
+    const tempoBasePorProcesso = 3;
+    const multiplicadorSistemas = coeficienteEsforco; // 1.0 a 1.08
+    const multiplicadorErros = formData.errosFrequentes ? 1.2 : 1.0; // +20% se há erros
+    
+    // Tempo total de desenvolvimento (distribuído entre profissionais)
+    const tempoTotalProcessos = numeroProcessos * tempoBasePorProcesso * multiplicadorSistemas * multiplicadorErros;
+    const tempoDev = Math.ceil(tempoTotalProcessos / numeroProfissionais);
+    
+    // Capacitação: baseado no PORTE do projeto
+    let tempoCapacitacao = 2;
+    if (complexidadeProjeto === 'Alta' || complexidadeProjeto === 'Muito Alta') {
+      tempoCapacitacao = 3; // Projetos grandes precisam mais capacitação
+    }
+    
+    // Go-Live: fixo
+    const tempoGoLive = 1;
+    
+    // Total
+    const tempoTotal = tempoDiscovery + tempoDev + tempoCapacitacao + tempoGoLive;
+    const tempoTotalMinimo = Math.ceil(tempoTotal * 0.7); // 70% do tempo total
     
     // ===== ESTRATÉGIA DE PRIORIZAÇÃO =====
     let estrategia = '';
@@ -796,7 +899,13 @@ const BusinessCaseBuilder = () => {
       tempoDiscovery,
       tempoDev,
       tempoCapacitacao,
+      tempoGoLive,
       tempoTotal,
+      tempoTotalMinimo,
+      numeroProfissionais,
+      tempoBasePorProcesso: 3,
+      multiplicadorSistemas: coeficienteEsforco,
+      multiplicadorErros: formData.errosFrequentes ? 1.2 : 1.0,
       
       // Estratégia
       estrategia,
@@ -812,11 +921,57 @@ const BusinessCaseBuilder = () => {
     };
   };
 
-  const roi = calculateROI();
-  const timeline = getTimelinePorPrioridade();
-  const mensagemPrioridade = getMensagemPorPrioridade();
+  // Função para salvar lead no localStorage
+  const saveLeadData = () => {
+    const roi = calculateROI();
+    const timeline = getTimelinePorPrioridade();
+    
+    const leadData = {
+      timestamp: new Date().toISOString(),
+      nomeGestor: formData.nomeGestor,
+      email: formData.email,
+      whatsapp: formData.whatsapp,
+      empresa: formData.empresa,
+      cargo: formData.cargo,
+      area: formData.area,
+      numeroProcessos: formData.numeroProcessos,
+      sistemasUtilizados: formData.sistemasUtilizados,
+      errosFrequentes: formData.errosFrequentes,
+      roi: roi,
+      timeline: timeline,
+      quickWins: roi.benchmark?.quickWins || []
+    };
+
+    // Recuperar leads existentes
+    const existingLeads = JSON.parse(localStorage.getItem('businessCaseLeads') || '[]');
+    
+    // Adicionar novo lead
+    existingLeads.push(leadData);
+    
+    // Salvar de volta no localStorage
+    localStorage.setItem('businessCaseLeads', JSON.stringify(existingLeads));
+    
+    console.log('Lead salvo com sucesso:', leadData);
+  };
+
+  // Auto-save quando chegar na etapa 4 (Business Case)
+  React.useEffect(() => {
+    if (currentStep === 4 && formData.nomeGestor && formData.email && formData.empresa) {
+      // Verifica se já não foi salvo (evita duplicatas)
+      const lastSave = sessionStorage.getItem('lastLeadSave');
+      const currentData = JSON.stringify(formData);
+      
+      if (lastSave !== currentData) {
+        saveLeadData();
+        sessionStorage.setItem('lastLeadSave', currentData);
+      }
+    }
+  }, [currentStep, formData]);
 
   const renderStepContent = () => {
+    const roi = calculateROI();
+    const timeline = getTimelinePorPrioridade();
+    const mensagemPrioridade = getMensagemPorPrioridade();
     switch(currentStep) {
       case 0:
         return (
@@ -891,6 +1046,7 @@ const BusinessCaseBuilder = () => {
                   <option value="fiscal">Fiscal</option>
                   <option value="auditoria">Auditoria</option>
                   <option value="compliance">Compliance</option>
+                  <option value="esg">ESG</option>
                 </select>
               </div>
               
@@ -1013,7 +1169,7 @@ const BusinessCaseBuilder = () => {
               
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Tempo Médio por Processo (horas)
+                  Tempo Médio por Processo (horas) ao longo do mês
                 </label>
                 <input
                   type="number"
@@ -1107,47 +1263,41 @@ const BusinessCaseBuilder = () => {
               </div>
             </div>
             
-            {/* Cards de Métricas */}
+            {/* Quadro de Resumo Superior - Cards Vermelhos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              {/* Custo Mensal - Vermelho */}
+              <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-red-100 text-sm font-medium">Custo mensal</span>
+                  <Download className="w-5 h-5 text-red-200" />
+                </div>
+                <div className="text-3xl font-bold mb-3">
+                  R$ {roi.custoTotal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="space-y-2 text-red-100 text-sm">
+                  <p>Equipe gasta {formData.percentualAtividadesManuais}% do tempo com tarefas manuais</p>
+                  <p>{formData.numeroProcessos} processos críticos gerando {(formData.numeroProcessos / formData.numProfissionais).toFixed(1)} processos/profissional</p>
+                </div>
+              </div>
+
+              {/* Custo Anual - Vermelho */}
+              <div className="bg-gradient-to-br from-red-600 to-red-700 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-red-100 text-sm font-medium">Custo Anual</span>
+                  <Download className="w-5 h-5 text-red-200" />
+                </div>
+                <div className="text-3xl font-bold mb-3">
+                  R$ {(roi.custoTotal * 12).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="text-red-100 text-sm">
+                  Custo anual total atual
+                </div>
+              </div>
+            </div>
+
+            {/* Cards de Métricas - Nova Ordem */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-gradient-to-br from-[#032c62] to-[#17203c] rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-300 text-sm font-medium">Economia Mensal</span>
-                  <Calculator className="w-5 h-5 text-gray-400" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-gray-300 text-sm">
-                  Redução de {roi.benchmark.reducaoTempo}% em atividades manuais
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-green-100 text-sm font-medium">Economia Anual</span>
-                  <TrendingUp className="w-5 h-5 text-green-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
-                </div>
-                <div className="text-green-100 text-sm">
-                  Retorno em {roi.payback.toFixed(1)} meses
-                </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
-                  <Target className="w-5 h-5 text-purple-200" />
-                </div>
-                <div className="text-3xl font-bold mb-1">
-                  {roi.roiAnual.toFixed(0)}%
-                </div>
-                <div className="text-purple-100 text-sm">
-                  Retorno sobre investimento
-                </div>
-              </div>
-              
+              {/* 1. Investimento (Laranja) */}
               <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-orange-100 text-sm font-medium">Investimento</span>
@@ -1161,9 +1311,51 @@ const BusinessCaseBuilder = () => {
                 </div>
               </div>
 
-              {/* NOVO: Card de Economia por Processo */}
-              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-lg md:col-span-2">
+              {/* 2. ROI Anual (Roxo) */}
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
                 <div className="flex items-center justify-between mb-2">
+                  <span className="text-purple-100 text-sm font-medium">ROI Anual</span>
+                  <Target className="w-5 h-5 text-purple-200" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  {roi.roiAnual.toFixed(0)}%
+                </div>
+                <div className="text-purple-100 text-sm">
+                  Retorno sobre investimento
+                </div>
+              </div>
+
+              {/* 3. Economia Mensal (Azul Escuro) */}
+              <div className="bg-gradient-to-br from-[#032c62] to-[#17203c] rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-300 text-sm font-medium">Economia Mensal</span>
+                  <Calculator className="w-5 h-5 text-gray-400" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  R$ {roi.economiaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="text-gray-300 text-sm">
+                  Redução de {roi.benchmark.reducaoTempo}% em atividades manuais
+                </div>
+              </div>
+
+              {/* 4. Economia Anual (Verde) */}
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-green-100 text-sm font-medium">Economia Anual</span>
+                  <TrendingUp className="w-5 h-5 text-green-200" />
+                </div>
+                <div className="text-3xl font-bold mb-1">
+                  R$ {roi.economiaAnual.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}
+                </div>
+                <div className="text-green-100 text-sm">
+                  Retorno em {roi.payback.toFixed(1)} meses
+                </div>
+              </div>
+
+              {/* 5. Economia por Processo (Teal - Full Width) */}
+              <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-6 text-white shadow-lg md:col-span-2">
+                <div className="flex items-center justify-between mb-4">
                   <span className="text-teal-100 text-sm font-medium">Economia por Processo</span>
                   <Calculator className="w-5 h-5 text-teal-200" />
                 </div>
@@ -1280,8 +1472,8 @@ const BusinessCaseBuilder = () => {
                 
                 <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
                   <p className="text-sm text-gray-600 mb-1">Tempo Estimado</p>
-                  <p className="text-2xl font-bold text-blue-700">{roi.tempoTotal} semanas</p>
-                  <p className="text-xs text-gray-500 mt-1">≈ {(roi.tempoTotal / 4.33).toFixed(1)} meses</p>
+                  <p className="text-2xl font-bold text-blue-700">{roi.tempoTotalMinimo}-{roi.tempoTotal} semanas</p>
+                  <p className="text-xs text-gray-500 mt-1">≈ {(roi.tempoTotalMinimo / 4.33).toFixed(1)}-{(roi.tempoTotal / 4.33).toFixed(1)} meses</p>
                 </div>
                 
                 <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
@@ -1307,7 +1499,7 @@ const BusinessCaseBuilder = () => {
               </div>
 
               <div className="mt-4 bg-white rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Detalhado:</p>
+                <p className="text-sm font-semibold text-gray-700 mb-2">Cronograma Estimado:</p>
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Discovery:</span>
@@ -1321,10 +1513,23 @@ const BusinessCaseBuilder = () => {
                     <span className="text-gray-600">Capacitação:</span>
                     <span className="font-semibold text-gray-800">{roi.tempoCapacitacao} semanas</span>
                   </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Go-Live:</span>
+                    <span className="font-semibold text-gray-800">{roi.tempoGoLive} semana</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Equipe:</span>
+                    <span className="font-semibold text-gray-800">{roi.numeroProfissionais} profissional(is)</span>
+                  </div>
                   <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
                     <span className="font-semibold text-gray-700">Total:</span>
-                    <span className="font-bold text-purple-700">{roi.tempoTotal} semanas</span>
+                    <span className="font-bold text-blue-700">{roi.tempoTotalMinimo}-{roi.tempoTotal} semanas</span>
                   </div>
+                </div>
+                <div className="mt-2 bg-blue-50 rounded p-3">
+                  <p className="text-xs text-blue-800">
+                    <strong>ℹ️ Sobre o prazo:</strong> O tempo varia de acordo com a complexidade do acesso aos dados e regras de negócio. O prazo mínimo pressupõe dados estruturados e regras claras, enquanto o máximo considera cenários mais complexos.
+                  </p>
                 </div>
               </div>
             </div>
@@ -1509,7 +1714,7 @@ const BusinessCaseBuilder = () => {
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700 font-semibold">Tempo Total:</span>
-                  <span className="text-2xl font-bold text-[#032c62]">{timeline.total} semanas</span>
+                  <span className="text-2xl font-bold text-[#032c62]">{roi.tempoTotalMinimo}-{timeline.total} semanas</span>
                 </div>
                 <p className="text-sm text-gray-600 mt-2">{timeline.nota}</p>
               </div>
@@ -1821,7 +2026,7 @@ const BusinessCaseBuilder = () => {
                 <div className="bg-purple-50 rounded-lg p-4 border border-purple-200 mb-4">
                   <h4 className="font-semibold text-purple-900 mb-2">Estratégia: {roi.estrategia}</h4>
                   <p className="text-sm text-purple-700 mb-3">
-                    Complexidade {roi.complexidadeProjeto} | Tempo total: {roi.tempoTotal} semanas
+                    Complexidade {roi.complexidadeProjeto} | Tempo total: {roi.tempoTotalMinimo}-{roi.tempoTotal} semanas
                   </p>
                   
                   <div className="space-y-2">
@@ -1840,7 +2045,7 @@ const BusinessCaseBuilder = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-800 mb-3">Cronograma Detalhado</h4>
+                  <h4 className="font-semibold text-gray-800 mb-3">Cronograma Estimado</h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Discovery:</span>
@@ -1854,12 +2059,62 @@ const BusinessCaseBuilder = () => {
                       <span className="text-gray-600">Capacitação:</span>
                       <span className="font-semibold">{roi.tempoCapacitacao} semanas</span>
                     </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Go-Live:</span>
+                      <span className="font-semibold">{roi.tempoGoLive} semana</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Equipe:</span>
+                      <span className="font-semibold">{roi.numeroProfissionais} profissional(is)</span>
+                    </div>
                     <div className="flex justify-between pt-2 border-t border-gray-300">
                       <span className="font-bold text-gray-800">Total:</span>
-                      <span className="font-bold text-[#032c62]">{roi.tempoTotal} semanas</span>
+                      <span className="font-bold text-[#032c62]">{roi.tempoTotalMinimo}-{roi.tempoTotal} semanas</span>
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* CASES DE SUCESSO KNIME - INSERIDO ANTES DE PRÓXIMOS PASSOS */}
+              <div className="bg-gradient-to-r from-blue-900 to-indigo-900 rounded-xl p-6 text-white">
+                <div className="flex items-center mb-4">
+                  <Award className="w-8 h-8 mr-3 text-yellow-400" />
+                  <h3 className="text-2xl font-bold">Cases de Sucesso com KNIME</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏦 Rabobank</h4>
+                    <p className="text-sm text-blue-100">
+                      Treinou <strong>300 auditores em 2 dias</strong> para usar KNIME em detecção de anomalias 
+                      e anti-lavagem de dinheiro, democratizando analytics avançado
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏦 ING</h4>
+                    <p className="text-sm text-blue-100">
+                      <strong>400 auditores economizam 400h/ano</strong>, reduziram tempo de coleta de dados 
+                      de <strong>8 semanas para acesso instantâneo</strong>
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏭 Tata Steel</h4>
+                    <p className="text-sm text-blue-100">
+                      Economia de tempo de até <strong>95%</strong> ao migrar de Excel para KNIME, 
+                      identificando erros em cálculos e conciliações
+                    </p>
+                  </div>
+                  <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+                    <h4 className="font-bold text-yellow-400 mb-2">🏦 Banco BV (HupData)</h4>
+                    <p className="text-sm text-blue-100">
+                      Automatização de <strong>processos de dados em área tributária</strong> com KNIME Business Hub, 
+                      gerando economia significativa
+                    </p>
+                  </div>
+                </div>
+                <p className="text-xs text-blue-200 mt-4 text-center italic">
+                  Fonte: KNIME Case Studies & HupData Portfolio
+                </p>
               </div>
 
               {/* Próximos Passos */}
@@ -1936,13 +2191,123 @@ const BusinessCaseBuilder = () => {
     return true;
   };
 
+  // ============================================
+  // INTEGRAÇÃO COM GOOGLE SHEETS
+  // ============================================
+  
+  // CONFIGURAÇÃO: Cole aqui a URL do seu Google Apps Script
+  const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVoIYLHiUmIbuR8s1jzk_8QX1IOh68hHvNUE-C5w9VbKllUUk70EHZYs_25euB5Xo8/exec';
+  
+  const sendToGoogleSheets = async () => {
+    // Se não tiver URL configurada, avisa visualmente
+    if (!GOOGLE_APPS_SCRIPT_URL || GOOGLE_APPS_SCRIPT_URL === 'COLE_AQUI_A_URL_DO_SEU_GOOGLE_APPS_SCRIPT') {
+      console.warn('⚠️ Google Sheets NÃO configurado. Os dados NÃO serão salvos!');
+      console.warn('📝 Para configurar: Cole a URL do Google Apps Script na linha 2097');
+      
+      // Mostra alerta visual (apenas uma vez)
+      if (!window.alertaGoogleSheetsExibido) {
+        alert('⚠️ ATENÇÃO: Google Sheets não configurado!\n\nOs dados deste lead NÃO serão salvos.\n\nPara habilitar, configure a URL do Google Apps Script no código.');
+        window.alertaGoogleSheetsExibido = true;
+      }
+      return;
+    }
+    
+    console.log('📤 Enviando dados para Google Sheets...');
+    console.log('🔗 URL configurada:', GOOGLE_APPS_SCRIPT_URL.substring(0, 50) + '...');
+    
+    try {
+      const roi = calculateROI();
+      
+      const payload = {
+        // Dados do lead
+        nome: formData.nomeGestor,
+        email: formData.email,
+        whatsapp: formData.whatsapp,
+        cargo: formData.cargo,
+        area: formData.area,
+        empresa: formData.empresa,
+        
+        // Dados do diagnóstico
+        numeroProcessos: formData.numeroProcessos,
+        sistemasUtilizados: formData.sistemasUtilizados,
+        tempoMedioPorProcesso: formData.tempoMedioPorProcesso,
+        percentualAtividadesManual: formData.percentualAtividadesManual,
+        errosFrequentes: formData.errosFrequentes,
+        custoHoraProfissional: formData.custoHoraProfissional,
+        prioridadeAutomacao: formData.prioridadeAutomacao,
+        
+        // Dados do ROI
+        roi: {
+          investimentoTotal: roi.investimentoTotal,
+          economiaMensal: roi.economiaMensal,
+          economiaAnual: roi.economiaAnual,
+          payback: roi.payback,
+          tempoTotal: roi.tempoTotal,
+          tempoTotalMinimo: roi.tempoTotalMinimo,
+          complexidadeProjeto: roi.complexidadeProjeto,
+          estrategia: roi.estrategia
+        }
+      };
+      
+      const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Google Apps Script requer no-cors
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      // Com no-cors, não conseguimos ler a resposta, mas se chegou aqui, foi enviado
+      console.log('✅ Dados enviados com sucesso para Google Sheets!');
+      console.log('📊 Lead capturado:', payload.nome, '-', payload.empresa);
+      console.log('💰 ROI: Investimento: R$', roi.investimentoTotal.toLocaleString('pt-BR'), '| Economia Anual: R$', roi.economiaAnual.toLocaleString('pt-BR'));
+      console.log('⏱️ Payback:', roi.payback, 'meses');
+      console.log('');
+      console.log('💡 IMPORTANTE: Com mode: no-cors, não conseguimos verificar se houve erro.');
+      console.log('👉 Confira no Google Sheets se o lead foi salvo (aba "Leads")');
+      
+    } catch (error) {
+      // Com no-cors, erros são comuns mas os dados geralmente são enviados
+      // Apenas logamos no console, sem alarmar o usuário
+      console.warn('⚠️ Aviso ao enviar para Google Sheets:', error.message);
+      console.log('');
+      console.log('📝 NOTA: Com mode: no-cors, este aviso é normal.');
+      console.log('👉 Verifique no Google Sheets se o lead foi salvo (aba "Leads")');
+      console.log('');
+      console.log('🔍 Se o lead NÃO foi salvo, verifique:');
+      console.log('   1. URL do Apps Script está correta?');
+      console.log('   2. Apps Script foi implantado corretamente?');
+      console.log('   3. Configuração "Quem tem acesso" = "Qualquer pessoa"?');
+    }
+  };
+  
+  // Hook para enviar dados quando chegar na última etapa
+  React.useEffect(() => {
+    if (currentStep === steps.length - 1) {
+      // Envia os dados automaticamente quando chega no Business Case final
+      sendToGoogleSheets();
+    }
+  }, [currentStep]);
+
+  // ============================================
+  // FIM DA INTEGRAÇÃO
+  // ============================================
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Business Case Builder
-          </h1>
+          <div className="flex items-center justify-center gap-4 mb-2">
+            <img 
+              src="https://hupdata.com/wp-content/uploads/2023/06/logo-hupdata-horizontal-color.png" 
+              alt="HupData Logo" 
+              className="h-12"
+            />
+            <h1 className="text-4xl font-bold text-gray-900">
+              Business Case Builder
+            </h1>
+          </div>
           <p className="text-gray-600">
             Construa seu business case de automação em minutos
           </p>
